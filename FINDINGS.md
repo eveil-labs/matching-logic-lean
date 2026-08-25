@@ -211,7 +211,7 @@ we have misread.
 | toolchain | Lean 4.33.0 |
 | Mathlib | pinned to the public tag `v4.33.0` |
 | build | `lake exe cache get && lake build MatchingLogic` — about 90 s from a clean clone |
-| gates | `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh` |
+| gates | `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh` |
 | independent check | the complete development also compiles on the AXLE service at `lean-4.33.0`: 0 errors, 0 incomplete declarations, same axiom verdict |
 
 `CORRESPONDENCE.md` lists each **paper result** against its Lean name and the

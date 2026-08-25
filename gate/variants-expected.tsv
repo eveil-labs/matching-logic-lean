@@ -1,0 +1,6 @@
+# file	namespace	settled side	the paper lemma the variant alters
+variants/V1ConstantOneCopy.lean	VariantOneCopy	fails	Lemma 11
+variants/V2MixedTuples.lean	VariantMixed	fails	Lemma 11
+variants/V3WeakAgreement.lean	VariantWeakAgree	fails	Lemma 9
+variants/V4StepDirection.lean	VariantStepDirection	fails	Lemma 9
+variants/V5SingleSheet.lean	VariantSingleSheet	fails	Corollary 12

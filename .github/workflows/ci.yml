@@ -18,8 +18,8 @@ jobs:
           build-args: MatchingLogic
 
       # A green `lake build` is NOT evidence that anything is proved: the build
-      # succeeds with `sorry`s present, emitting only warnings. These three
-      # gates are the actual evidence.
+      # succeeds with `sorry`s present, emitting only warnings. The gates below
+      # are the actual evidence.
       - name: No sorry in files claimed complete
         run: ./scripts/audit-files.sh
 

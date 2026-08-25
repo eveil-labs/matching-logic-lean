@@ -34,8 +34,9 @@ axiom column are *generated* — a name appears only if it is certified and the
 kernel confirms it — and CI regenerates and diffs the file. Two honest caveats:
 the English description of each paper result comes from the hand-maintained
 `gate/paper-map.tsv`, and CI cannot check that those descriptions are faithful;
-and the table lists paper results only, so supporting lemmas and controls are
-certified without appearing in it. **The full list of what is claimed is
+and the table lists results that are mapped to the paper -- including rows
+marked BEYOND, for what is proved on top of it -- so supporting lemmas and
+controls are certified without appearing in it. **The full list of what is claimed is
 `gate/certified.txt`** (checked by `scripts/audit.sh`) together with the five
 variant refutations (checked by `scripts/audit-variants.sh`).
 
@@ -164,7 +165,7 @@ lake build MatchingLogic
 ./scripts/audit-files.sh      # no sorry in files claimed complete
 ./scripts/audit.sh            # axiom gate over gate/certified.txt
 ./scripts/audit-variants.sh   # each variant settled, and settled honestly
-./scripts/audit-pinned.sh     # every pinned statement and definition unchanged
+./scripts/audit-pinned.sh     # every certified statement type and pinned definition body unchanged
 ```
 
 ## Layout
@@ -181,7 +182,14 @@ lake build MatchingLogic
     MatchingLogic/Composite.lean     Corollary 12, Theorem 13
     MatchingLogic/Independence.lean  which hypotheses do work
     MatchingLogic/Applicative.lean   Section 6
-    MatchingLogic/ProofSystem.lean   Figure 2 (statements pinned, unproved)
+    MatchingLogic/ProofSystem.lean   Figure 2, Lemma 5, and the two black boxes
+    MatchingLogic/Soundness.lean     (S), proved
+    MatchingLogic/Completeness.lean  Theorem 14, Corollary 15
+    MatchingLogic/EntryPoints.lean   Corollary 15 with (S) discharged
+    MatchingLogic/Sorted.lean        many-sorted syntax, Proposition 30 (semantic)
+    MatchingLogic/SortedProof.lean   many-sorted Figure 2, Proposition 30, Corollary 31
+    MatchingLogic/Definedness.lean   Corollary 16
+    MatchingLogic/SetVariables.lean  Remark 17
     variants/                        five neighbouring readings, all refuted
     alternates/                      the independent second proof of a target
     gate/                            the enforced lists the gates read
