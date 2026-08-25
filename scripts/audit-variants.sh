@@ -36,9 +36,18 @@ for f in variants/V*.lean; do
     esac
   done
   cnt=$(printf '%s' "$proved" | wc -w | tr -d ' ')
+  # Exactly one `sorry` is expected: the side that was NOT settled. More than
+  # that means an auxiliary lemma was left open and the file is claiming more
+  # than it proves.
+  stubs=$(printf '%s\n' "$out" | grep -c "declaration uses" || true)
   if [ -n "$bad" ]; then echo "FAIL  $f -- disallowed axioms:$bad"; fail=1
+  elif [ "$stubs" -ne 1 ]; then echo "FAIL  $f -- expected exactly 1 sorry, found $stubs"; fail=1
   elif [ "$cnt" -eq 1 ]; then echo "ok    $f -- settled:$proved"; settled=$((settled+1))
-  elif [ "$cnt" -eq 0 ]; then echo "..    $f -- UNSETTLED (both sides still open)"; unsettled=$((unsettled+1))
+  elif [ "$cnt" -eq 0 ]; then
+    # An earlier version reported this and still exited 0, so CI stayed green if
+    # a refutation was replaced by `sorry`. A variant in the repository is a
+    # variant we claim to have settled.
+    echo "FAIL  $f -- UNSETTLED: neither side proved"; fail=1
   else echo "FAIL  $f -- BOTH sides proved:$proved (the variant statement is inconsistent)"; fail=1; fi
 done
 echo "-- $settled settled, $unsettled unsettled --"

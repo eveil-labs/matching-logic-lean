@@ -23,14 +23,21 @@ studies has not been mechanized.
 Everything below is proved with no `sorry`, and depends only on
 `propext`, `Classical.choice`, `Quot.sound` — many on strictly fewer.
 `gate/certified.txt` is the enforced list; `scripts/audit.sh` fails if any entry
-acquires a `sorry` or any other axiom, and CI runs it on every push. **Nothing
-outside that list is claimed.**
+acquires a `sorry` or any other axiom. The five variant refutations in
+`variants/` are claimed too, and are enforced separately by
+`scripts/audit-variants.sh`. **Nothing outside those two is claimed.** CI runs
+every gate on every push.
 
-[`CORRESPONDENCE.md`](CORRESPONDENCE.md) maps each result of the paper
-to its Lean name and to the axioms the kernel actually reports for it. It is
-*generated* from that list joined with `#print axioms` output, never written by
-hand, so a result it does not mention is a result we are not claiming. CI
-regenerates it and diffs, so it cannot drift into overclaiming.
+[`CORRESPONDENCE.md`](CORRESPONDENCE.md) maps each **result of the paper** to
+its Lean name and to the axioms the kernel actually reports. Membership and the
+axiom column are *generated* — a name appears only if it is certified and the
+kernel confirms it — and CI regenerates and diffs the file. Two honest caveats:
+the English description of each paper result comes from the hand-maintained
+`gate/paper-map.tsv`, and CI cannot check that those descriptions are faithful;
+and the table lists paper results only, so supporting lemmas and controls are
+certified without appearing in it. **The full list of what is claimed is
+`gate/certified.txt`** (checked by `scripts/audit.sh`) together with the five
+variant refutations (checked by `scripts/audit-variants.sh`).
 
 ### Entry point (i) — complete
 
@@ -152,11 +159,12 @@ singling out:
 Lean 4.33.0 with Mathlib v4.33.0, pinned to a public tag.
 
 ```bash
-lake exe cache get
+lake exe cache get      # first run downloads Mathlib oleans: minutes, then seconds
 lake build MatchingLogic
 ./scripts/audit-files.sh      # no sorry in files claimed complete
 ./scripts/audit.sh            # axiom gate over gate/certified.txt
 ./scripts/audit-variants.sh   # each variant settled, and settled honestly
+./scripts/audit-pinned.sh     # every pinned statement and definition unchanged
 ```
 
 ## Layout
@@ -209,20 +217,35 @@ audited against the paper before proofs are commissioned — by several readers 
 parallel, one of whom is asked not whether the definitions match the paper but
 whether any pinned statement could be **true for the wrong reason**.
 
-Every proof was verified rather than trusted. Alongside the gates above, each
-contribution was checked against a pinned baseline of the statement **types**
-and definition **bodies** as the kernel prints them — including the recursor of
-the proof system, which pins its constructor set so that no rule of Figure 2 can
-be added or reshaped to make a target go through. A type-level check is not
-enough: the cheapest way to "prove" Lemma 11 is to weaken Definition 10 so
-constants populate one copy only, which the paper explicitly warns about and
-which changes no type. That check was fire-tested against a deliberately
-sabotaged copy and caught exactly that. Every gate here was likewise
-fire-tested, and running each against real data found a defect in it.
+Every proof was verified rather than trusted. `scripts/audit-pinned.sh`
+compares the kernel's own printing of every pinned statement **type** and
+definition **body** against `gate/pinned-baseline.txt` — including
+`Provable.rec`, which pins the *constructor set*, so no rule of Figure 2 can be
+added or reshaped to make a target go through. You can run it yourself.
+
+A type-level check would not be enough: the cheapest way to "prove" Lemma 11 is
+to weaken Definition 10 so constants populate one copy only — which the paper
+explicitly warns about, and which changes no type. Nor is the axiom gate enough:
+`#print axioms` accepts any declaration, including a *definition* carrying a
+theorem's name. Each gate was fire-tested against a deliberately broken tree, and
+running each against real data found a defect in it.
+
+Statements were pinned before proofs were attempted, results were proved twice in
+different model families where `alternates/` shows it, and the development was
+cross-checked on a second Lean service. Those are project records: the artifacts
+behind them are not in this repository, so treat them as claims about how the
+work was done rather than as something you can reproduce from what is here. The
+gates, the baseline and `alternates/` you can check directly.
 
 A green `lake build` is **not** evidence: the build succeeds with `sorry`s
 present, emitting only warnings. That is why the gates above exist and why CI
 runs them rather than grepping the build.
+
+**Where the `sorry`s are.** Six, all deliberate and none reachable from any
+claimed result: the five `vN_holds` stubs in `variants/` — the *refuted* side of
+each prove-or-refute pair — and one in `alternates/V5SingleSheet.inhouse.lean`,
+which is a second, independent proof of the same variant and carries the same
+stub. `alternates/` is evidence, not part of the build; nothing imports it.
 
 The development is also checked on an independent Lean service (AXLE) at
 `lean-4.33.0`: zero errors and zero incomplete declarations across the library,
@@ -240,5 +263,11 @@ under audit wherever possible. Errors are ours.
 
 ## License
 
-Apache 2.0, matching Mathlib, so anything here can be upstreamed without
+Apache 2.0, matching Mathlib, so the code here can be upstreamed without
 friction.
+
+**Exception.** The comments and docstrings quote passages of arXiv:2608.13306 —
+definitions, lemma statements, and short proof sketches — to pin exactly what is
+being formalized. Those passages remain the copyright of Xiaohong Chen and
+Grigore Roșu, are included as scholarly quotation with attribution, and are not
+covered by the Apache grant.

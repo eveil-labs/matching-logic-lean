@@ -1,0 +1,221 @@
+@MatchingLogic.locality : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) {C : Set M.carrier},
+ M.BackwardClosed C →
+ ∀ (ψ : MatchingLogic.Pattern S Var) (ρ ρ' : Var → M.carrier),
+ MatchingLogic.AgreeOn C ρ ρ' → M.denote ρ ψ ∩ C = M.denote ρ' ψ ∩ C
+@MatchingLogic.two_copies : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (C : Set M.carrier),
+ M.BackwardClosed C →
+ ∀ (hne : C.Nonempty),
+ ∀ star ∉ C,
+ ∀ (ψ : MatchingLogic.Pattern S Var) (ν : Var → ↑C × Bool) (p : ↑C × Bool),
+ p ∈ (MatchingLogic.cover M C hne).denote ν ψ ↔
+ ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star p.2 (ν x)) ψ
+@MatchingLogic.two_copies_set : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (C : Set M.carrier),
+ M.BackwardClosed C →
+ ∀ (hne : C.Nonempty),
+ ∀ star ∉ C,
+ ∀ (ψ : MatchingLogic.Pattern S Var) (ν : Var → ↑C × Bool),
+ (MatchingLogic.cover M C hne).denote ν ψ =
+ {p | p.2 = false ∧ ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star false (ν x)) ψ} ∪
+ {p | p.2 = true ∧ ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star true (ν x)) ψ}
+def MatchingLogic.coverInterp : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (C : Set M.carrier) → (σ : S.Sym) → (Fin (S.arity σ) → ↑C × Bool) → Set (↑C × Bool) :=
+fun {S} M C σ A => {p | (∀ (j : Fin (S.arity σ)), (A j).2 = p.2) ∧ ↑p.1 ∈ M.interp σ fun j => ↑(A j).1}
+def MatchingLogic.cover : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (C : Set M.carrier) → C.Nonempty → MatchingLogic.Model S :=
+fun {S} M C hne => { carrier := ↑C × Bool, nonempty := ⋯, interp := MatchingLogic.coverInterp M C }
+def MatchingLogic.proj : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (C : Set M.carrier) → M.carrier → Bool → ↑C × Bool → M.carrier :=
+fun {S} M C star i p => if p.2 = i then ↑p.1 else star
+def MatchingLogic.AgreeOn : {S : MatchingLogic.Signature} →
+ {Var : Type} → {M : MatchingLogic.Model S} → Set M.carrier → (Var → M.carrier) → (Var → M.carrier) → Prop :=
+fun {S} {Var} {M} C ρ ρ' => ∀ (x : Var), ρ x = ρ' x ∧ ρ x ∈ C ∨ ρ x ∉ C ∧ ρ' x ∉ C
+def MatchingLogic.Model.app : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (σ : S.Sym) → (Fin (S.arity σ) → Set M.carrier) → Set M.carrier :=
+fun {S} M σ A => {u | ∃ a, (∀ (i : Fin (S.arity σ)), a i ∈ A i) ∧ u ∈ M.interp σ a}
+def MatchingLogic.Model.BackwardClosed : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → Set M.carrier → Prop :=
+fun {S} M C => ∀ ⦃u : M.carrier⦄, u ∈ C → ∀ ⦃v : M.carrier⦄, M.Step u v → v ∈ C
+def MatchingLogic.Model.denote : {S : MatchingLogic.Signature} →
+ {Var : Type} →
+ [DecidableEq Var] → (M : MatchingLogic.Model S) → (Var → M.carrier) → MatchingLogic.Pattern S Var → Set M.carrier :=
+fun {S} {Var} [DecidableEq Var] M x x_1 =>
+ MatchingLogic.Pattern.brecOn (motive := fun x => (Var → M.carrier) → Set M.carrier) x_1
+ (MatchingLogic.Model.denote._f M) x
+def MatchingLogic.FV : {S : MatchingLogic.Signature} → {Var : Type} → MatchingLogic.Pattern S Var → Set Var :=
+fun {S} {Var} x => MatchingLogic.Pattern.brecOn x MatchingLogic.FV._f
+def MatchingLogic.Closed : {S : MatchingLogic.Signature} → {Var : Type} → MatchingLogic.Pattern S Var → Prop :=
+fun {S} {Var} φ => MatchingLogic.FV φ = ∅
+def MatchingLogic.Model.Total : {S : MatchingLogic.Signature} →
+ {Var : Type} →
+ [DecidableEq Var] → (M : MatchingLogic.Model S) → (Var → M.carrier) → MatchingLogic.Pattern S Var → Prop :=
+fun {S} {Var} [DecidableEq Var] M ρ φ => M.denote ρ φ = Set.univ
+def MatchingLogic.Model.Sat : {S : MatchingLogic.Signature} →
+ {Var : Type} → [DecidableEq Var] → MatchingLogic.Model S → MatchingLogic.Pattern S Var → Prop :=
+fun {S} {Var} [DecidableEq Var] M φ => ∀ (ρ : Var → M.carrier), M.Total ρ φ
+def MatchingLogic.Model.SatSet : {S : MatchingLogic.Signature} →
+ {Var : Type} → [DecidableEq Var] → MatchingLogic.Model S → Set (MatchingLogic.Pattern S Var) → Prop :=
+fun {S} {Var} [DecidableEq Var] M Γ => ∀ γ ∈ Γ, M.Sat γ
+def MatchingLogic.Model.denoteSet : {S : MatchingLogic.Signature} →
+ {Var : Type} →
+ [DecidableEq Var] →
+ (M : MatchingLogic.Model S) → (Var → M.carrier) → Set (MatchingLogic.Pattern S Var) → Set M.carrier :=
+fun {S} {Var} [DecidableEq Var] M ρ Δ => ⋂ δ ∈ Δ, M.denote ρ δ
+def MatchingLogic.LocalCons : {S : MatchingLogic.Signature} →
+ {Var : Type} → [DecidableEq Var] → Set (MatchingLogic.Pattern S Var) → MatchingLogic.Pattern S Var → Prop :=
+fun {S} {Var} [DecidableEq Var] Δ φ =>
+ ∀ (M : MatchingLogic.Model S) (ρ : Var → M.carrier), M.denoteSet ρ Δ ⊆ M.denote ρ φ
+def MatchingLogic.GlobalCons : {S : MatchingLogic.Signature} →
+ {Var : Type} → [DecidableEq Var] → Set (MatchingLogic.Pattern S Var) → MatchingLogic.Pattern S Var → Prop :=
+fun {S} {Var} [DecidableEq Var] Γ φ => ∀ (M : MatchingLogic.Model S), M.SatSet Γ → M.Sat φ
+@[reducible] def MatchingLogic.Coord : MatchingLogic.Signature → Type :=
+fun S => (σ : S.Sym) × Fin (S.arity σ)
+def MatchingLogic.dia : {S : MatchingLogic.Signature} →
+ {Var : Type} → MatchingLogic.Coord S → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var :=
+fun {S} {Var} e ψ => MatchingLogic.Pattern.app e.fst fun j => if j = e.snd then ψ else MatchingLogic.Pattern.tp
+def MatchingLogic.box : {S : MatchingLogic.Signature} →
+ {Var : Type} → MatchingLogic.Coord S → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var :=
+fun {S} {Var} e ψ => (MatchingLogic.dia e (ψ.imp MatchingLogic.Pattern.bot)).imp MatchingLogic.Pattern.bot
+def MatchingLogic.boxes : {S : MatchingLogic.Signature} →
+ {Var : Type} → List (MatchingLogic.Coord S) → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var :=
+fun {S} {Var} x x_1 =>
+ List.brecOn (motive := fun x => MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var) x MatchingLogic.boxes._f
+ x_1
+def MatchingLogic.Model.stepAt : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → MatchingLogic.Coord S → M.carrier → M.carrier → Prop :=
+fun {S} M e u v => ∃ a, u ∈ M.interp e.fst a ∧ v = a e.snd
+def MatchingLogic.Model.reachWord : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → List (MatchingLogic.Coord S) → M.carrier → M.carrier → Prop :=
+fun {S} M x x_1 x_2 =>
+ List.brecOn (motive := fun x => M.carrier → M.carrier → Prop) x (MatchingLogic.Model.reachWord._f M) x_1 x_2
+def MatchingLogic.localize : {S : MatchingLogic.Signature} →
+ {Var : Type} → Set (MatchingLogic.Pattern S Var) → Set (MatchingLogic.Pattern S Var) :=
+fun {S} {Var} Γ => {ψ | ∃ γ ∈ Γ, ∃ p, ψ = MatchingLogic.boxes p γ}
+@MatchingLogic.denote_congr : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (φ : MatchingLogic.Pattern S Var) (ρ ρ' : Var → M.carrier),
+ (∀ x ∈ MatchingLogic.FV φ, ρ x = ρ' x) → M.denote ρ φ = M.denote ρ' φ
+@MatchingLogic.denote_boxes : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (p : List (MatchingLogic.Coord S))
+ (ψ : MatchingLogic.Pattern S Var),
+ M.denote ρ (MatchingLogic.boxes p ψ) = {u | ∀ (v : M.carrier), M.reachWord p u v → v ∈ M.denote ρ ψ}
+@MatchingLogic.denoteSet_localize : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (Γ : Set (MatchingLogic.Pattern S Var)),
+ M.denoteSet ρ (MatchingLogic.localize Γ) =
+ {u | ∀ (v : M.carrier), Relation.ReflTransGen M.Step u v → v ∈ M.denoteSet ρ Γ}
+@MatchingLogic.globalCons_of_localCons_localize : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ {Γ : Set (MatchingLogic.Pattern S Var)} {φ : MatchingLogic.Pattern S Var},
+ (∀ γ ∈ Γ, MatchingLogic.Closed γ) →
+ MatchingLogic.Closed φ → MatchingLogic.LocalCons (MatchingLogic.localize Γ) φ → MatchingLogic.GlobalCons Γ φ
+@MatchingLogic.cover_denote_closed : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (C : Set M.carrier),
+ M.BackwardClosed C →
+ ∀ (hne : C.Nonempty),
+ ∀ star ∉ C,
+ ∀ {ψ : MatchingLogic.Pattern S Var},
+ MatchingLogic.Closed ψ →
+ ∀ (ν : Var → ↑C × Bool) (ρ : Var → M.carrier) (p : ↑C × Bool),
+ p ∈ (MatchingLogic.cover M C hne).denote ν ψ ↔ ↑p.1 ∈ M.denote ρ ψ
+@MatchingLogic.cover_sat_iff : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (C : Set M.carrier),
+ M.BackwardClosed C →
+ ∀ (hne : C.Nonempty),
+ ∀ star ∉ C,
+ ∀ {ψ : MatchingLogic.Pattern S Var},
+ MatchingLogic.Closed ψ → ∀ (ρ : Var → M.carrier), (MatchingLogic.cover M C hne).Sat ψ ↔ C ⊆ M.denote ρ ψ
+@MatchingLogic.semantic_localization : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ {Γ : Set (MatchingLogic.Pattern S Var)} {φ : MatchingLogic.Pattern S Var},
+ (∀ γ ∈ Γ, MatchingLogic.Closed γ) →
+ MatchingLogic.Closed φ → (MatchingLogic.GlobalCons Γ φ ↔ MatchingLogic.LocalCons (MatchingLogic.localize Γ) φ)
+def MatchingLogic.substVar : {S : MatchingLogic.Signature} →
+ {Var : Type} → [DecidableEq Var] → Var → Var → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var :=
+fun {S} {Var} [DecidableEq Var] x y x_1 => MatchingLogic.Pattern.brecOn x_1 (MatchingLogic.substVar._f x y)
+def MatchingLogic.CaptureFree : {S : MatchingLogic.Signature} →
+ {Var : Type} → Var → Var → MatchingLogic.Pattern S Var → Prop :=
+fun {S} {Var} x y x_1 => MatchingLogic.Pattern.brecOn x_1 (MatchingLogic.CaptureFree._f x y)
+def MatchingLogic.PForm.eval : (ℕ → Bool) → MatchingLogic.PForm → Bool :=
+fun v x => MatchingLogic.PForm.brecOn x (MatchingLogic.PForm.eval._f v)
+def MatchingLogic.PForm.subst : {S : MatchingLogic.Signature} →
+ {Var : Type} → (ℕ → MatchingLogic.Pattern S Var) → MatchingLogic.PForm → MatchingLogic.Pattern S Var :=
+fun {S} {Var} θ x => MatchingLogic.PForm.brecOn x (MatchingLogic.PForm.subst._f θ)
+def MatchingLogic.AppCtx.plug : {S : MatchingLogic.Signature} →
+ {Var : Type} →
+ [DecidableEq Var] → MatchingLogic.AppCtx S Var → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var :=
+fun {S} {Var} [DecidableEq Var] x x_1 =>
+ MatchingLogic.AppCtx.brecOn (motive := fun x => MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var) x
+ MatchingLogic.AppCtx.plug._f x_1
+def MatchingLogic.conj : {S : MatchingLogic.Signature} →
+ {Var : Type} → List (MatchingLogic.Pattern S Var) → MatchingLogic.Pattern S Var :=
+fun {S} {Var} x => List.brecOn x MatchingLogic.conj._f
+def MatchingLogic.StrongLocalCompleteness : MatchingLogic.Signature → (Var : Type) → [DecidableEq Var] → Prop :=
+fun S Var [DecidableEq Var] =>
+ ∀ (Δ : Set (MatchingLogic.Pattern S Var)) (φ : MatchingLogic.Pattern S Var),
+ MatchingLogic.LocalCons Δ φ → ∃ l, (∀ δ ∈ l, δ ∈ Δ) ∧ MatchingLogic.Provable ∅ ((MatchingLogic.conj l).imp φ)
+def MatchingLogic.Soundness : MatchingLogic.Signature → (Var : Type) → [DecidableEq Var] → Prop :=
+fun S Var [DecidableEq Var] =>
+ ∀ (Γ : Set (MatchingLogic.Pattern S Var)) (φ : MatchingLogic.Pattern S Var),
+ MatchingLogic.Provable Γ φ → MatchingLogic.GlobalCons Γ φ
+@MatchingLogic.Provable.rec : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ {Γ : Set (MatchingLogic.Pattern S Var)}
+ {motive : (a : MatchingLogic.Pattern S Var) → MatchingLogic.Provable Γ a → Prop},
+ (∀ {φ : MatchingLogic.Pattern S Var} (a : φ ∈ Γ), motive φ ⋯) →
+ (∀ {p : MatchingLogic.PForm} {θ : ℕ → MatchingLogic.Pattern S Var} (a : p.Taut),
+ motive (MatchingLogic.PForm.subst θ p) ⋯) →
+ (∀ {φ₁ φ₂ : MatchingLogic.Pattern S Var} (a : MatchingLogic.Provable Γ φ₁)
+ (a_1 : MatchingLogic.Provable Γ (φ₁.imp φ₂)), motive φ₁ a → motive (φ₁.imp φ₂) a_1 → motive φ₂ ⋯) →
+ (∀ {x y : Var} {φ : MatchingLogic.Pattern S Var} (a : MatchingLogic.CaptureFree x y φ),
+ motive ((MatchingLogic.substVar x y φ).imp (MatchingLogic.Pattern.ex x φ)) ⋯) →
+ (∀ {x : Var} {φ₁ φ₂ : MatchingLogic.Pattern S Var} (a : MatchingLogic.Provable Γ (φ₁.imp φ₂))
+ (a_1 : x ∉ MatchingLogic.FV φ₂),
+ motive (φ₁.imp φ₂) a → motive ((MatchingLogic.Pattern.ex x φ₁).imp φ₂) ⋯) →
+ (∀ {σ : S.Sym} {i : Fin (S.arity σ)} {args : Fin (S.arity σ) → MatchingLogic.Pattern S Var},
+ motive
+ ((MatchingLogic.Pattern.app σ (Function.update args i MatchingLogic.Pattern.bot)).imp
+ MatchingLogic.Pattern.bot)
+ ⋯) →
+ (∀ {σ : S.Sym} {i : Fin (S.arity σ)} {args : Fin (S.arity σ) → MatchingLogic.Pattern S Var}
+ {φ₁ φ₂ : MatchingLogic.Pattern S Var},
+ motive
+ ((MatchingLogic.Pattern.app σ (Function.update args i (φ₁.or φ₂))).imp
+ ((MatchingLogic.Pattern.app σ (Function.update args i φ₁)).or
+ (MatchingLogic.Pattern.app σ (Function.update args i φ₂))))
+ ⋯) →
+ (∀ {σ : S.Sym} {i : Fin (S.arity σ)} {args : Fin (S.arity σ) → MatchingLogic.Pattern S Var} {x : Var}
+ {φ : MatchingLogic.Pattern S Var}
+ (a : ∀ (j : Fin (S.arity σ)), j ≠ i → x ∉ MatchingLogic.FV (args j)),
+ motive
+ ((MatchingLogic.Pattern.app σ (Function.update args i (MatchingLogic.Pattern.ex x φ))).imp
+ (MatchingLogic.Pattern.ex x (MatchingLogic.Pattern.app σ (Function.update args i φ))))
+ ⋯) →
+ (∀ {σ : S.Sym} {i : Fin (S.arity σ)} {args : Fin (S.arity σ) → MatchingLogic.Pattern S Var}
+ {φ₁ φ₂ : MatchingLogic.Pattern S Var} (a : MatchingLogic.Provable Γ (φ₁.imp φ₂)),
+ motive (φ₁.imp φ₂) a →
+ motive
+ ((MatchingLogic.Pattern.app σ (Function.update args i φ₁)).imp
+ (MatchingLogic.Pattern.app σ (Function.update args i φ₂)))
+ ⋯) →
+ (∀ {x : Var}, motive (MatchingLogic.Pattern.ex x (MatchingLogic.Pattern.var x)) ⋯) →
+ (∀ {x : Var} {φ : MatchingLogic.Pattern S Var} (C₁ C₂ : MatchingLogic.AppCtx S Var),
+ motive
+ ((C₁.plug ((MatchingLogic.Pattern.var x).and φ)).imp
+ (C₂.plug ((MatchingLogic.Pattern.var x).and φ.nt)).nt)
+ ⋯) →
+ ∀ {a : MatchingLogic.Pattern S Var} (t : MatchingLogic.Provable Γ a), motive a t
+@MatchingLogic.necessitation : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ {Γ : Set (MatchingLogic.Pattern S Var)} {ψ : MatchingLogic.Pattern S Var},
+ MatchingLogic.Provable Γ ψ → ∀ (p : List (MatchingLogic.Coord S)), MatchingLogic.Provable Γ (MatchingLogic.boxes p ψ)
+@MatchingLogic.soundness : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var],
+ MatchingLogic.Soundness S Var
+@MatchingLogic.proof_theoretic_localization : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var],
+ MatchingLogic.StrongLocalCompleteness S Var →
+ MatchingLogic.Soundness S Var →
+ ∀ {Γ : Set (MatchingLogic.Pattern S Var)} {φ : MatchingLogic.Pattern S Var},
+ (∀ γ ∈ Γ, MatchingLogic.Closed γ) →
+ MatchingLogic.Closed φ → (MatchingLogic.Provable Γ φ ↔ MatchingLogic.LocalCons (MatchingLogic.localize Γ) φ)
+@MatchingLogic.global_completeness : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var],
+ MatchingLogic.StrongLocalCompleteness S Var →
+ MatchingLogic.Soundness S Var →
+ ∀ {Γ : Set (MatchingLogic.Pattern S Var)} {φ : MatchingLogic.Pattern S Var},
+ (∀ γ ∈ Γ, MatchingLogic.Closed γ) →
+ MatchingLogic.Closed φ → (MatchingLogic.GlobalCons Γ φ ↔ MatchingLogic.Provable Γ φ)

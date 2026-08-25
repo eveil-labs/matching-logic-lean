@@ -132,7 +132,7 @@ theorem globalCons_of_localCons_localize_general {Γ : Set (Pattern S Var)}
 
 The paper obtains this from Lemma 5 (necessitation) together with soundness (S),
 i.e. through the proof system.  Here it comes from Lemma 4 alone.  That is why
-`Composite.semantic_localization` — the whole semantic half of the argument —
+`semantic_localization` (in `Composite.lean`) — the whole semantic half —
 depends on neither of the paper's two black boxes (L) and (S). -/
 theorem satSet_localize_iff_general (M : Model S) (Γ : Set (Pattern S Var)) :
     M.SatSet (localize Γ) ↔ M.SatSet Γ := by

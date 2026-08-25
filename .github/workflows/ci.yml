@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
   pull_request:
   workflow_dispatch:
 
@@ -26,6 +25,13 @@ jobs:
 
       - name: Axiom audit
         run: ./scripts/audit.sh
+
+      # Pins what each name SAYS, not merely that it exists with clean axioms.
+      # The axiom gate accepts any declaration, including a definition carrying a
+      # theorem's name; this one compares kernel-printed statement types and
+      # definition bodies against a baseline.
+      - name: Pinned statements and definitions
+        run: ./scripts/audit-pinned.sh
 
       - name: Variant gate
         run: ./scripts/audit-variants.sh

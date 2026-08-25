@@ -1,6 +1,6 @@
 # Variant readings — results
 
-Every definition in a paper is under-determined by its prose. These four files
+Every definition in a paper is under-determined by its prose. These five files
 take *neighbouring* readings of the paper's definitions — ones a careful person
 might also have chosen — and ask whether the paper's lemmas survive them.
 
@@ -104,5 +104,5 @@ not at the `Γ` step.
 
 Where a lemma fails under a neighbouring reading, that reading is excluded and
 the authors' intent is pinned. Where it survives, the result is robust to the
-choice. Four refutations mean these four definitional choices are all forced —
+choice. Five refutations mean these five definitional choices are all forced —
 none of them is a convention that could have gone the other way.

@@ -2,8 +2,9 @@
 The proof system of Figure 2 — arXiv:2608.13306v1, Section 2.
 
 This is the point at which the development stops being purely semantic. Up to
-and including Theorem 13 nothing here was needed; `Composite.semantic_localization`
-depends on neither of the paper's black boxes. Theorem 14 and Corollary 15 do.
+and including Theorem 13 nothing here was needed: `semantic_localization` (in
+`Composite.lean`) depends on neither of the paper's black boxes, and the module
+graph enforces it -- this file imports that one, not the reverse. Theorem 14 and Corollary 15 do.
 
 DESIGN RULINGS, binding on all lanes:
 

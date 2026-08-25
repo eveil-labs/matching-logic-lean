@@ -10,7 +10,9 @@ may edit it.
 
 Representation rulings (desk, binding on all lanes):
 * Element variables are NAMED, and there is no syntactic substitution anywhere in
-  the development.  Lemmas 9 and 11 are purely semantic: they speak only of
+  this file or in the semantic development built on it.  The single exception is
+  rule (3) of Figure 2, which needs variable-for-variable substitution;
+  `ProofSystem.lean` defines `substVar` there and nowhere else.  Lemmas 9 and 11 are purely semantic: they speak only of
   valuation update `ρ[a/x]`, never of `φ[y/x]`.  Capture-avoidance is therefore
   not needed and de Bruijn indices are forbidden -- they would add an entire
   layer of noise the paper's argument never touches.

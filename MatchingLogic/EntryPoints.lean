@@ -1,10 +1,10 @@
 /-
 Where the mechanization actually stands against the paper's challenge.
 
-`Completeness.global_completeness` is entry point (ii) verbatim: Corollary 15
-with (L) and (S) assumed. But (S) is not an assumption in this development --
-`Soundness.soundness` proves it -- so it can be supplied rather than
-hypothesised. That is what this file records.
+`global_completeness` (in `Completeness.lean`) is entry point (ii) verbatim:
+Corollary 15 with (L) and (S) assumed. But (S) is not an assumption in this
+development -- `soundness` (in `Soundness.lean`) proves it -- so it can be
+supplied rather than hypothesised. That is what this file records.
 -/
 import MatchingLogic.Soundness
 import MatchingLogic.Completeness
