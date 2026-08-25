@@ -255,16 +255,26 @@ somewhere in the development; they are **not** a defence against the
 repository's own authors, and no in-repository check could be. The trust root for
 that is review of the diff.
 
-Every gate here was fire-tested by being attacked. Four rounds of adversarial
-review broke earlier versions, each time by a route the previous round had not
-considered: swapping a certified theorem for `def X : True`; replacing a variant
-refutation with an unrelated theorem of the same name; shrinking the manifests
-and then leaving the orphaned theorem unproved; and — needing no access to
-`gate/` at all — changing an unpinned *definition* so that a theorem's type and
-proof stayed valid while its meaning moved. That last one is why the pinned
-baseline now covers the whole semantic surface rather than the headline objects,
-and why the variant gate pins each variant's own definitions and not merely its
-claim.
+Every gate here was fire-tested by being attacked. **Five rounds of adversarial
+review broke earlier versions**, each by a route the previous round had not
+considered:
+
+1. swapping a certified theorem for `def X : True`;
+2. replacing a variant refutation with an unrelated theorem of the same name;
+3. shrinking the manifests, then leaving the orphaned theorem unproved;
+4. changing an unpinned *definition*, so a theorem kept its type and its proof
+   while its meaning moved — needing no access to `gate/` at all;
+5. the same again, against definitions a hand-written pin list had omitted:
+   `Pattern.or`, turning Figure 2's rule (6) into an identity, and `Srt3`,
+   checking a "three-sort" theorem over four sorts.
+
+Round five is why the pin list is no longer hand-written. `scripts/gen-pinned.sh`
+derives it from the source: **every** `def`, `abbrev`, `structure` and
+`inductive` under `MatchingLogic/` is pinned — bodies for definitions,
+constructor sets for types — so coverage is a property of the code rather than of
+whoever last edited a list. It is currently 91 of 91 declarations. The library
+also contains no `private def`, because a private name cannot be reached by
+`#print` while still appearing in a public statement.
 
 A green `lake build` is **not** evidence: the build succeeds with `sorry`s
 present, emitting only warnings. That is why the gates above exist and why CI

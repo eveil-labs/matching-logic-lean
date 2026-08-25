@@ -160,14 +160,14 @@ inductive Provable (Γ : Set (Pattern S Var)) : Pattern S Var → Prop
 
 /-! ### Lemma 5 -/
 
-private def doubleNegIntro : PForm :=
+def doubleNegIntro : PForm :=
   .imp (.atom 0) (.imp (.imp (.atom 0) .bot) .bot)
 
 private theorem doubleNegIntro_taut : doubleNegIntro.Taut := by
   intro v
   cases h : v 0 <;> simp [doubleNegIntro, PForm.eval, h]
 
-private def implicationTransitivity : PForm :=
+def implicationTransitivity : PForm :=
   .imp (.imp (.atom 0) (.atom 1))
     (.imp (.imp (.atom 1) (.atom 2)) (.imp (.atom 0) (.atom 2)))
 

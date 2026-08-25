@@ -24,7 +24,8 @@ for f in variants/V*.lean; do
 done
 n_cert=$(grep -cvE '^#|^$' gate/certified.txt)
 n_var=$(grep -cvE '^#|^$' gate/variants-expected.tsv)
-[ "$n_cert" -ge 25 ] || { echo "FAIL  certified list implausibly short: $n_cert"; fail=1; }
+n_req=$(grep -cvE '^#|^$' gate/required.txt)
+[ "$n_cert" -eq "$n_req" ] || { echo "FAIL  certified ($n_cert) and required ($n_req) disagree"; fail=1; }
 [ "$n_var" -eq 5 ] || { echo "FAIL  expected 5 variants, found $n_var"; fail=1; }
 echo "-- $n_cert certified, $n_var variants, $(ls MatchingLogic/*.lean | wc -l | tr -d ' ') modules --"
 [ $fail -eq 0 ] && echo "== MANIFEST GATE PASS ==" || echo "== MANIFEST GATE FAIL =="
