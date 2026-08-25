@@ -38,6 +38,12 @@ jobs:
       - name: Pinned statements and definitions
         run: ./scripts/audit-pinned.sh
 
+      # Asks Lean which declarations exist and checks each is pinned. Written
+      # deliberately NOT to reuse the generator's logic: an earlier coverage
+      # check shared the generator's regex and so compared it against itself.
+      - name: Every declaration is pinned
+        run: ./scripts/audit-coverage.sh
+
       # gate/pinned.lean is generated. If it has been hand-edited to drop
       # checks, the pinned gate would still pass against a matching baseline.
       - name: Pinned files are regenerable

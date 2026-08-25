@@ -167,6 +167,7 @@ lake build MatchingLogic
 ./scripts/audit-variants.sh   # each variant settled, and settled honestly
 ./scripts/audit-pinned.sh     # every certified statement type and pinned definition body unchanged
 ./scripts/audit-manifest.sh   # the manifests those gates read have not been shrunk
+./scripts/audit-coverage.sh   # Lean's own declaration list is fully pinned
 ```
 
 ## Layout
@@ -268,13 +269,19 @@ considered:
    `Pattern.or`, turning Figure 2's rule (6) into an identity, and `Srt3`,
    checking a "three-sort" theorem over four sorts.
 
-Round five is why the pin list is no longer hand-written. `scripts/gen-pinned.sh`
-derives it from the source: **every** `def`, `abbrev`, `structure` and
-`inductive` under `MatchingLogic/` is pinned — bodies for definitions,
-constructor sets for types — so coverage is a property of the code rather than of
-whoever last edited a list. It is currently 91 of 91 declarations. The library
-also contains no `private def`, because a private name cannot be reached by
-`#print` while still appearing in a public statement.
+Rounds five and six are why the pin list is neither hand-written nor derived
+from a regex. `scripts/gen-pinned.sh` **asks Lean's environment** which
+declarations exist and pins every one — bodies for definitions, constructor sets
+for types — so the list cannot omit what the kernel contains. A regex-derived
+version of this list silently dropped every name containing a dot or a Greek
+letter (`Model.Sat`, `AppCtx.plug`, `Γ3`), and the coverage check that was meant
+to catch that used the *same regex*, so it compared the generator against itself
+and reported success.
+
+`scripts/audit-coverage.sh` now performs that check independently, from the
+environment rather than from source text: currently **126 of 126** declarations.
+The library also contains no `private def`, since a private name cannot be
+reached by `#print` while still appearing in a public statement's type.
 
 A green `lake build` is **not** evidence: the build succeeds with `sorry`s
 present, emitting only warnings. That is why the gates above exist and why CI
