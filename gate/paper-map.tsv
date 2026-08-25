@@ -46,7 +46,6 @@ MatchingLogic.semantic_localization	Theorem 13 (semantic localization)	4
 MatchingLogic.semantic_localization_needs_closed_Γ	BEYOND: Closed gamma is load-bearing	-
 MatchingLogic.semantic_localization_of_closed_Γ	BEYOND: Theorem 13 without Closed phi	-
 MatchingLogic.soundness	(S) Soundness -- DISCHARGED, not assumed	2
-MatchingLogic.soundness	(S) Soundness -- PROVED here, assumed in the paper	2
 MatchingLogic.subset_localize	Definition 6 (Gamma subset of Delta_Gamma)	3
 MatchingLogic.two_copies	Lemma 11 (two copies), membership form	4
 MatchingLogic.two_copies_set	Lemma 11 (two copies), displayed form	4

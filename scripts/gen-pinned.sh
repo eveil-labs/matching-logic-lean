@@ -30,4 +30,4 @@ cd "$(dirname "$0")/.."
   echo "-- Every certified statement's TYPE."
   grep -vE '^#|^$' gate/certified.txt | while read -r n; do echo "#check @$n"; done
 } > gate/pinned.lean
-echo "gate/pinned.lean regenerated: $(grep -c '^#' gate/pinned.lean) checks"
+echo "gate/pinned.lean regenerated: $(grep -c '^#check' gate/pinned.lean) statement types, $(grep -c '^#print' gate/pinned.lean) definition bodies"

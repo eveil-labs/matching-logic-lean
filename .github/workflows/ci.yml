@@ -30,8 +30,20 @@ jobs:
       # The axiom gate accepts any declaration, including a definition carrying a
       # theorem's name; this one compares kernel-printed statement types and
       # definition bodies against a baseline.
+      # The manifests are what the other gates read. An audit shrank them and
+      # passed everything, so they are checked too.
+      - name: Manifest is intact
+        run: ./scripts/audit-manifest.sh
+
       - name: Pinned statements and definitions
         run: ./scripts/audit-pinned.sh
+
+      # gate/pinned.lean is generated. If it has been hand-edited to drop
+      # checks, the pinned gate would still pass against a matching baseline.
+      - name: Pinned file is regenerable
+        run: |
+          ./scripts/gen-pinned.sh
+          git diff --exit-code -- gate/pinned.lean
 
       - name: Variant gate
         run: ./scripts/audit-variants.sh

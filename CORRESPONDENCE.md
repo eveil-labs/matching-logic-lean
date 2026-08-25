@@ -47,7 +47,6 @@
 | BEYOND: Closed gamma is load-bearing | `MatchingLogic.semantic_localization_needs_closed_Γ` | propext, Classical.choice, Quot.sound |
 | BEYOND: Theorem 13 without Closed phi | `MatchingLogic.semantic_localization_of_closed_Γ` | propext, Classical.choice, Quot.sound |
 | (S) Soundness -- DISCHARGED, not assumed | `MatchingLogic.soundness` | propext, Classical.choice, Quot.sound |
-| (S) Soundness -- PROVED here, assumed in the paper | `MatchingLogic.soundness` | propext, Classical.choice, Quot.sound |
 | Definition 6 (Gamma subset of Delta_Gamma) | `MatchingLogic.subset_localize` | none |
 | Lemma 11 (two copies), membership form | `MatchingLogic.two_copies` | propext, Classical.choice, Quot.sound |
 | Lemma 11 (two copies), displayed form | `MatchingLogic.two_copies_set` | propext, Classical.choice, Quot.sound |

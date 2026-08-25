@@ -166,6 +166,7 @@ lake build MatchingLogic
 ./scripts/audit.sh            # axiom gate over gate/certified.txt
 ./scripts/audit-variants.sh   # each variant settled, and settled honestly
 ./scripts/audit-pinned.sh     # every certified statement type and pinned definition body unchanged
+./scripts/audit-manifest.sh   # the manifests those gates read have not been shrunk
 ```
 
 ## Layout
@@ -244,6 +245,19 @@ cross-checked on a second Lean service. Those are project records: the artifacts
 behind them are not in this repository, so treat them as claims about how the
 work was done rather than as something you can reproduce from what is here. The
 gates, the baseline and `alternates/` you can check directly.
+
+**What the gates do not protect against.** They read `gate/`. A coordinated edit
+that weakens a proof *and* updates the baseline, or removes a name from the
+manifests, is not detectable from inside the repository — `scripts/audit-manifest.sh`
+raises the cost by requiring the documented results to stay listed, but the
+manifest of required names is itself a file in `gate/`. These gates defend
+against accident, drift, and a lane taking a shortcut; they are not a defence
+against the repository's own authors, and no in-repository check could be. The
+trust root for that is review of the diff. Every gate here was fire-tested by
+being attacked: three rounds of adversarial review broke earlier versions —
+by swapping a certified theorem for `def X : True`, by replacing a refutation
+with an unrelated theorem of the same name, and by shrinking the manifest — and
+each attack is now caught.
 
 A green `lake build` is **not** evidence: the build succeeds with `sorry`s
 present, emitting only warnings. That is why the gates above exist and why CI

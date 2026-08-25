@@ -33,6 +33,9 @@ while IFS=$'\t' read -r f ns side _lemma; do
     echo "end MatchingLogic.$ns"
     echo "#print axioms MatchingLogic.$ns.v${num}_${side}"
     echo "#print axioms MatchingLogic.$ns.v${num}_${other}"
+    # Pin the CLAIM itself. Refuting a claim that has been weakened to `False`
+    # would be worthless, and the type check above would still pass.
+    echo "#print MatchingLogic.$ns.V${num}Claim"
   } >> "$tmp"
   out=$(lake env lean "$tmp" 2>&1); rc=$?
   rm -f "$tmp"
@@ -53,7 +56,12 @@ while IFS=$'\t' read -r f ns side _lemma; do
             | grep -vE '^(propext|Classical\.choice|Quot\.sound)$' | grep -v '^$' || true) ;;
   esac
   if [ -n "$ax" ]; then echo "FAIL  $f -- disallowed axioms: $(echo $ax | tr '\n' ' ')"; fail=1; continue; fi
-  echo "ok    $f -- $side, with the intended type"; settled=$((settled+1))
+  claim=$(printf '%s\n' "$out" | sed -n "/^def MatchingLogic.$ns.V${num}Claim/,/^[a-z#]/p" | tr -s ' \n' ' ')
+  want=$(sed -n "s|^$f\t$ns\t$side\t.*\t||p" gate/variants-expected.tsv)
+  if [ -n "$want" ] && [ "$claim" != "$want" ]; then
+    echo "FAIL  $f -- V${num}Claim's body differs from its pinned form"; fail=1; continue
+  fi
+  echo "ok    $f -- $side, with the intended type and pinned claim"; settled=$((settled+1))
 done < gate/variants-expected.tsv
 echo "-- $settled settled --"
 [ $fail -eq 0 ] && echo "== VARIANT GATE PASS ==" || echo "== VARIANT GATE FAIL =="
