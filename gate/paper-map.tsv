@@ -1,0 +1,48 @@
+# Lean name	Paper result	Section
+MatchingLogic.denote_congr	(supporting: denotation depends only on FV)	2
+MatchingLogic.denote_closed	(supporting: closed patterns are valuation-independent)	2
+MatchingLogic.Model.sat_iff_denote_eq_univ	Section 2, "Closed patterns"	2
+MatchingLogic.Model.step_iff_exists_coord	Definition 2 (reachability)	3
+MatchingLogic.Model.reflTransGen_step_iff_exists_word	Definition 2 (reachability, transitive closure)	3
+MatchingLogic.denote_dia	(supporting: semantics of the diamond)	3
+MatchingLogic.denote_boxes	Lemma 4 (box semantics)	3
+MatchingLogic.FV_boxes	(beyond the paper: boxing is binder-free)	3
+MatchingLogic.boxes_append	(supporting: word concatenation)	3
+MatchingLogic.Model.reachWord_append	(supporting: word concatenation)	3
+MatchingLogic.subset_localize	Definition 6 (Gamma subset of Delta_Gamma)	3
+MatchingLogic.closed_of_mem_localize	Definition 6 (closedness of Delta_Gamma)	3
+MatchingLogic.denoteSet_localize	Lemma 8	3
+MatchingLogic.backwardClosed_denoteSet_localize	Lemma 8 (backward closed, contained)	3
+MatchingLogic.denoteSet_localize_greatest	Lemma 8 (largest such set)	3
+MatchingLogic.satSet_localize_iff	Section 3 (M models Gamma iff M models Delta_Gamma)	3
+MatchingLogic.globalCons_of_localCons_localize	Lemma 7	3
+MatchingLogic.locality	Lemma 9 (locality)	4
+MatchingLogic.two_copies	Lemma 11 (two copies), membership form	4
+MatchingLogic.two_copies_set	Lemma 11 (two copies), displayed form	4
+MatchingLogic.cover_denote_closed	Corollary 12	4
+MatchingLogic.cover_sat_iff	Corollary 12 (second half)	4
+MatchingLogic.semantic_localization	Theorem 13 (semantic localization)	4
+MatchingLogic.Applicative.coord_eq	Section 6 ("it has two coordinates")	6
+MatchingLogic.Applicative.box_coord₁	Section 6 (explicit formula for [1]psi)	6
+MatchingLogic.Applicative.box_coord₂	Section 6 (explicit formula for [2]psi)	6
+MatchingLogic.Applicative.stepAt_coord₁	Section 6 (a.b ~>1 a)	6
+MatchingLogic.Applicative.stepAt_coord₂	Section 6 (a.b ~>2 b)	6
+MatchingLogic.Applicative.semantic_localization_applicative	Section 6 ("everything above applies unchanged")	6
+MatchingLogic.necessitation	Lemma 5 (necessitation)	3
+MatchingLogic.soundness	(S) Soundness -- DISCHARGED, not assumed	2
+MatchingLogic.proof_theoretic_localization	Theorem 14 (proof-theoretic localization)	4
+MatchingLogic.global_completeness	Corollary 15 (global completeness)	5
+MatchingLogic.semantic_localization_of_closed_Γ	BEYOND: Theorem 13 without Closed phi	-
+MatchingLogic.globalCons_of_localCons_localize_general	BEYOND: Lemma 7 with no closedness	-
+MatchingLogic.satSet_localize_iff_general	BEYOND: independent of (L) and (S)	-
+MatchingLogic.semantic_localization_needs_closed_Γ	BEYOND: Closed gamma is load-bearing	-
+MatchingLogic.localize_not_redundant	BEYOND: localizing is not decoration	-
+MatchingLogic.Necessity.locality_needs_backwardClosed_nat	BEYOND: Lemma 9's hypothesis is load-bearing	-
+MatchingLogic.definedness_conservative	Corollary 16 (conservativity of definedness)	5
+MatchingLogic.denote_defined	Section 2 (semantics of definedness), as a control	5
+MatchingLogic.SetVariables.set_variable_is_not_a_constant	Remark 17 (free set variables do not come along)	5
+MatchingLogic.Sorted.Γ3_satisfiable	Proposition 30, first claim (satisfiability)	8
+MatchingLogic.Sorted.Γ3_entails_φ3	Proposition 30, second claim (entailment)	8
+MatchingLogic.Sorted.Γ3_not_derives_φ3	Proposition 30, third claim (non-derivability)	8
+MatchingLogic.Sorted.mprovable_empty_of_not_feeds	Section 8 (the sort-feeding induction)	8
+MatchingLogic.Sorted.no_faithful_translation	Corollary 31, at the Proposition 30 data	8

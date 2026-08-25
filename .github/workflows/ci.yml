@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: true
+          build-args: MatchingLogic
+
+      # A green `lake build` is NOT evidence that anything is proved: the build
+      # succeeds with `sorry`s present, emitting only warnings. These three
+      # gates are the actual evidence.
+      - name: No sorry in files claimed complete
+        run: ./scripts/audit-files.sh
+
+      - name: Axiom audit
+        run: ./scripts/audit.sh
+
+      - name: Variant gate
+        run: ./scripts/audit-variants.sh
+
+      # The correspondence table is GENERATED from gate/certified.txt and the
+      # kernel's own axiom output. If it has drifted from the source, the table
+      # in the repository is claiming something the kernel is not confirming.
+      - name: Correspondence table is current
+        run: |
+          ./scripts/correspondence.sh > /tmp/corr.md
+          diff -u CORRESPONDENCE.md /tmp/corr.md

@@ -1,0 +1,24 @@
+# Files claimed FREE OF `sorry`. CI fails if any of them contains one.
+# A green `lake build` proves nothing here: the build succeeds with `sorry`s
+# present, emitting only warnings. Two separate lanes reported that as a flaw in
+# an earlier version of this gate, and they were right.
+MatchingLogic/Core.lean
+MatchingLogic/Sanity.lean
+MatchingLogic/Locality.lean
+MatchingLogic/DoubleCover.lean
+MatchingLogic/Necessity.lean
+MatchingLogic/Semantics.lean
+MatchingLogic/Boxes.lean
+MatchingLogic/BoxesControl.lean
+MatchingLogic/Localization.lean
+MatchingLogic/Composite.lean
+MatchingLogic/Applicative.lean
+MatchingLogic/Independence.lean
+MatchingLogic/ProofSystem.lean
+MatchingLogic/Soundness.lean
+MatchingLogic/Completeness.lean
+MatchingLogic/EntryPoints.lean
+MatchingLogic/Definedness.lean
+MatchingLogic/SetVariables.lean
+MatchingLogic/Sorted.lean
+MatchingLogic/SortedProof.lean
