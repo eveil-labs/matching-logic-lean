@@ -211,15 +211,16 @@ we have misread.
 | toolchain | Lean 4.33.0 |
 | Mathlib | pinned to the public tag `v4.33.0` |
 | build | `lake exe cache get && lake build MatchingLogic` — about 90 s from a clean clone |
-| gates | `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh` |
+| gates | `scripts/audit-manifest.sh`, `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh` |
 | independent check | the `MatchingLogic` library also compiles on a second Lean service at `lean-4.33.0`: 0 errors, 0 incomplete declarations, same axiom verdict. The deliberate stubs in `variants/` and `alternates/` are outside that library. |
 
-`CORRESPONDENCE.md` lists each **paper result** against its Lean name and the
-axioms the kernel reports; membership and the axiom column are generated. The
-full list of what is claimed is `gate/certified.txt`, checked by
-`scripts/audit.sh`, together with the five variant refutations, checked by
-`scripts/audit-variants.sh`. Supporting lemmas and controls are certified without
-appearing in the paper-facing table.
+`CORRESPONDENCE.md` lists each result that is **mapped to the paper** against
+its Lean name and the axioms the kernel reports; membership and the axiom column
+are generated. It is not the full inventory: supporting lemmas and controls are
+certified without appearing in it. **The full list of what is claimed is
+`gate/certified.txt`** (checked by `scripts/audit.sh`), together with the five
+variant refutations (checked by `scripts/audit-variants.sh`), and
+`scripts/audit-manifest.sh` checks that neither list has been shrunk.
 
 There are six `sorry`s, all deliberate and none reachable from any claimed
 result: the five `vN_holds` stubs in `variants/`, which are the *refuted* side of

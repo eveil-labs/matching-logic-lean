@@ -11,23 +11,55 @@ cd "$(dirname "$0")/.."
   echo "import MatchingLogic"
   echo ""
   echo "-- Definition BODIES: a weakened definition changes no type."
-  for d in MatchingLogic.Model.app MatchingLogic.Model.denote MatchingLogic.Model.BackwardClosed \
-           MatchingLogic.AgreeOn MatchingLogic.coverInterp MatchingLogic.cover MatchingLogic.proj \
-           MatchingLogic.FV MatchingLogic.Closed MatchingLogic.Model.Sat MatchingLogic.Model.SatSet \
-           MatchingLogic.Model.denoteSet MatchingLogic.LocalCons MatchingLogic.GlobalCons \
-           MatchingLogic.Coord MatchingLogic.dia MatchingLogic.box MatchingLogic.boxes \
-           MatchingLogic.Model.stepAt MatchingLogic.Model.reachWord MatchingLogic.localize \
-           MatchingLogic.substVar MatchingLogic.CaptureFree MatchingLogic.PForm.eval \
-           MatchingLogic.PForm.subst MatchingLogic.AppCtx.plug MatchingLogic.conj \
-           MatchingLogic.StrongLocalCompleteness MatchingLogic.Soundness \
-           MatchingLogic.Sorted.mupdate MatchingLogic.Sorted.msubstVar MatchingLogic.Sorted.MCaptureFree \
-           MatchingLogic.Sorted.Feeds; do echo "#print $d"; done
+  for d in \
+    MatchingLogic.Model.app MatchingLogic.Model.denote MatchingLogic.Model.BackwardClosed \
+    MatchingLogic.Model.Step MatchingLogic.AgreeOn \
+    MatchingLogic.coverInterp MatchingLogic.cover MatchingLogic.proj \
+    MatchingLogic.FV MatchingLogic.Closed MatchingLogic.Model.Total MatchingLogic.Model.Sat \
+    MatchingLogic.Model.SatSet MatchingLogic.Model.denoteSet MatchingLogic.LocalCons \
+    MatchingLogic.GlobalCons MatchingLogic.Coord MatchingLogic.dia MatchingLogic.box \
+    MatchingLogic.boxes MatchingLogic.Model.stepAt MatchingLogic.Model.reachWord \
+    MatchingLogic.localize MatchingLogic.substVar MatchingLogic.CaptureFree \
+    MatchingLogic.PForm.eval MatchingLogic.PForm.Taut MatchingLogic.PForm.subst \
+    MatchingLogic.AppCtx.plug MatchingLogic.conj \
+    MatchingLogic.StrongLocalCompleteness MatchingLogic.Soundness \
+    MatchingLogic.defSig MatchingLogic.emb MatchingLogic.defined \
+    MatchingLogic.definednessAxiom MatchingLogic.expand \
+    MatchingLogic.SetVariables.sdenote MatchingLogic.SetVariables.SSat \
+    MatchingLogic.SetVariables.SGlobalCons MatchingLogic.SetVariables.constSig \
+    MatchingLogic.SetVariables.dPat \
+    MatchingLogic.Applicative.appSig MatchingLogic.Applicative.ap \
+    MatchingLogic.Applicative.coord₁ MatchingLogic.Applicative.coord₂ \
+    MatchingLogic.Sorted.mupdate MatchingLogic.Sorted.MModel.app MatchingLogic.Sorted.mdenote \
+    MatchingLogic.Sorted.MModel.Sat MatchingLogic.Sorted.MModel.SatSet \
+    MatchingLogic.Sorted.MModel.SatSetHet MatchingLogic.Sorted.MGlobalCons \
+    MatchingLogic.Sorted.MGlobalConsHet MatchingLogic.Sorted.S3 MatchingLogic.Sorted.fAp \
+    MatchingLogic.Sorted.gAp MatchingLogic.Sorted.Γ3 MatchingLogic.Sorted.φ3 \
+    MatchingLogic.Sorted.MFV MatchingLogic.Sorted.MAppCtx.plug MatchingLogic.Sorted.substPF \
+    MatchingLogic.Sorted.msubstVar MatchingLogic.Sorted.MCaptureFree \
+    MatchingLogic.Sorted.Feeds MatchingLogic.Sorted.FeedsStar MatchingLogic.Sorted.MSoundness \
+    MatchingLogic.Necessity.S MatchingLogic.Necessity.M MatchingLogic.Necessity.C \
+    MatchingLogic.Necessity.psi MatchingLogic.BoxesControl.Mo MatchingLogic.BoxesControl.Sg \
+    ; do echo "#print $d"; done
   echo ""
   echo "-- The proof system's CONSTRUCTOR SET."
+  # Recursors pin CONSTRUCTOR SETS: no rule or syntactic form can be added,
+  # dropped or reshaped without this changing.
   echo "#check @MatchingLogic.Provable.rec"
   echo "#check @MatchingLogic.Sorted.MProvable.rec"
+  echo "#check @MatchingLogic.Pattern.rec"
+  echo "#check @MatchingLogic.Sorted.MPattern.rec"
+  echo "#check @MatchingLogic.SetVariables.SPattern.rec"
+  echo "#check @MatchingLogic.AppCtx.rec"
+  echo "#check @MatchingLogic.Sorted.MAppCtx.rec"
+  echo "#check @MatchingLogic.PForm.rec"
+  echo "#check @MatchingLogic.Model.mk"
+  echo "#check @MatchingLogic.Signature.mk"
+  echo "#check @MatchingLogic.Sorted.MModel.mk"
+  echo "#check @MatchingLogic.Sorted.MSignature.mk"
+  echo "#check @MatchingLogic.SetVariables.SVal.mk"
   echo ""
   echo "-- Every certified statement's TYPE."
   grep -vE '^#|^$' gate/certified.txt | while read -r n; do echo "#check @$n"; done
 } > gate/pinned.lean
-echo "gate/pinned.lean regenerated: $(grep -c '^#check' gate/pinned.lean) statement types, $(grep -c '^#print' gate/pinned.lean) definition bodies"
+echo "gate/pinned.lean regenerated: $(grep -c '^#print' gate/pinned.lean) definition bodies, $(grep -cvE '^#check @MatchingLogic\.[A-Za-z.]*(rec|mk)$' <(grep '^#check' gate/pinned.lean)) certified statement types, $(grep -cE '^#check @MatchingLogic\.[A-Za-z.]*(rec|mk)$' gate/pinned.lean) constructor sets"

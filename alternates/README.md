@@ -16,3 +16,8 @@ to baseline as printed by the kernel, and no edit outside the assigned file.
 
 These files are not part of the build; they are evidence. To check one, drop it
 over the corresponding file in `MatchingLogic/` and rebuild.
+
+`V5SingleSheet.inhouse.lean` is a third: the in-house proof of the variant V5
+refutation, whose merged counterpart came from the codex lane. Like the variant
+files it carries the deliberate `v5_holds` stub — the refuted side — which is
+the sixth `sorry` the README accounts for.

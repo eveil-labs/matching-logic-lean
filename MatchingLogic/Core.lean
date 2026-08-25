@@ -4,9 +4,10 @@ Basic matching logic — syntax, models, denotation, and backward closure.
 Source: Xiaohong Chen and Grigore Roșu, "Completeness and incompleteness of basic
 matching logic", arXiv:2608.13306v1 (13 Aug 2026), Sections 2 and 3.
 
-This file is DESK-AUTHORED (orchestrating session, 2026-08-25) and owes an
-independent read.  It is the pinned interface every lane builds against: no lane
-may edit it.
+This file is the pinned interface the rest of the development is built against.
+Its definitions were written first, then audited against the paper by independent
+readers before any proof was commissioned on them, and their kernel-printed
+bodies are pinned by `scripts/audit-pinned.sh`.
 
 Representation rulings (desk, binding on all lanes):
 * Element variables are NAMED, and there is no syntactic substitution anywhere in

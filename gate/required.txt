@@ -26,3 +26,7 @@ MatchingLogic.Sorted.Γ3_satisfiable
 MatchingLogic.Sorted.Γ3_entails_φ3
 MatchingLogic.Sorted.Γ3_not_derives_φ3
 MatchingLogic.Sorted.no_faithful_translation
+MatchingLogic.Sorted.mprovable_empty_of_not_feeds
+MatchingLogic.FV_boxes
+MatchingLogic.globalCons_of_localCons_localize_general
+MatchingLogic.satSet_localize_iff_general

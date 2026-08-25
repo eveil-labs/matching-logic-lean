@@ -1,0 +1,18 @@
+def MatchingLogic.VariantStepDirection.V4Claim : Prop :=
+ MatchingLogic.VariantStepDirection.ForwardClosed M C →
+ ∀ (ψ : MatchingLogic.Pattern S Var) (ρ ρ' : Var → M.carrier),
+ MatchingLogic.AgreeOn C ρ ρ' → M.denote ρ ψ ∩ C = M.denote ρ' ψ ∩ C
+def MatchingLogic.VariantStepDirection.StepRev : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → M.carrier → M.carrier → Prop :=
+fun {S} M u v => ∃ σ a i, v ∈ M.interp σ a ∧ u = a i
+def MatchingLogic.VariantStepDirection.ForwardClosed : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → Set M.carrier → Prop :=
+fun {S} M C => ∀ ⦃u : M.carrier⦄, u ∈ C → ∀ ⦃v : M.carrier⦄, MatchingLogic.VariantStepDirection.StepRev M u v → v ∈ C
+ interp := fun x a => if a 0 = 2 then ∅ else {0} }
+def MatchingLogic.VariantStepDirection.psi' : {Var : Type} →
+ Var → MatchingLogic.Pattern MatchingLogic.VariantStepDirection.S' Var :=
+fun {Var} x => MatchingLogic.Pattern.app () fun x_1 => MatchingLogic.Pattern.var x
+def MatchingLogic.VariantStepDirection.rho1 : {Var : Type} → Var → Fin 3 :=
+fun {Var} x => 1
+def MatchingLogic.VariantStepDirection.rho2 : {Var : Type} → Var → Fin 3 :=
+fun {Var} x => 2

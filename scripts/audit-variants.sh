@@ -36,6 +36,14 @@ while IFS=$'\t' read -r f ns side _lemma; do
     # Pin the CLAIM itself. Refuting a claim that has been weakened to `False`
     # would be worthless, and the type check above would still pass.
     echo "#print MatchingLogic.$ns.V${num}Claim"
+    # ...and every definition the claim is ABOUT. An audit changed a variant's
+    # own definitions while the claim's type and text stayed identical, so the
+    # refutation became a refutation of something else.
+    for d in $(grep -oE "^(private )?(def|abbrev) [A-Za-z_][A-Za-z0-9_₀-₉'\.]*" "$f" \
+               | sed -E 's/^(private )?(def|abbrev) //'); do
+      case "$d" in V${num}Claim) continue ;; esac
+      echo "#print MatchingLogic.$ns.$d"
+    done
   } >> "$tmp"
   out=$(lake env lean "$tmp" 2>&1); rc=$?
   rm -f "$tmp"
@@ -56,12 +64,18 @@ while IFS=$'\t' read -r f ns side _lemma; do
             | grep -vE '^(propext|Classical\.choice|Quot\.sound)$' | grep -v '^$' || true) ;;
   esac
   if [ -n "$ax" ]; then echo "FAIL  $f -- disallowed axioms: $(echo $ax | tr '\n' ' ')"; fail=1; continue; fi
-  claim=$(printf '%s\n' "$out" | sed -n "/^def MatchingLogic.$ns.V${num}Claim/,/^[a-z#]/p" | tr -s ' \n' ' ')
-  want=$(sed -n "s|^$f\t$ns\t$side\t.*\t||p" gate/variants-expected.tsv)
-  if [ -n "$want" ] && [ "$claim" != "$want" ]; then
-    echo "FAIL  $f -- V${num}Claim's body differs from its pinned form"; fail=1; continue
+  # Compare the whole printed surface -- claim and every definition it is about --
+  # against this variant's baseline.
+  base="gate/variants/$(basename "$f" .lean).txt"
+  printf '%s\n' "$out" | grep -E "^(def|theorem|abbrev|private) MatchingLogic\.$ns\.|^fun |^  " \
+    | tr -s ' \n' ' \n' > /tmp/mlvarnow.$$
+  if [ ! -f "$base" ]; then echo "FAIL  $f -- no pinned baseline at $base"; rm -f /tmp/mlvarnow.$$; fail=1; continue; fi
+  if ! diff -q "$base" /tmp/mlvarnow.$$ >/dev/null; then
+    echo "FAIL  $f -- a pinned definition or the claim changed"; diff "$base" /tmp/mlvarnow.$$ | head -6
+    rm -f /tmp/mlvarnow.$$; fail=1; continue
   fi
-  echo "ok    $f -- $side, with the intended type and pinned claim"; settled=$((settled+1))
+  rm -f /tmp/mlvarnow.$$
+  echo "ok    $f -- $side, intended type, claim and definitions pinned"; settled=$((settled+1))
 done < gate/variants-expected.tsv
 echo "-- $settled settled --"
 [ $fail -eq 0 ] && echo "== VARIANT GATE PASS ==" || echo "== VARIANT GATE FAIL =="

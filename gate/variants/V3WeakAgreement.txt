@@ -1,0 +1,7 @@
+def MatchingLogic.VariantWeakAgree.V3Claim : Prop :=
+ M.BackwardClosed C →
+ ∀ (ψ : MatchingLogic.Pattern S Var) (ρ ρ' : Var → M.carrier),
+ MatchingLogic.VariantWeakAgree.AgreeOnWeak C ρ ρ' → M.denote ρ ψ ∩ C = M.denote ρ' ψ ∩ C
+def MatchingLogic.VariantWeakAgree.AgreeOnWeak : {S : MatchingLogic.Signature} →
+ {Var : Type} → {M : MatchingLogic.Model S} → Set M.carrier → (Var → M.carrier) → (Var → M.carrier) → Prop :=
+fun {S} {Var} {M} C ρ ρ' => ∀ (x : Var), ρ x ∈ C → ρ x = ρ' x

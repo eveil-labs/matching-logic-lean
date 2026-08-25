@@ -40,10 +40,11 @@ jobs:
 
       # gate/pinned.lean is generated. If it has been hand-edited to drop
       # checks, the pinned gate would still pass against a matching baseline.
-      - name: Pinned file is regenerable
+      - name: Pinned files are regenerable
         run: |
           ./scripts/gen-pinned.sh
-          git diff --exit-code -- gate/pinned.lean
+          ./scripts/gen-variants-baseline.sh
+          git diff --exit-code -- gate/pinned.lean gate/variants/
 
       - name: Variant gate
         run: ./scripts/audit-variants.sh

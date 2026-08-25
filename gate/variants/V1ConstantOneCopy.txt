@@ -1,0 +1,14 @@
+def MatchingLogic.VariantOneCopy.V1Claim : Prop :=
+ M.BackwardClosed C →
+ ∀ (hne : C.Nonempty),
+ ∀ star ∉ C,
+ ∀ (ψ : MatchingLogic.Pattern S Var) (ν : Var → ↑C × Bool) (p : ↑C × Bool),
+ p ∈ (MatchingLogic.VariantOneCopy.cover₁ M C hne).denote ν ψ ↔
+ ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star p.2 (ν x)) ψ
+def MatchingLogic.VariantOneCopy.coverInterp₁ : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (C : Set M.carrier) → (σ : S.Sym) → (Fin (S.arity σ) → ↑C × Bool) → Set (↑C × Bool) :=
+fun {S} M C σ A =>
+ {p | (∀ (j : Fin (S.arity σ)), (A j).2 = p.2) ∧ (S.arity σ = 0 → p.2 = false) ∧ ↑p.1 ∈ M.interp σ fun j => ↑(A j).1}
+def MatchingLogic.VariantOneCopy.cover₁ : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (C : Set M.carrier) → C.Nonempty → MatchingLogic.Model S :=
+fun {S} M C hne => { carrier := ↑C × Bool, nonempty := ⋯, interp := MatchingLogic.VariantOneCopy.coverInterp₁ M C }

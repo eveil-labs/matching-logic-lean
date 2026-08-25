@@ -1,0 +1,18 @@
+def MatchingLogic.VariantMixed.V2Claim : Prop :=
+ M.BackwardClosed C →
+ ∀ (hne : C.Nonempty),
+ ∀ star ∉ C,
+ ∀ (ψ : MatchingLogic.Pattern S Var) (ν : Var → ↑C × Bool) (p : ↑C × Bool),
+ p ∈ (MatchingLogic.VariantMixed.cover₂ M C hne).denote ν ψ ↔
+ ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star p.2 (ν x)) ψ
+def MatchingLogic.VariantMixed.coverInterp₂ : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (C : Set M.carrier) → (σ : S.Sym) → (Fin (S.arity σ) → ↑C × Bool) → Set (↑C × Bool) :=
+fun {S} M C σ A => {p | ↑p.1 ∈ M.interp σ fun j => ↑(A j).1}
+def MatchingLogic.VariantMixed.cover₂ : {S : MatchingLogic.Signature} →
+ (M : MatchingLogic.Model S) → (C : Set M.carrier) → C.Nonempty → MatchingLogic.Model S :=
+fun {S} M C hne => { carrier := ↑C × Bool, nonempty := ⋯, interp := MatchingLogic.VariantMixed.coverInterp₂ M C }
+def MatchingLogic.VariantMixed.cmFalse : ↑MatchingLogic.VariantMixed.cmC :=
+def MatchingLogic.VariantMixed.cmPat : MatchingLogic.Pattern MatchingLogic.VariantMixed.cmSig ℕ :=
+def MatchingLogic.VariantMixed.cmVal : ℕ → ↑MatchingLogic.VariantMixed.cmC × Bool :=
+fun n => (MatchingLogic.VariantMixed.cmFalse, decide (n ≠ 0))
+def MatchingLogic.VariantMixed.cmPt : ↑MatchingLogic.VariantMixed.cmC × Bool :=
