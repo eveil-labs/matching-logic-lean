@@ -36,6 +36,9 @@ while IFS=$'\t' read -r f ns side _lemma; do
     # Pin the CLAIM itself. Refuting a claim that has been weakened to `False`
     # would be worthless, and the type check above would still pass.
     echo "#print MatchingLogic.$ns.V${num}Claim"
+    for t in $(grep -oE "^(private )?theorem [A-Za-z_][^ :({]*" "$f" | sed -E 's/^(private )?theorem //'); do
+      echo "#check @MatchingLogic.$ns.$t"
+    done
     # ...and every definition the claim is ABOUT. An audit changed a variant's
     # own definitions while the claim's type and text stayed identical, so the
     # refutation became a refutation of something else.
@@ -67,7 +70,7 @@ while IFS=$'\t' read -r f ns side _lemma; do
   # Compare the whole printed surface -- claim and every definition it is about --
   # against this variant's baseline.
   base="gate/variants/$(basename "$f" .lean).txt"
-  printf '%s\n' "$out" | grep -E "^(def|theorem|abbrev|private) MatchingLogic\.$ns\.|^fun |^  " \
+  printf '%s\n' "$out" | grep -E "^(def|theorem|abbrev|private|@) ?MatchingLogic\.$ns\.|^@MatchingLogic\.$ns\.|^fun |^  " \
     | tr -s ' \n' ' \n' > /tmp/mlvarnow.$$
   if [ ! -f "$base" ]; then echo "FAIL  $f -- no pinned baseline at $base"; rm -f /tmp/mlvarnow.$$; fail=1; continue; fi
   if ! diff -q "$base" /tmp/mlvarnow.$$ >/dev/null; then

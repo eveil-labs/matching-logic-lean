@@ -873,3 +873,78 @@ MatchingLogic.Sorted.feedsStar_a_only_a : ∀ (t : MatchingLogic.Sorted.Srt3),
  MatchingLogic.GlobalCons (tΓ '' MatchingLogic.Sorted.Γ3 x y) (tφ (MatchingLogic.Sorted.φ3 x y))) ∧
  (MatchingLogic.Provable (tΓ '' MatchingLogic.Sorted.Γ3 x y) (tφ (MatchingLogic.Sorted.φ3 x y)) →
  MatchingLogic.Sorted.MProvable (MatchingLogic.Sorted.Γ3 x y) (MatchingLogic.Sorted.φ3 x y))
+@MatchingLogic.AgreeOn.update : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ {M : MatchingLogic.Model S} {C : Set M.carrier} {ρ ρ' : Var → M.carrier},
+ MatchingLogic.AgreeOn C ρ ρ' →
+ ∀ (x : Var) (a : M.carrier), MatchingLogic.AgreeOn C (Function.update ρ x a) (Function.update ρ' x a)
+@MatchingLogic.FV_app : ∀ {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var] (σ : S.Sym)
+ (f : Fin (S.arity σ) → MatchingLogic.Pattern S Var),
+ MatchingLogic.FV (MatchingLogic.Pattern.app σ f) = ⋃ i, MatchingLogic.FV (f i)
+@MatchingLogic.FV_bot : ∀ {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var],
+ MatchingLogic.FV MatchingLogic.Pattern.bot = ∅
+@MatchingLogic.FV_ex : ∀ {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var] (x : Var)
+ (φ : MatchingLogic.Pattern S Var), MatchingLogic.FV (MatchingLogic.Pattern.ex x φ) = MatchingLogic.FV φ \ {x}
+@MatchingLogic.FV_imp : ∀ {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var]
+ (φ ψ : MatchingLogic.Pattern S Var), MatchingLogic.FV (φ.imp ψ) = MatchingLogic.FV φ ∪ MatchingLogic.FV ψ
+@MatchingLogic.FV_var : ∀ {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var] (x : Var),
+ MatchingLogic.FV (MatchingLogic.Pattern.var x) = {x}
+@MatchingLogic.Model.BackwardClosed.mem_of_interp : ∀ {S : MatchingLogic.Signature} (M : MatchingLogic.Model S)
+ {C : Set M.carrier},
+ M.BackwardClosed C →
+ ∀ {σ : S.Sym} {a : Fin (S.arity σ) → M.carrier} {u : M.carrier},
+ u ∈ C → u ∈ M.interp σ a → ∀ (i : Fin (S.arity σ)), a i ∈ C
+@MatchingLogic.Model.app_const : ∀ {S : MatchingLogic.Signature} (M : MatchingLogic.Model S) (σ : S.Sym)
+ (h : S.arity σ = 0) (A : Fin (S.arity σ) → Set M.carrier), M.app σ A = M.interp σ fun i => absurd ⋯ ⋯
+@MatchingLogic.Model.app_eq_empty : ∀ {S : MatchingLogic.Signature} (M : MatchingLogic.Model S) (σ : S.Sym)
+ (A : Fin (S.arity σ) → Set M.carrier) (i : Fin (S.arity σ)), A i = ∅ → M.app σ A = ∅
+@MatchingLogic.Model.app_inter_backwardClosed : ∀ {S : MatchingLogic.Signature} {M : MatchingLogic.Model S}
+ {C : Set M.carrier},
+ M.BackwardClosed C →
+ ∀ (σ : S.Sym) (A : Fin (S.arity σ) → Set M.carrier), M.app σ A ∩ C = (M.app σ fun i => A i ∩ C) ∩ C
+@MatchingLogic.Model.reachWord_cons : ∀ {S : MatchingLogic.Signature} (M : MatchingLogic.Model S)
+ (e : MatchingLogic.Coord S) (p : List (MatchingLogic.Coord S)) (u v : M.carrier),
+ M.reachWord (e :: p) u v ↔ ∃ w, M.stepAt e u w ∧ M.reachWord p w v
+@MatchingLogic.Model.reachWord_nil : ∀ {S : MatchingLogic.Signature} (M : MatchingLogic.Model S) (u v : M.carrier),
+ M.reachWord [] u v ↔ u = v
+@MatchingLogic.Necessity.agree : ∀ {Var : Type},
+ MatchingLogic.AgreeOn MatchingLogic.Necessity.C MatchingLogic.Necessity.rho MatchingLogic.Necessity.rho'
+@MatchingLogic.Necessity.denote_rho : ∀ {Var : Type} [inst : DecidableEq Var] (x : Var),
+ MatchingLogic.Necessity.M.denote MatchingLogic.Necessity.rho (MatchingLogic.Necessity.psi x) = {0}
+@MatchingLogic.Necessity.denote_rho' : ∀ {Var : Type} [inst : DecidableEq Var] (x : Var),
+ MatchingLogic.Necessity.M.denote MatchingLogic.Necessity.rho' (MatchingLogic.Necessity.psi x) = ∅
+@MatchingLogic.Sorted.MModel.app_eq_empty : ∀ {S : MatchingLogic.Sorted.MSignature} [DecidableEq S.Srt]
+ (M : MatchingLogic.Sorted.MModel S) (σ : S.Sym) (A : (i : Fin (S.arity σ)) → Set (M.carrier (S.argSort σ i)))
+ (i : Fin (S.arity σ)), A i = ∅ → M.app σ A = ∅
+@MatchingLogic.Sorted.mdenote_al : ∀ {S : MatchingLogic.Sorted.MSignature} {Var : Type} [inst : DecidableEq S.Srt]
+ [inst_1 : DecidableEq Var] (M : MatchingLogic.Sorted.MModel S) (ρ : MatchingLogic.Sorted.MVal M Var) {s : S.Srt}
+ (x : Var) (s' : S.Srt) (φ : MatchingLogic.Sorted.MPattern S Var s),
+ MatchingLogic.Sorted.mdenote M ρ (MatchingLogic.Sorted.MPattern.al x s' φ) =
+ ⋂ a, MatchingLogic.Sorted.mdenote M (MatchingLogic.Sorted.mupdate M ρ s' x a) φ
+@MatchingLogic.boxes_cons : ∀ {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var] (e : MatchingLogic.Coord S)
+ (p : List (MatchingLogic.Coord S)) (ψ : MatchingLogic.Pattern S Var),
+ MatchingLogic.boxes (e :: p) ψ = MatchingLogic.box e (MatchingLogic.boxes p ψ)
+@MatchingLogic.boxes_nil : ∀ {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var]
+ (ψ : MatchingLogic.Pattern S Var), MatchingLogic.boxes [] ψ = ψ
+@MatchingLogic.denote_al : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (x : Var) (φ : MatchingLogic.Pattern S Var),
+ M.denote ρ (MatchingLogic.Pattern.al x φ) = ⋂ a, M.denote (Function.update ρ x a) φ
+@MatchingLogic.denote_app : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (σ : S.Sym) (f : Fin (S.arity σ) → MatchingLogic.Pattern S Var),
+ M.denote ρ (MatchingLogic.Pattern.app σ f) = M.app σ fun i => M.denote ρ (f i)
+@MatchingLogic.denote_bot : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier), M.denote ρ MatchingLogic.Pattern.bot = ∅
+@MatchingLogic.denote_box : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (e : MatchingLogic.Coord S) (ψ : MatchingLogic.Pattern S Var),
+ M.denote ρ (MatchingLogic.box e ψ) = {u | ∀ (v : M.carrier), M.stepAt e u v → v ∈ M.denote ρ ψ}
+@MatchingLogic.denote_ex : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (x : Var) (φ : MatchingLogic.Pattern S Var),
+ M.denote ρ (MatchingLogic.Pattern.ex x φ) = ⋃ a, M.denote (Function.update ρ x a) φ
+@MatchingLogic.denote_imp : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (φ ψ : MatchingLogic.Pattern S Var),
+ M.denote ρ (φ.imp ψ) = (M.denote ρ φ)ᶜ ∪ M.denote ρ ψ
+@MatchingLogic.denote_nt : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (φ : MatchingLogic.Pattern S Var), M.denote ρ φ.nt = (M.denote ρ φ)ᶜ
+@MatchingLogic.denote_tp : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier), M.denote ρ MatchingLogic.Pattern.tp = Set.univ
+@MatchingLogic.denote_var : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+ (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (x : Var), M.denote ρ (MatchingLogic.Pattern.var x) = {ρ x}

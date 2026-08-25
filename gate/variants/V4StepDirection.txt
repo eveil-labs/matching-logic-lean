@@ -2,6 +2,22 @@ def MatchingLogic.VariantStepDirection.V4Claim : Prop :=
  MatchingLogic.VariantStepDirection.ForwardClosed M C →
  ∀ (ψ : MatchingLogic.Pattern S Var) (ρ ρ' : Var → M.carrier),
  MatchingLogic.AgreeOn C ρ ρ' → M.denote ρ ψ ∩ C = M.denote ρ' ψ ∩ C
+ MatchingLogic.Necessity.M MatchingLogic.Necessity.C
+ MatchingLogic.VariantStepDirection.N.interp () a = if a 0 = 2 then ∅ else {0}
+ MatchingLogic.VariantStepDirection.N MatchingLogic.VariantStepDirection.C'
+ ∃ v, MatchingLogic.VariantStepDirection.StepRev MatchingLogic.VariantStepDirection.N u v
+ MatchingLogic.VariantStepDirection.C'
+@MatchingLogic.VariantStepDirection.agree' : ∀ {Var : Type},
+ MatchingLogic.AgreeOn MatchingLogic.VariantStepDirection.C' MatchingLogic.VariantStepDirection.rho1
+ MatchingLogic.VariantStepDirection.rho2
+@MatchingLogic.VariantStepDirection.denote_rho1 : ∀ {Var : Type} [inst : DecidableEq Var] (x : Var),
+ MatchingLogic.VariantStepDirection.N.denote MatchingLogic.VariantStepDirection.rho1
+ (MatchingLogic.VariantStepDirection.psi' x) =
+ {0}
+@MatchingLogic.VariantStepDirection.denote_rho2 : ∀ {Var : Type} [inst : DecidableEq Var] (x : Var),
+ MatchingLogic.VariantStepDirection.N.denote MatchingLogic.VariantStepDirection.rho2
+ (MatchingLogic.VariantStepDirection.psi' x) =
+ ∅
 def MatchingLogic.VariantStepDirection.StepRev : {S : MatchingLogic.Signature} →
  (M : MatchingLogic.Model S) → M.carrier → M.carrier → Prop :=
 fun {S} M u v => ∃ σ a i, v ∈ M.interp σ a ∧ u = a i

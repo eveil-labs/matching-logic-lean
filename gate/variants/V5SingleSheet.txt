@@ -5,6 +5,9 @@ def MatchingLogic.VariantSingleSheet.V5Claim : Prop :=
  ∀ (ψ : MatchingLogic.Pattern S Var),
  MatchingLogic.Closed ψ →
  ∀ (ρ : Var → M.carrier), (MatchingLogic.VariantSingleSheet.single M C hne).Sat ψ ↔ C ⊆ M.denote ρ ψ
+ MatchingLogic.VariantSingleSheet.ssC
+ MatchingLogic.VariantSingleSheet.ssC MatchingLogic.VariantSingleSheet.ssC_nonempty).Sat
+ MatchingLogic.VariantSingleSheet.ssPat
 def MatchingLogic.VariantSingleSheet.single : {S : MatchingLogic.Signature} →
  (M : MatchingLogic.Model S) → (C : Set M.carrier) → C.Nonempty → MatchingLogic.Model S :=
 fun {S} M C hne => { carrier := ↑C, nonempty := ⋯, interp := fun σ A => {u | ↑u ∈ M.interp σ fun j => ↑(A j)} }

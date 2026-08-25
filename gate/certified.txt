@@ -68,3 +68,36 @@ MatchingLogic.Sorted.feedsStar_a_only_a
 MatchingLogic.Sorted.mprovable_empty_of_not_feeds
 MatchingLogic.Sorted.Γ3_not_derives_φ3
 MatchingLogic.Sorted.no_faithful_translation
+
+# Supporting lemmas and controls. Certified so that their statements are
+# pinned too: an audit showed a documented control could be replaced by a
+# proof of True while every gate stayed green, because only certified
+# names have their types pinned.
+MatchingLogic.AgreeOn.update
+MatchingLogic.FV_app
+MatchingLogic.FV_bot
+MatchingLogic.FV_ex
+MatchingLogic.FV_imp
+MatchingLogic.FV_var
+MatchingLogic.Model.BackwardClosed.mem_of_interp
+MatchingLogic.Model.app_const
+MatchingLogic.Model.app_eq_empty
+MatchingLogic.Model.app_inter_backwardClosed
+MatchingLogic.Model.reachWord_cons
+MatchingLogic.Model.reachWord_nil
+MatchingLogic.Necessity.agree
+MatchingLogic.Necessity.denote_rho
+MatchingLogic.Necessity.denote_rho'
+MatchingLogic.Sorted.MModel.app_eq_empty
+MatchingLogic.Sorted.mdenote_al
+MatchingLogic.boxes_cons
+MatchingLogic.boxes_nil
+MatchingLogic.denote_al
+MatchingLogic.denote_app
+MatchingLogic.denote_bot
+MatchingLogic.denote_box
+MatchingLogic.denote_ex
+MatchingLogic.denote_imp
+MatchingLogic.denote_nt
+MatchingLogic.denote_tp
+MatchingLogic.denote_var

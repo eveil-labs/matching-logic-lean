@@ -5,6 +5,10 @@ def MatchingLogic.VariantMixed.V2Claim : Prop :=
  ∀ (ψ : MatchingLogic.Pattern S Var) (ν : Var → ↑C × Bool) (p : ↑C × Bool),
  p ∈ (MatchingLogic.VariantMixed.cover₂ M C hne).denote ν ψ ↔
  ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star p.2 (ν x)) ψ
+ MatchingLogic.VariantMixed.cmC
+ (MatchingLogic.cover MatchingLogic.VariantMixed.cmModel MatchingLogic.VariantMixed.cmC
+ MatchingLogic.VariantMixed.cmC_nonempty).denote
+ MatchingLogic.VariantMixed.cmVal MatchingLogic.VariantMixed.cmPat
 def MatchingLogic.VariantMixed.coverInterp₂ : {S : MatchingLogic.Signature} →
  (M : MatchingLogic.Model S) → (C : Set M.carrier) → (σ : S.Sym) → (Fin (S.arity σ) → ↑C × Bool) → Set (↑C × Bool) :=
 fun {S} M C σ A => {p | ↑p.1 ∈ M.interp σ fun j => ↑(A j).1}

@@ -38,9 +38,10 @@ jobs:
       - name: Pinned statements and definitions
         run: ./scripts/audit-pinned.sh
 
-      # Asks Lean which declarations exist and checks each is pinned. Written
-      # deliberately NOT to reuse the generator's logic: an earlier coverage
-      # check shared the generator's regex and so compared it against itself.
+      # Cross-method: the generator enumerates from Lean's environment, this
+      # reads the source text and requires each declaration to be pinned. An
+      # earlier version shared the generator's logic and so compared it against
+      # itself, reporting full coverage while a dozen names were missing.
       - name: Every declaration is pinned
         run: ./scripts/audit-coverage.sh
 

@@ -148,11 +148,12 @@ Figure 2 is proved sound — so Corollary 15 is available with (L) as the only
 remaining black-box input. Proposition 30's many-sorted soundness input remains
 assumed, as in the paper.
 
-See `CORRESPONDENCE.md`, whose membership and axiom column are generated from
-the kernel's own output: a **paper result** it does not list is one we are not
-claiming as mapped to the paper. It is not the full inventory — supporting
-lemmas and controls are certified without appearing in it. `gate/certified.txt`
-is the full list.
+See `CORRESPONDENCE.md`. It is a convenience index from a paper result to the
+Lean name that carries it, with the axioms the kernel reports; membership and the
+axiom column are generated. **It is not an inventory of claims and should not be
+read as one** — it omits supporting lemmas, controls, definitions, and the
+variant refutations, all of which are certified. `gate/certified.txt` is the
+list of what is claimed.
 
 Proposition 30 is complete, including the non-derivability half and Corollary 31
 at that data. (L) is not attempted; we estimate discharging it at several

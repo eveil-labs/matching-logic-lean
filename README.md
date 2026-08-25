@@ -28,17 +28,20 @@ acquires a `sorry` or any other axiom. The five variant refutations in
 `scripts/audit-variants.sh`. **Nothing outside those two is claimed.** CI runs
 every gate on every push.
 
-[`CORRESPONDENCE.md`](CORRESPONDENCE.md) maps each **result of the paper** to
-its Lean name and to the axioms the kernel actually reports. Membership and the
-axiom column are *generated* — a name appears only if it is certified and the
-kernel confirms it — and CI regenerates and diffs the file. Two honest caveats:
-the English description of each paper result comes from the hand-maintained
-`gate/paper-map.tsv`, and CI cannot check that those descriptions are faithful;
-and the table lists results that are mapped to the paper -- including rows
-marked BEYOND, for what is proved on top of it -- so supporting lemmas and
-controls are certified without appearing in it. **The full list of what is claimed is
-`gate/certified.txt`** (checked by `scripts/audit.sh`) together with the five
-variant refutations (checked by `scripts/audit-variants.sh`).
+[`CORRESPONDENCE.md`](CORRESPONDENCE.md) is a convenience index: for results
+that have been mapped to the paper, it gives the Lean name and the axioms the
+kernel reports. Membership and the axiom column are generated, and CI
+regenerates and diffs the file.
+
+**It is not an inventory of claims.** It omits definitions, supporting lemmas,
+controls, and the variant refutations — all of which are certified — and it
+carries rows marked BEYOND for results proved on top of the paper. The English
+description in each row comes from the hand-maintained `gate/paper-map.tsv`,
+which CI cannot check for faithfulness.
+
+**The list of what is claimed is `gate/certified.txt`** (checked by
+`scripts/audit.sh` and `scripts/audit-pinned.sh`), together with the five variant
+refutations (checked by `scripts/audit-variants.sh`).
 
 ### Entry point (i) — complete
 
@@ -278,8 +281,14 @@ letter (`Model.Sat`, `AppCtx.plug`, `Γ3`), and the coverage check that was mean
 to catch that used the *same regex*, so it compared the generator against itself
 and reported success.
 
-`scripts/audit-coverage.sh` now performs that check independently, from the
-environment rather than from source text: currently **126 of 126** declarations.
+`scripts/audit-coverage.sh` checks coverage by the **opposite** method — it
+reads the source text and requires each declaration to appear in the pin list,
+so the two disagreeing in either direction is the signal. It currently reports
+**106 of 106** source-written declarations pinned, across 222 pin directives,
+and fails if either scan comes back implausibly small. An earlier version
+reported "0/0 PASS" when its enumeration failed; a check that cannot fail is not
+a check.
+
 The library also contains no `private def`, since a private name cannot be
 reached by `#print` while still appearing in a public statement's type.
 

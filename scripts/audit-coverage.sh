@@ -1,46 +1,50 @@
 #!/usr/bin/env bash
-# Coverage gate. Asks LEAN which declarations exist and checks each is pinned.
+# Coverage gate — deliberately CROSS-METHOD.
 #
-# This must not use the same pattern the generator uses. An earlier coverage
-# check did, and so compared the generator against itself: it reported 91 of 91
-# while a dozen definitions with dotted or Greek names were silently missing.
+# `gen-pinned.sh` builds the pin list by asking LEAN'S ENVIRONMENT what exists.
+# This gate builds its expectation by reading the SOURCE TEXT instead, and
+# compares. The two disagreeing in either direction is the signal.
+#
+# It is written this way because an earlier version of this check shared the
+# generator's logic and so compared the generator against itself: it reported
+# "91 of 91" while a dozen definitions whose names contained a dot or a Greek
+# letter were silently unpinned.
+#
+# It also FAILS on an empty or failed enumeration. The previous version counted
+# zero declarations and reported "0/0 PASS" when it could not create a temporary
+# file -- a check that cannot fail is not a check.
 set -uo pipefail
 cd "$(dirname "$0")/.."
-export PATH="$HOME/.elan/bin:$PATH"
-GEN=$(mktemp /tmp/mlcov-XXXXXX.lean); trap 'rm -f "$GEN"' EXIT
-cat > "$GEN" <<'LEAN'
-import MatchingLogic
-open Lean in
-run_cmd do
-  let env ← getEnv
-  let mut out := #[]
-  for (n, ci) in env.constants.toList do
-    let s := n.toString
-    unless s.startsWith "MatchingLogic" do continue
-    if n.isInternal then continue
-    if (s.splitOn "._").length > 1 then continue
-    -- compiler-generated companions of a type are pinned via its recursor
-    if s.endsWith ".rec" || s.endsWith ".recOn" || s.endsWith ".casesOn" || s.endsWith ".below"
-       || s.endsWith ".brecOn" || s.endsWith ".brecOn.go" || s.endsWith ".ndrec" || s.endsWith ".ibelow"
-       || s.endsWith ".binductionOn" || s.endsWith ".noConfusion" || s.endsWith ".noConfusionType"
-       || s.endsWith ".sizeOf" || s.endsWith ".injEq" || s.endsWith ".inj" || s.endsWith ".eq_def"
-       || s.endsWith ".mk" || s.endsWith ".toCtorIdx" || s.endsWith ".ofNat" || s.endsWith ".elim"
-       || s.endsWith ".ctorIdx" || s.endsWith ".ctorElim" || s.endsWith ".ctorElimType" then continue
-    match ci with
-    | .defnInfo _ => out := out.push s
-    | .inductInfo _ => out := out.push s
-    | _ => pure ()
-  for x in out.qsort (· < ·) do IO.println x
-LEAN
-ALL=$(lake env lean "$GEN" 2>/dev/null | grep -vE '\.(eq_[0-9]|match_[0-9]|proof_[0-9]|_sunfold|_unsafe_rec|_cstage|decEq)')
-miss=0; tot=0
-while read -r n; do
-  [ -z "$n" ] && continue
-  tot=$((tot+1))
-  grep -qxF "#print $n" gate/pinned.lean || grep -qxF "#check @$n.rec" gate/pinned.lean \
-    || grep -qxF "#check @$n" gate/pinned.lean \
-    || { echo "FAIL  not pinned: $n"; miss=$((miss+1)); }
-done <<< "$ALL"
-echo "-- $((tot-miss))/$tot declarations pinned --"
-[ $miss -eq 0 ] && echo "== COVERAGE GATE PASS ==" || echo "== COVERAGE GATE FAIL =="
-exit $([ $miss -eq 0 ] && echo 0 || echo 1)
+fail=0
+
+# --- expectation, from the source text -------------------------------------
+SRC=$(grep -hoE '^[[:space:]]*(@\[[^]]*\][[:space:]]*)?(private[[:space:]]+|protected[[:space:]]+|noncomputable[[:space:]]+)*(def|abbrev|structure|inductive)[[:space:]]+[^[:space:]:({]+' \
+        MatchingLogic/*.lean \
+      | sed -E 's/.*(def|abbrev|structure|inductive)[[:space:]]+//' | sort -u)
+n_src=$(printf '%s\n' "$SRC" | grep -c . || true)
+if [ "${n_src:-0}" -lt 50 ]; then
+  echo "FAIL  source scan found only ${n_src:-0} declarations; the scan itself is broken"
+  echo "== COVERAGE GATE FAIL =="; exit 1
+fi
+
+n_pin=$(grep -cE '^#print |^#check @' gate/pinned.lean || true)
+if [ "${n_pin:-0}" -lt 100 ]; then
+  echo "FAIL  gate/pinned.lean has only ${n_pin:-0} directives; it has been truncated"
+  echo "== COVERAGE GATE FAIL =="; exit 1
+fi
+
+# --- every source-written declaration must appear in the pin list -----------
+missing=0
+while read -r base; do
+  [ -z "$base" ] && continue
+  # the pin list carries fully qualified names; match on the final segment
+  # match the final segment, preceded by a space, a dot or an @
+  esc=$(printf '%s' "$base" | sed 's/[.[\*^$]/\\&/g')
+  grep -qE "(^|[ .@])${esc}(\.rec)?$" gate/pinned.lean \
+    || { echo "FAIL  source declares '$base' but nothing pins it"; missing=$((missing+1)); }
+done <<< "$SRC"
+
+echo "-- $((n_src-missing))/$n_src source-written declarations pinned; $n_pin pin directives --"
+[ $missing -eq 0 ] || fail=1
+[ $fail -eq 0 ] && echo "== COVERAGE GATE PASS ==" || echo "== COVERAGE GATE FAIL =="
+exit $fail
