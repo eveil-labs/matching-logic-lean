@@ -80,6 +80,11 @@ jobs:
       - name: Variant gate
         run: ./scripts/audit-variants.sh
 
+      # Entry point (iii): its own per-module pin files and certified list,
+      # carried over from the branch the construction was built on.
+      - name: Entry point (iii) gate
+        run: ./scripts/audit-entry-iii.sh
+
       # The correspondence table is GENERATED from gate/certified.txt and the
       # kernel's own axiom output. If it has drifted from the source, the table
       # in the repository is claiming something the kernel is not confirming.

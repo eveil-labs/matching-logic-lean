@@ -147,9 +147,12 @@ Entry point (i) and entry point (ii) of the Section 10 challenge, plus
 Corollary 16, the **counterexample of Remark 17**, and the **applicative
 specialization of Section 6** (Remark 18's currying discussion is not
 formalized). **One-sorted (S) is discharged rather than assumed** — every rule of
-Figure 2 is proved sound — so Corollary 15 is available with (L) as the only
-remaining black-box input. Proposition 30's many-sorted soundness input remains
-assumed, as in the paper.
+Figure 2 is proved sound — and **(L) is discharged too**, so Corollary 15 is
+available with no black-box input at all at the source's variable scope; that is
+`global_completeness_entryIII`. `global_completeness_of_localCompleteness`
+remains stated with (L) as a hypothesis, because it holds for an arbitrary
+element-variable type whereas the discharge is at a countably infinite one.
+Proposition 30's many-sorted soundness input remains assumed, as in the paper.
 
 See `CORRESPONDENCE.md`. It is a convenience index from a paper result to the
 Lean name that carries it, with the axioms the kernel reports; membership and the
@@ -159,9 +162,10 @@ variant refutations, all of which are certified. `gate/certified.txt` is the
 list of what is claimed.
 
 Proposition 30 is complete, including the non-derivability half and Corollary 31
-at that data. (L) is not attempted; we estimate discharging it at several
-thousand lines, since it is the canonical-model construction that the rest of the
-paper is designed to avoid.
+at that data. **(L) is discharged** — the canonical-model construction the rest
+of the paper is designed to avoid is in `MatchingLogic/EntryIII/`, and
+`global_completeness_entryIII` is Corollary 15 with both (L) and (S) supplied by
+the development, at a countably infinite element-variable type.
 
 ---
 
@@ -251,12 +255,36 @@ a second independent proof of the same variant carrying the same stub.
 ## What we did not look at
 
 Sections 7 and 9 are not mechanized. Theorem 19 routes through Hilbert's tenth
-problem, which is a project of its own. Section 9's obstruction theorem is
-formalizable and we simply did not get to it.
+problem, which is a project of its own — though the pattern this development
+already uses would apply: carry H10 as a `Prop` hypothesis, prove Theorem 19
+around it, and discharge it separately, exactly as (L) was carried and then
+discharged. Section 9's obstruction theorem is formalizable and we simply did
+not get to it.
 
-We also did not attempt (L). Having read the proof — Theorem 3.7 of [4], stated
-at pp. 68–69, resting on the development from p. 58 onward — we estimate three
-to four thousand lines of Lean, dominated by the n-ary Existence Lemma. Nothing existing transfers: the closest mechanized
-completeness proof for a neighbouring logic uses nominals as its Henkin
-witnesses, and this fragment has none.
+**(L) is no longer among these.** It is discharged — see
+`MatchingLogic/EntryIII/` and `ENTRY-III-COMPLETION.md` — at the source's
+variable scope, a countably infinite element-variable type. We had estimated
+three to four thousand lines from reading Theorem 3.7 of [4]; it came to about
+6,600, dominated as expected by the n-ary Existence Lemma. Nothing existing
+transferred: the closest mechanized completeness proof for a neighbouring logic
+uses nominals as its Henkin witnesses, and this fragment has none.
+
+Two things in that construction are worth your attention, because they are
+places where the raw formalization had to say more than the paper does.
+
+*Fresh witnesses on raw names.* The Lean syntax does not quotient patterns by
+α-equivalence, and a witness name merely absent from the free variables of an
+existential body can still collide with a binder inside it. The paper renames
+binders silently when substituting, so the collision cannot be ignored on raw
+names. Canonical points therefore carry a stronger invariant, `FreshWitnessed`,
+demanding a witness avoiding *all* variables of the body rather than only its
+free ones. This is not an extra assumption: the finite Henkin extension proves
+every locally consistent finite list extends to an MCS satisfying it.
+
+*Arbitrary symbol sets without countability.* The canonical construction wants a
+countable pattern type, and the paper permits an arbitrary finitary symbol set.
+Rather than assume countability, each finite countertheory is moved to the
+finite sub-signature its premises generate, the model is built there, and it is
+extended back to the ambient signature by interpreting the absent symbols as
+empty. So no finiteness or countability hypothesis is imposed on `S.Sym`.
 
