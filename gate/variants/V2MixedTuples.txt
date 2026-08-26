@@ -1,11 +1,18 @@
 def MatchingLogic.VariantMixed.V2Claim : Prop :=
+∀ (S : MatchingLogic.Signature) (Var : Type) (x : DecidableEq Var) (M : MatchingLogic.Model S) (C : Set M.carrier),
  M.BackwardClosed C →
  ∀ (hne : C.Nonempty),
  ∀ star ∉ C,
  ∀ (ψ : MatchingLogic.Pattern S Var) (ν : Var → ↑C × Bool) (p : ↑C × Bool),
  p ∈ (MatchingLogic.VariantMixed.cover₂ M C hne).denote ν ψ ↔
  ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star p.2 (ν x)) ψ
+MatchingLogic.VariantMixed.v2_holds : MatchingLogic.VariantMixed.V2Claim
+MatchingLogic.VariantMixed.cmC_nonempty : MatchingLogic.VariantMixed.cmC.Nonempty
+MatchingLogic.VariantMixed.cmStar : true ∉ MatchingLogic.VariantMixed.cmC
+MatchingLogic.VariantMixed.cmC_backwardClosed : MatchingLogic.VariantMixed.cmModel.BackwardClosed
  MatchingLogic.VariantMixed.cmC
+MatchingLogic.VariantMixed.v2_fails : ¬MatchingLogic.VariantMixed.V2Claim
+MatchingLogic.VariantMixed.cm_real_cover_excludes_it : MatchingLogic.VariantMixed.cmPt ∉
  (MatchingLogic.cover MatchingLogic.VariantMixed.cmModel MatchingLogic.VariantMixed.cmC
  MatchingLogic.VariantMixed.cmC_nonempty).denote
  MatchingLogic.VariantMixed.cmVal MatchingLogic.VariantMixed.cmPat
@@ -15,8 +22,17 @@ fun {S} M C σ A => {p | ↑p.1 ∈ M.interp σ fun j => ↑(A j).1}
 def MatchingLogic.VariantMixed.cover₂ : {S : MatchingLogic.Signature} →
  (M : MatchingLogic.Model S) → (C : Set M.carrier) → C.Nonempty → MatchingLogic.Model S :=
 fun {S} M C hne => { carrier := ↑C × Bool, nonempty := ⋯, interp := MatchingLogic.VariantMixed.coverInterp₂ M C }
+@[reducible] def MatchingLogic.VariantMixed.cmSig : MatchingLogic.Signature :=
+{ Sym := Unit, arity := fun x => 2 }
+@[reducible] def MatchingLogic.VariantMixed.cmModel : MatchingLogic.Model MatchingLogic.VariantMixed.cmSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun x a => {u | u = false ∧ a 0 = false ∧ a 1 = false} }
+@[reducible] def MatchingLogic.VariantMixed.cmC : Set MatchingLogic.VariantMixed.cmModel.carrier :=
+{b | b = false}
 def MatchingLogic.VariantMixed.cmFalse : ↑MatchingLogic.VariantMixed.cmC :=
+⟨false, MatchingLogic.VariantMixed.cmFalse._proof_1⟩
 def MatchingLogic.VariantMixed.cmPat : MatchingLogic.Pattern MatchingLogic.VariantMixed.cmSig ℕ :=
+MatchingLogic.Pattern.app () fun i => MatchingLogic.Pattern.var ↑i
 def MatchingLogic.VariantMixed.cmVal : ℕ → ↑MatchingLogic.VariantMixed.cmC × Bool :=
 fun n => (MatchingLogic.VariantMixed.cmFalse, decide (n ≠ 0))
 def MatchingLogic.VariantMixed.cmPt : ↑MatchingLogic.VariantMixed.cmC × Bool :=
+(MatchingLogic.VariantMixed.cmFalse, false)

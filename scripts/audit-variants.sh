@@ -1,25 +1,38 @@
 #!/usr/bin/env bash
-# Variant gate. For each variant, three things must hold:
+# Variant gate. For each variant, four things must hold:
 #
 #   1. the file compiles and leaves exactly ONE `sorry` -- the unsettled side;
-#   2. the side that is settled is the one gate/variants-expected.tsv expects;
+#   2. the side that is settled is the one gate/variants-expected.tsv expects,
+#      and the other side is NOT also proved;
 #   3. that side genuinely has the type it should -- `vN_fails : ¬ VNClaim`,
-#      checked by elaborating an `example` against it.
+#      checked by elaborating an `example` against it;
+#   4. the claim, every theorem's type and every definition the claim is ABOUT
+#      print exactly what gate/variants/<name>.txt recorded.
 #
 # Point 3 exists because two independent audits broke an earlier version of this
 # gate by replacing a refutation with an unrelated theorem of the same name
 # (`theorem v1_fails : True := ...`). Counting stubs and axioms is not enough:
 # the gate has to pin what the settled side SAYS.
+#
+# Point 4's SLICE is the round-eight repair. It used to keep a continuation line
+# only if it began with `fun ` or two spaces, so four definition bodies -- among
+# them V2's test point `cmPt`, printed at column zero starting with `(` -- were
+# never recorded at all. A reviewer moved that test point from copy 0 to copy 1,
+# falsifying the variant's own documentation, and regenerated a byte-identical
+# baseline. The print block and the slice now live in scripts/variant-common.sh,
+# shared with the generator, and the slice drops nothing.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 export PATH="$HOME/.elan/bin:$PATH"
+. scripts/variant-common.sh
+TD=$(mktemp -d); trap 'rm -rf "$TD"' EXIT
 fail=0; settled=0
 while IFS=$'\t' read -r f ns side _lemma; do
   case "$f" in ''|'#'*) continue ;; esac
   [ -f "$f" ] || { echo "FAIL  $f -- listed but missing"; fail=1; continue; }
   other=$([ "$side" = "fails" ] && echo holds || echo fails)
   num=$(printf '%s' "$f" | sed -E 's|.*/V([0-9]+).*|\1|')
-  tmp=$(mktemp /tmp/mlvar-XXXXXX.lean)
+  tmp="$TD/$(basename "$f")"
   cp "$f" "$tmp"
   {
     echo ""
@@ -33,23 +46,10 @@ while IFS=$'\t' read -r f ns side _lemma; do
     echo "end MatchingLogic.$ns"
     echo "#print axioms MatchingLogic.$ns.v${num}_${side}"
     echo "#print axioms MatchingLogic.$ns.v${num}_${other}"
-    # Pin the CLAIM itself. Refuting a claim that has been weakened to `False`
-    # would be worthless, and the type check above would still pass.
-    echo "#print MatchingLogic.$ns.V${num}Claim"
-    for t in $(grep -oE "^(private )?theorem [A-Za-z_][^ :({]*" "$f" | sed -E 's/^(private )?theorem //'); do
-      echo "#check @MatchingLogic.$ns.$t"
-    done
-    # ...and every definition the claim is ABOUT. An audit changed a variant's
-    # own definitions while the claim's type and text stayed identical, so the
-    # refutation became a refutation of something else.
-    for d in $(grep -oE "^(private )?(def|abbrev) [A-Za-z_][A-Za-z0-9_₀-₉'\.]*" "$f" \
-               | sed -E 's/^(private )?(def|abbrev) //'); do
-      case "$d" in V${num}Claim) continue ;; esac
-      echo "#print MatchingLogic.$ns.$d"
-    done
+    # (4) the pinned surface. LAST, so that everything after the sentinel is it.
+    variant_decls "$f" "$ns" "$num"
   } >> "$tmp"
   out=$(lake env lean "$tmp" 2>&1); rc=$?
-  rm -f "$tmp"
   if [ $rc -ne 0 ] || printf '%s\n' "$out" | grep -q "error"; then
     echo "FAIL  $f -- does not compile, or the settled side does not have the intended type"
     printf '%s\n' "$out" | grep error | head -3; fail=1; continue
@@ -67,19 +67,29 @@ while IFS=$'\t' read -r f ns side _lemma; do
             | grep -vE '^(propext|Classical\.choice|Quot\.sound)$' | grep -v '^$' || true) ;;
   esac
   if [ -n "$ax" ]; then echo "FAIL  $f -- disallowed axioms: $(echo $ax | tr '\n' ' ')"; fail=1; continue; fi
-  # Compare the whole printed surface -- claim and every definition it is about --
-  # against this variant's baseline.
+  # Compare the whole printed surface against this variant's baseline.
   base="gate/variants/$(basename "$f" .lean).txt"
-  printf '%s\n' "$out" | grep -E "^(def|theorem|abbrev|private|@) ?MatchingLogic\.$ns\.|^@MatchingLogic\.$ns\.|^fun |^  " \
-    | tr -s ' \n' ' \n' > /tmp/mlvarnow.$$
-  if [ ! -f "$base" ]; then echo "FAIL  $f -- no pinned baseline at $base"; rm -f /tmp/mlvarnow.$$; fail=1; continue; fi
-  if ! diff -q "$base" /tmp/mlvarnow.$$ >/dev/null; then
-    echo "FAIL  $f -- a pinned definition or the claim changed"; diff "$base" /tmp/mlvarnow.$$ | head -6
-    rm -f /tmp/mlvarnow.$$; fail=1; continue
+  if [ ! -f "$base" ]; then echo "FAIL  $f -- no pinned baseline at $base"; fail=1; continue; fi
+  # An absent sentinel would make the surface empty, and an empty surface must
+  # never read as "nothing changed".
+  if ! printf '%s\n' "$out" | grep -qF "$VARIANT_SENTINEL"; then
+    echo "FAIL  $f -- no surface marker in Lean's output; nothing was compared"; fail=1; continue
   fi
-  rm -f /tmp/mlvarnow.$$
-  echo "ok    $f -- $side, intended type, claim and definitions pinned"; settled=$((settled+1))
+  now="$TD/now.txt"
+  printf '%s\n' "$out" | variant_surface > "$now"
+  nlines=$(wc -l < "$now" | tr -d ' ')
+  blines=$(wc -l < "$base" | tr -d ' ')
+  if [ "$nlines" -lt 5 ] || [ "$blines" -lt 5 ]; then
+    echo "FAIL  $f -- surface is $nlines lines against a $blines-line baseline; one of them is empty"; fail=1; continue
+  fi
+  if ! diff -q "$base" "$now" >/dev/null; then
+    echo "FAIL  $f -- a pinned definition, theorem or the claim changed"; diff "$base" "$now" | head -8
+    fail=1; continue
+  fi
+  echo "ok    $f -- $side, intended type, $nlines lines of claim, theorems and definitions pinned"
+  settled=$((settled+1))
 done < gate/variants-expected.tsv
 echo "-- $settled settled --"
+[ "$settled" -eq 5 ] || { echo "FAIL  $settled variants settled, expected 5"; fail=1; }
 [ $fail -eq 0 ] && echo "== VARIANT GATE PASS ==" || echo "== VARIANT GATE FAIL =="
 exit $fail

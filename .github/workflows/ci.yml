@@ -26,6 +26,12 @@ jobs:
       - name: Axiom audit
         run: ./scripts/audit.sh
 
+      # `#print axioms` reports what a theorem DEPENDS on. Nothing rejected an
+      # `axiom` DECLARATION until round eight, when one passed every gate here.
+      # The whole design rests on (L) and (S) being Prop hypotheses.
+      - name: No axiom or opaque declarations
+        run: ./scripts/audit-axiom-decls.sh
+
       # Pins what each name SAYS, not merely that it exists with clean axioms.
       # The axiom gate accepts any declaration, including a definition carrying a
       # theorem's name; this one compares kernel-printed statement types and
@@ -51,7 +57,8 @@ jobs:
         run: |
           ./scripts/gen-pinned.sh
           ./scripts/gen-variants-baseline.sh
-          git diff --exit-code -- gate/pinned.lean gate/variants/
+          ./scripts/gen-required.sh
+          git diff --exit-code -- gate/pinned.lean gate/variants/ gate/required.txt
 
       - name: Variant gate
         run: ./scripts/audit-variants.sh

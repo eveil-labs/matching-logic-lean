@@ -173,6 +173,7 @@ lake build MatchingLogic
 ./scripts/audit-pinned.sh     # every certified statement type and pinned definition body unchanged
 ./scripts/audit-manifest.sh   # the manifests those gates read have not been shrunk
 ./scripts/audit-coverage.sh   # Lean's own declaration list is fully pinned
+./scripts/audit-axiom-decls.sh # no `axiom` and no `opaque` anywhere
 ```
 
 ## Layout
@@ -261,7 +262,7 @@ somewhere in the development; they are **not** a defence against the
 repository's own authors, and no in-repository check could be. The trust root for
 that is review of the diff.
 
-Every gate here was fire-tested by being attacked. **Five rounds of adversarial
+Every gate here was fire-tested by being attacked. **Eight rounds of adversarial
 review broke earlier versions**, each by a route the previous round had not
 considered:
 
@@ -272,27 +273,58 @@ considered:
    while its meaning moved — needing no access to `gate/` at all;
 5. the same again, against definitions a hand-written pin list had omitted:
    `Pattern.or`, turning Figure 2's rule (6) into an identity, and `Srt3`,
-   checking a "three-sort" theorem over four sorts.
+   checking a "three-sort" theorem over four sorts;
+6. a coverage check that shared the pin generator's regex, so it compared the
+   generator against itself and reported "91 of 91" while a dozen names were
+   unpinned;
+7. the same check reporting "0/0 PASS" when its own enumeration failed — a
+   check that cannot fail is not a check;
+8. two at once. An `axiom` declaration passed every gate in this repository,
+   because the pin list enumerated definitions and inductive types only. And the
+   variant gate sliced Lean's output with a line-prefix filter that kept a
+   continuation line only if it began with `fun ` or two spaces. A reviewer
+   moved a test point between copies and regenerated a baseline that did not
+   change; measuring the repair showed why, and how much wider it went — of the
+   144 lines the five variants print, 92 were recorded and **52 were not**,
+   among them every theorem's type and every `@[reducible]` model definition the
+   countermodels are built from.
 
 Rounds five and six are why the pin list is neither hand-written nor derived
 from a regex. `scripts/gen-pinned.sh` **asks Lean's environment** which
-declarations exist and pins every one — bodies for definitions, constructor sets
-for types — so the list cannot omit what the kernel contains. A regex-derived
-version of this list silently dropped every name containing a dot or a Greek
-letter (`Model.Sat`, `AppCtx.plug`, `Γ3`), and the coverage check that was meant
-to catch that used the *same regex*, so it compared the generator against itself
-and reported success.
+declarations exist, so the list cannot miss a declaration because of how its
+*name* is spelled — the failure the regex version had, which silently dropped
+every name containing a dot or a Greek letter (`Model.Sat`, `AppCtx.plug`,
+`Γ3`), and which the coverage check written with the same regex could not see.
+
+What an environment scan can still miss is a *kind*, and round eight showed that
+it did. So here is the generator's scope exactly, rather than a claim larger
+than it. It enumerates the environment under `MatchingLogic`, discards
+compiler-generated names (recursors, `.injEq`, `.eq_def`, match and proof
+auxiliaries), and emits a directive for every remaining **definition** (its
+body), **inductive type** (its recursor's type), **theorem** and **axiom** (its
+type). It cannot reach a `private` name at all — which is why
+`scripts/audit-coverage.sh` **rejects a private definition outright**, since a
+private definition can appear inside a public statement's type. Private
+*theorems* are allowed, and there are 32: a theorem's type is not part of
+anything public, only its proof, and the kernel checks that.
+
+`scripts/audit-axiom-decls.sh` is what makes (L) and (S) hypotheses rather than
+axioms. It asks Lean's environment for any `axiom` or `opaque` declaration under
+`MatchingLogic` — in the library, and again in each variant file — and it greps
+every Lean file this repository ships. Both methods are there because neither is
+enough alone, and that is measured, not assumed: the source scan does not see an
+`axiom` written after `in` on a `set_option` line, and the kernel scan cannot
+see a file that nothing imports.
 
 `scripts/audit-coverage.sh` checks coverage by the **opposite** method — it
 reads the source text and requires each declaration to appear in the pin list,
 so the two disagreeing in either direction is the signal. It currently reports
-**106 of 106** source-written declarations pinned, across 222 pin directives,
-and fails if either scan comes back implausibly small. An earlier version
-reported "0/0 PASS" when its enumeration failed; a check that cannot fail is not
-a check.
-
-The library also contains no `private def`, since a private name cannot be
-reached by `#print` while still appearing in a public statement's type.
+**201 of 201** public source-written declarations pinned, across 364 pin
+directives, and fails if either scan comes back implausibly small. Since round
+eight it also counts the iterations of its own comparison loop and requires that
+count to equal the number of declarations found. Its predecessor validated its
+inputs and then read a here-string; with the here-string empty, the loop ran
+zero times and it printed "106/106 PASS" having compared nothing.
 
 A green `lake build` is **not** evidence: the build succeeds with `sorry`s
 present, emitting only warnings. That is why the gates above exist and why CI

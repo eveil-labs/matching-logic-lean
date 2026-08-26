@@ -1,10 +1,13 @@
 def MatchingLogic.VariantOneCopy.V1Claim : Prop :=
+∀ (S : MatchingLogic.Signature) (Var : Type) (x : DecidableEq Var) (M : MatchingLogic.Model S) (C : Set M.carrier),
  M.BackwardClosed C →
  ∀ (hne : C.Nonempty),
  ∀ star ∉ C,
  ∀ (ψ : MatchingLogic.Pattern S Var) (ν : Var → ↑C × Bool) (p : ↑C × Bool),
  p ∈ (MatchingLogic.VariantOneCopy.cover₁ M C hne).denote ν ψ ↔
  ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star p.2 (ν x)) ψ
+MatchingLogic.VariantOneCopy.v1_holds : MatchingLogic.VariantOneCopy.V1Claim
+MatchingLogic.VariantOneCopy.v1_fails : ¬MatchingLogic.VariantOneCopy.V1Claim
 def MatchingLogic.VariantOneCopy.coverInterp₁ : {S : MatchingLogic.Signature} →
  (M : MatchingLogic.Model S) → (C : Set M.carrier) → (σ : S.Sym) → (Fin (S.arity σ) → ↑C × Bool) → Set (↑C × Bool) :=
 fun {S} M C σ A =>

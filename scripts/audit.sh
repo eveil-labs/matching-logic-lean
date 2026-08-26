@@ -10,8 +10,8 @@ cd "$(dirname "$0")/.."
 export PATH="$HOME/.elan/bin:$PATH"
 
 LIST=${1:-gate/certified.txt}   # read-only; overridable so the gate itself can be tested
-GEN=$(mktemp /tmp/ml-audit-XXXXXX.lean)
-trap 'rm -f "$GEN"' EXIT
+TD=$(mktemp -d); trap 'rm -rf "$TD"' EXIT
+GEN="$TD/audit.lean"
 
 echo "import MatchingLogic" > "$GEN"
 NAMES=()
@@ -21,6 +21,17 @@ while IFS= read -r line; do
   echo "#print axioms $line" >> "$GEN"
 done < "$LIST"
 
+# An empty or truncated list would audit nothing and report a pass. The gate is
+# overridable so it can be tested against a small list, so the floor applies to
+# the DEFAULT manifest only.
+if [ "$LIST" = "gate/certified.txt" ] && [ "${#NAMES[@]}" -lt 90 ]; then
+  echo "FAIL: gate/certified.txt lists only ${#NAMES[@]} names; it has been truncated"
+  echo "== AUDIT FAIL =="; exit 1
+fi
+if [ "${#NAMES[@]}" -eq 0 ]; then
+  echo "FAIL: nothing to audit; a gate over an empty list is not a gate"
+  echo "== AUDIT FAIL =="; exit 1
+fi
 echo "== auditing ${#NAMES[@]} certified theorems =="
 OUT=$(lake env lean "$GEN" 2>&1)
 RC=$?

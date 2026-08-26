@@ -214,7 +214,7 @@ we have misread.
 | toolchain | Lean 4.33.0 |
 | Mathlib | pinned to the public tag `v4.33.0` |
 | build | `lake exe cache get && lake build MatchingLogic` — about 90 s from a clean clone |
-| gates | `scripts/audit-manifest.sh`, `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh` |
+| gates | `scripts/audit-manifest.sh`, `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh`, `scripts/audit-coverage.sh`, `scripts/audit-axiom-decls.sh` — all seven run in CI |
 | independent check | the `MatchingLogic` library also compiles on a second Lean service at `lean-4.33.0`: 0 errors, 0 incomplete declarations, same axiom verdict. The deliberate stubs in `variants/` and `alternates/` are outside that library. |
 
 `CORRESPONDENCE.md` lists each result that is **mapped to the paper** against
@@ -224,6 +224,15 @@ certified without appearing in it. **The full list of what is claimed is
 `gate/certified.txt`** (checked by `scripts/audit.sh`), together with the five
 variant refutations (checked by `scripts/audit-variants.sh`), and
 `scripts/audit-manifest.sh` checks that neither list has been shrunk.
+`gate/required.txt` is **generated from `gate/certified.txt`** by
+`scripts/gen-required.sh`, so it is a snapshot guard and not an independent
+source of truth: it stops `gate/certified.txt` being shrunk on its own, and it
+does not stop the two being regenerated together.
+
+The hypotheses (L) and (S) are `Prop` arguments of the theorems that use them,
+never axioms; `scripts/audit-axiom-decls.sh` fails if any `axiom` or `opaque`
+declaration exists under `MatchingLogic/` or `variants/`. Before round eight
+nothing checked this, and an `axiom` passed every gate.
 
 There are six `sorry`s, all deliberate and none reachable from any claimed
 result: the five `vN_holds` stubs in `variants/`, which are the *refuted* side of
