@@ -51,29 +51,73 @@ SRCFILES="MatchingLogic.lean $(ls MatchingLogic/*.lean)"
 # reach a private name, so a private DEFINITION is a defect (rejected by the
 # declaration gate, from the kernel) and a private THEOREM is fine.
 QUALIFY='
-  function top() { return depth }
-  /^[[:space:]]*namespace[[:space:]]/ { split($0,a,/[[:space:]]+/); i=1; while(a[i]=="") i++;
-      depth++; kind[depth]="ns"; nm[depth]=a[i+1]; next }
-  /^[[:space:]]*section([[:space:]]|$)/ { depth++; kind[depth]="sec"; nm[depth]=""; next }
-  /^[[:space:]]*end([[:space:]]|$)/ { if (depth>0) depth--; next }
+  /^[ \t]*namespace[ \t]/ { line=$0; sub(/^[ \t]*namespace[ \t]+/,"",line);
+      sub(/[ \t].*$/,"",line);
+      depth++; kind[depth]="ns"; nm[depth]=line; next }
+  /^[ \t]*section([ \t]|$)/ { depth++; kind[depth]="sec"; nm[depth]=""; next }
+  /^[ \t]*end([ \t]|$)/ { if (depth>0) depth--; next }
   {
     line=$0
-    sub(/^[[:space:]]+/,"",line)
-    while (match(line,/^@\[[^]]*\][[:space:]]*/)) line=substr(line,RLENGTH+1)
+    sub(/^[ \t]+/,"",line)
+    while (match(line,/^@\[[^]]*\][ \t]*/)) { if (RLENGTH<=0) break; line=substr(line,RLENGTH+1) }
     priv=0
-    while (match(line,/^(private|protected|noncomputable|partial|unsafe|scoped|local)[[:space:]]+/)) {
-      if (line ~ /^private[[:space:]]/) priv=1
-      line=substr(line,RLENGTH+1)
+    while (match(line,/^(private|protected|noncomputable|partial|unsafe|scoped|local)[ \t]+/)) {
+      # `n=RLENGTH` FIRST. `match()` sets RLENGTH, so testing for `private` with
+      # match() here would clobber the length just measured -- and on a modifier
+      # that is not `private` it sets RLENGTH to -1, substr consumes nothing,
+      # and this loop never ends. `~` does not touch RLENGTH.
+      n=RLENGTH
+      if (n<=0) break
+      if (line ~ /^private[ \t]/) priv=1
+      line=substr(line,n+1)
     }
-    if (line !~ /^(def|abbrev|structure|inductive|theorem|lemma|instance|class)[[:space:]]/) next
-    split(line,b,/[[:space:]]+/); kw=b[1]; nme=b[2]
-    if (nme ~ /^[:({\[]/ || nme=="") { print (priv ? "PRIVANON " : "ANON ") kw; next }
+    if (line !~ /^(def|abbrev|structure|inductive|theorem|lemma|instance|class)[ \t]/) next
+    kw=line; sub(/[ \t].*$/,"",kw)
+    nme=line; sub(/^[^ \t]+[ \t]+/,"",nme); sub(/[ \t].*$/,"",nme)
+    if (nme=="" || match(nme,/^[:({[]/)) { print (priv ? "PRIVANON " : "ANON ") kw; next }
     sub(/[:({].*$/,"",nme)
     if (nme=="") next
     pre=""
     for (i=1;i<=depth;i++) if (kind[i]=="ns") pre = pre nm[i] "."
     print (priv ? "PRIV " : "PUB ") pre nme
   }'
+
+# --- the scan is awk, and CI's awk is not this one ---------------------------
+# Round nine: the previous scan used `sort -u`, whose collation is locale
+# dependent, and under en_US.UTF-8 four declarations left the expectation while
+# the gate reported success on the survivors. A dialect or locale difference
+# that SHRINKS the expectation is invisible -- fewer things to check, all of
+# them pinned, PASS. So the scan is exercised on a fixed input with a known
+# answer before it is trusted on the real one. This host has BSD awk; CI has
+# mawk; nobody has both.
+SELFTEST_IN='namespace Alpha
+section Helpers
+@[simp] private theorem hidden_thm : True := trivial
+noncomputable def ncdef : Nat := 0
+end Helpers
+namespace Beta
+@[reducible] def inner : Nat := 1
+instance : Inhabited Nat := ⟨0⟩
+partial def part (n : Nat) : Nat := n
+end Beta
+theorem outer : True := trivial
+end Alpha
+def toplevel : Nat := 2'
+SELFTEST_WANT='PUB Alpha.ncdef
+PRIV Alpha.hidden_thm
+PUB Alpha.Beta.inner
+ANON instance
+PUB Alpha.Beta.part
+PUB Alpha.outer
+PUB toplevel'
+got=$(printf '%s\n' "$SELFTEST_IN" | awk "$QUALIFY" | sort)
+want=$(printf '%s\n' "$SELFTEST_WANT" | sort)
+if [ "$got" != "$want" ]; then
+  echo "FAIL  the source scan does not behave as expected on its own test input;"
+  echo "      this awk resolves the scan differently and the expectation cannot be trusted."
+  diff <(printf '%s\n' "$want") <(printf '%s\n' "$got") | sed 's/^/      /'
+  echo "== COVERAGE GATE FAIL =="; exit 1
+fi
 
 SCAN=$(awk "$QUALIFY" $SRCFILES)
 PUBN=$(printf '%s\n' "$SCAN" | awk '$1=="PUB"{print $2}' | sort)
