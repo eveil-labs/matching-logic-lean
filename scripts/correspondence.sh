@@ -11,9 +11,36 @@ echo "import MatchingLogic" > "$GEN"
 grep -vE '^#|^$' gate/certified.txt | while read -r n; do echo "#print axioms $n"; done >> "$GEN"
 OUT=$(lake env lean "$GEN" 2>&1)
 
+
+# `#print axioms` WRAPS. The kernel breaks a long axiom list across physical
+# lines, and reading only the first line stops at "[propext," -- so a forbidden
+# axiom on a continuation line is invisible. Measured on this tree: 33 of the
+# 367 certified names wrap. `scripts/audit-entry-iii.sh` found and repaired this
+# for its own gate; the repair was never carried here until round ten said so.
+#
+# Emit the whole stanza for $1, joined onto one line.
+axiom_stanza () {
+  # The name must be followed by a SPACE: `denote_rho` is a prefix of
+  # `denote_rho'`, and a prefix test swallowed the following stanza --
+  # caught by running this against the real 367-name output, not a sample.
+  # The quote character is passed in as a variable so the awk program itself
+  # contains none, which is what the shell quoting requires.
+  awk -v want="'$1'" -v q="'" '
+    substr($0, 1, length(want) + 1) == want " " { inb = 1 }
+    inb {
+      if (started && substr($0, 1, 1) == q) exit
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "")
+      if (started) printf " "
+      printf "%s", $0
+      started = 1
+    }
+    END { if (started) print "" }
+  '
+}
+
 printf '| Paper result | Lean | Axioms |\n|---|---|---|\n'
 grep -vE '^#|^$' gate/paper-map.tsv | while IFS=$'\t' read -r name paper _sec; do
-  line=$(printf '%s\n' "$OUT" | grep -F "'$name'" | tail -1)
+  line=$(printf '%s\n' "$OUT" | axiom_stanza "$name")
   [ -z "$line" ] && continue                      # not certified yet: omit, never guess
   case "$line" in
     *"does not depend on any axioms"*) ax="none" ;;

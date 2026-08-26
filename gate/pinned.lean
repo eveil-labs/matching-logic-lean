@@ -1058,3 +1058,6 @@ import MatchingLogic
 #check @MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed
 #check @MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample
 #check @MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted
+#check @MatchingLogic.pairArgs_zero
+#check @MatchingLogic.pairArgs_one
+#check @MatchingLogic.alphaBlocked_mem

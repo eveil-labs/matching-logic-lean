@@ -182,8 +182,10 @@ The completion audit checks all of the following:
 ## Verification result
 
 The completed tree was checked on 2026-08-25.  `lake build MatchingLogic`,
-`lake build MatchingLogic.EntryIII.All`, all six inherited audit gates,
-`audit-additive.sh`, and `audit-entry-iii.sh` pass.
+`lake build MatchingLogic.EntryIII.All`, all seven inherited audit gates,
+and `audit-entry-iii.sh` pass. (`audit-additive.sh` was a check on the
+development BRANCH: it compares against `upstream/main`, cannot run in a
+standalone clone, and is not in CI.)
 The EntryIII audit verifies exact statement-pin baselines, rejects `sorry`, new
 axiom declarations, and `native_decide`, checks every public declaration is
 pinned and every public theorem is certified, and checks every certified

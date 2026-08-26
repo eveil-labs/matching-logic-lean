@@ -388,3 +388,8 @@ MatchingLogic.alphaWitnessTheory_witnessed
 MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed
 MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample
 MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted
+
+# Round-ten follow-up: the separation results.
+MatchingLogic.pairArgs_zero
+MatchingLogic.pairArgs_one
+MatchingLogic.alphaBlocked_mem

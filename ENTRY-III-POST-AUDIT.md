@@ -9,10 +9,11 @@ merely rerunning the original scripts.
 
 1. The aggregate axiom checker previously selected only the first physical
    line of each `#print axioms` result.  A forbidden dependency on a wrapped
-   continuation line could therefore escape.  The checker now requests a very
-   large `format.width`, accepts only one complete well-formed verdict, rejects
-   wrapped or malformed output, and self-tests both an allowed list and a
-   synthetic forbidden token.
+   continuation line could therefore escape.  The checker now normalizes each complete
+   stanza WITHOUT discarding continuation lines (`normalize_axiom_stanza`),
+   accepts only one well-formed verdict, and self-tests both an allowed list and
+   a synthetic forbidden token. The same defect was found in `scripts/audit.sh`
+   and `scripts/correspondence.sh` in round ten and repaired there too.
 2. The additive gate compared only tracked changes with `upstream/main`.
    Untracked EntryIII files were invisible to its addition count.  It now
    enumerates untracked files under `MatchingLogic`, `gate`, and `scripts` and

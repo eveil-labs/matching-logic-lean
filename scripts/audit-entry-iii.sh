@@ -59,7 +59,13 @@ check_source_coverage() {
   for source in MatchingLogic/EntryIII/*.lean; do
     module="${source%.lean}"
     module="${module//\//.}"
-    pin=$(pin_for_module "$module") || continue
+    # `fail=1` inside pin_for_module dies with the command substitution's
+    # SUBSHELL. Round ten: the gate printed three FAIL lines and exited 0, and
+    # the three modules holding the new separation results were dropped from the
+    # coverage scan silently -- `missing` stayed 0 and the count line read `ok`.
+    # Any module could be put outside this gate by deleting its pin pair. The
+    # caller must set the flag.
+    if ! pin=$(pin_for_module "$module"); then fail=1; continue; fi
     while IFS= read -r entry; do
       [ -z "$entry" ] && continue
       kind="${entry%%|*}"

@@ -1,0 +1,21 @@
+def MatchingLogic.InfiniteWitnessSupply : {S : MatchingLogic.Signature} → Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma =>
+  ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
+    MatchingLogic.Pattern.ex x p ∈ Gamma →
+      {y | (MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x y p) ∈ Gamma}.Infinite
+def MatchingLogic.InfiniteFreshVariableSupply : {S : MatchingLogic.Signature} →
+  Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma => {y | ∀ q ∈ Gamma, y ∉ MatchingLogic.FV q}.Infinite
+@MatchingLogic.freshWitnessed_of_witnessed_of_supply : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.Witnessed Gamma → MatchingLogic.InfiniteWitnessSupply Gamma → MatchingLogic.FreshWitnessed Gamma
+@MatchingLogic.locConsistent_extend_freshWitnessed_isMCS : ∀ {S : MatchingLogic.Signature}
+  [Countable (MatchingLogic.Pattern S ℕ)] {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.LocConsistent Gamma →
+    MatchingLogic.InfiniteFreshVariableSupply Gamma →
+      ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta
+MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted : ¬∀
+    {Gamma : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ)},
+    MatchingLogic.LocConsistent Gamma →
+      ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta

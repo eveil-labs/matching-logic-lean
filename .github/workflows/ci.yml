@@ -30,8 +30,8 @@ jobs:
       # leanprover-community. It asks the kernel which axioms each declaration
       # depends on and fails outside [propext, Classical.choice, Quot.sound],
       # catching sorry (sorryAx), native_decide (Lean.ofReduceBool) and any
-      # home-rolled axiom, transitively -- across all 903 declarations, where
-      # our own gate checked the 95 names we had listed by hand.
+      # home-rolled axiom, transitively -- across every declaration the library
+      # holds, where our own gate checks only the names in gate/certified.txt.
       - name: Axiom audit (leanprover-community/axiom-audit)
         run: lake exe axiom-audit
 

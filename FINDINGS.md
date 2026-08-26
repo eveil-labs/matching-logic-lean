@@ -6,9 +6,11 @@ our development rather than the paper, it says so.
 
 We are not proposing any of this as a correction to the mathematics. The one
 item that is an actual erratum is a citation, item 1. Item 7 is the one we would
-most like your view on: it does not correct anything, but it shows that a step
-in Lemma 3.22 which reads as bookkeeping is carrying a hypothesis that cannot be
-dropped, and suggests a strengthening that costs nothing.
+most like your view on: it does not correct anything, but it isolates the
+hypothesis your `V → V⁺` extension supplies, shows it cannot be dropped even
+from a theory that is already maximal, and suggests a strengthening of Lemma
+3.22's side condition that costs nothing and turns an appeal to the α-quotient
+into a derivation inside Figure 2.
 
 ---
 
@@ -141,12 +143,13 @@ boxing is binder-free: `FV([p]ψ) = FV ψ`. (`denote_boxes`, `FV_boxes`.)
 
 ---
 
-## 7. What your V → V⁺ step is carrying, and why it cannot be dropped
+## 7. Isolating what the V → V⁺ extension supplies
 
 This one came out of mechanizing (L) and is, we think, the most interesting
 thing we can report. It is not a correction — nothing below says anything of
-yours is wrong — but it makes a step that reads as bookkeeping into a stated
-hypothesis, and proves it is load-bearing.
+yours is wrong, and the one place we thought it did turned out to be our own
+error. What it does is isolate the hypothesis your variable extension supplies,
+and show it is load-bearing in a case the extension itself cannot repair.
 
 **The setting.** Your Definition 3.5 asks that a witnessed MCS have, for each
 `∃x.φ ∈ Γ`, *some* `y` with `(∃x.φ) → φ[y/x] ∈ Γ`. Lemma 3.22 then builds one,
@@ -154,6 +157,13 @@ choosing `y` from `V⁺ \ V` — a set of countably many *new* variables — sub
 to it not occurring **free** in `Γₙ₋₁` and `ψ`. All of this is correct in your
 setting, where α-equivalent patterns are identified and substitution renames
 implicitly.
+
+**And you already say why the extension is needed.** The paragraph above Lemma
+3.22 gives the counterexample: `Γ = {¬x | x ∈ V}` is consistent and cannot be
+extended to a witnessed MCS without new variables. Nothing below is news to you
+on that point. What is different here is the target — not *witnessed* but a
+strictly stronger condition — and the fact that the obstruction survives in a
+form your extension does not reach.
 
 Our formalization does not quotient: `Pattern` is raw named syntax. So we had to
 carry a stronger invariant, `FreshWitnessed`, in which the witness avoids **all**
@@ -194,15 +204,32 @@ That is the raw-syntax translation of your extension step.
 (`locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted`). Drop it and
 the statement is false. Feed the extension the witnessed-but-not-fresh MCS from
 (1): it is already maximal, so any locally consistent extension equals it, so it
-would have to be fresh-witnessed itself, which (1) refutes.
+would have to be fresh-witnessed itself, which (1) refutes. Note the difference
+from your `{¬x | x ∈ V}`: that set is consistent but not maximal, and the repair
+is to add variables. Ours is *already an MCS*, so there is nothing left to add —
+which is why the supply has to be a hypothesis on the starting theory rather
+than a step in the construction.
 
 **The concrete suggestion.** Lemma 3.22's side condition can be strengthened
 from *does not occur free in* `Γₙ₋₁` *and* `ψ` to *does not occur in* them at
 all, at no cost: your own justification — that only finitely many variables of
-`V⁺ \ V` are in play at each stage — already delivers it. With that
-strengthening the α-renaming step in the consistency argument becomes
-unnecessary, and the construction transfers to raw named syntax unchanged. We
-would be glad to know whether you think that is worth stating.
+`V⁺ \ V` are in play at each stage — already delivers it.
+
+What that buys is worth stating precisely, because our first attempt at this
+sentence was wrong and our own development refutes it. It does **not** make the
+α-renaming step unnecessary. `∃xᵢ.(ψ[xᵢ/x])` and `∃x.ψ` remain different raw
+patterns whenever `xᵢ ≠ x`, and our mechanization of exactly this step
+(`locConsistent_insert_captureAvoidingWitness`) assumes the strengthened
+condition and still performs the renaming.
+
+What changes is the *status* of that step. Under the weaker side condition the
+identification `∃xᵢ.(ψ[xᵢ/x]) ≡ ∃x.ψ` is a meta-level appeal to the α-quotient.
+Under the strengthened one the renaming is capture-free, and the implication
+becomes **derivable inside your own proof system**, from rules (3) and (4) of
+Figure 2 — we prove it as `Provable.alphaEx_forward`. So the construction
+transfers to raw named syntax with α-conversion as a *derived rule* rather than
+as a convention on the syntax. That is the whole content of the suggestion, and
+we would be glad to know whether you think it is worth stating.
 
 ## 8. What is mechanized
 
@@ -288,7 +315,7 @@ we have misread.
 | toolchain | Lean 4.33.0 |
 | Mathlib | pinned to the public tag `v4.33.0` |
 | build | `lake exe cache get && lake build MatchingLogic` — about 90 s from a clean clone |
-| gates | `scripts/audit-manifest.sh`, `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh`, `scripts/audit-coverage.sh`, `scripts/audit-axiom-decls.sh` — all seven run in CI |
+| gates | `scripts/audit-manifest.sh`, `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh`, `scripts/audit-coverage.sh`, `scripts/audit-axiom-decls.sh`, `scripts/audit-entry-iii.sh` — all eight run in CI, alongside `lake exe axiom-audit` and `lake exe mk_all --check` |
 | independent check | the `MatchingLogic` library also compiles on a second Lean service at `lean-4.33.0`: 0 errors, 0 incomplete declarations, same axiom verdict. The deliberate stubs in `variants/` and `alternates/` are outside that library. |
 
 `CORRESPONDENCE.md` lists each result that is **mapped to the paper** against

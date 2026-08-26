@@ -3970,3 +3970,8 @@ MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample : ∃ Gamma,
 MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted : ¬∀
  {Gamma : Set (MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ)},
  MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → MatchingLogic.AlphaFreshWitnessed Gamma
+MatchingLogic.pairArgs_zero : ∀ (p q : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ),
+ MatchingLogic.pairArgs p q 0 = p
+MatchingLogic.pairArgs_one : ∀ (p q : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ),
+ MatchingLogic.pairArgs p q 1 = q
+MatchingLogic.alphaBlocked_mem : MatchingLogic.alphaBlocked ∈ MatchingLogic.alphaWitnessTheory

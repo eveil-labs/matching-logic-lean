@@ -230,6 +230,7 @@ lake build MatchingLogic
 ./scripts/audit-manifest.sh   # the manifests those gates read have not been shrunk
 ./scripts/audit-coverage.sh   # Lean's own declaration list is fully pinned
 ./scripts/audit-axiom-decls.sh # no `axiom`, `opaque`, or private definition
+./scripts/audit-entry-iii.sh  # the (L) construction's own statement pins
 ```
 
 ## Layout
@@ -254,6 +255,8 @@ lake build MatchingLogic
     MatchingLogic/SortedProof.lean   many-sorted Figure 2, Proposition 30, Corollary 31
     MatchingLogic/Definedness.lean   Corollary 16
     MatchingLogic/SetVariables.lean  Remark 17
+    MatchingLogic/EntryIII/          entry point (iii): the canonical-model
+                                     construction discharging (L), 30 modules
     variants/                        five neighbouring readings, all refuted
     alternates/                      the independent second proof of a target
     gate/                            the enforced lists the gates read
@@ -266,11 +269,17 @@ lake build MatchingLogic
 
 ## Representation choices
 
-1. **Named variables, and no syntactic substitution** outside rule (3) of
-   Figure 2. Lemmas 9 and 11 and Theorem 13 are purely semantic: they speak only
-   of valuation update `ρ[a/x]`. Capture-avoidance is therefore needed in
-   exactly one place, where it is a *side condition* (`CaptureFree`) rather than
-   a renaming — which keeps α-conversion out of the development.
+1. **Named variables, and no quotient by α.** For entry points (i) and (ii)
+   this costs nothing: Lemmas 9 and 11 and Theorem 13 are purely semantic, they
+   speak only of valuation update `ρ[a/x]`, and substitution appears in exactly
+   one place — rule (3) of Figure 2 — where capture-avoidance is a *side
+   condition* (`CaptureFree`) rather than a renaming.
+
+   **Entry point (iii) changes that.** A canonical model needs Henkin witnesses,
+   and witnesses are substitution. `MatchingLogic/EntryIII/` therefore carries
+   α-equivalence, a binder-renaming `captureAvoidingSubst`, and derived
+   α-conversion rules — about 2,700 of its 6,616 lines. That is the price of
+   refusing the quotient, and `NARRATIVE.md` argues it is worth paying.
 2. **`Fin (arity σ) → Pattern` for symbol arguments**, giving a usable
    structural recursor: `denote` compiles via `brecOn` and its equation lemmas
    hold by `rfl`.

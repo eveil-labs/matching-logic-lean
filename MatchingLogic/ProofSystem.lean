@@ -9,12 +9,19 @@ graph enforces it -- this file imports that one, not the reverse. Theorem 14 and
 DESIGN RULINGS, binding on all lanes:
 
 * **Substitution is variable-for-variable only, and capture-avoidance is a
-  side condition rather than a renaming.** Rule (3) is the one place the whole
-  development needs substitution at all, and there `φ[y/x]` replaces an element
-  variable by an element variable. `substVar` performs the replacement
-  naively; `CaptureFree` is the predicate saying no binder captures `y` on the
-  way; rule (3) requires it. This keeps α-conversion out of the development
-  entirely, which is what has kept it small.
+  side condition rather than a renaming.** Rule (3) is the one place the
+  ONE-SORTED, FIXPOINT-FREE development of entry points (i) and (ii) needs
+  substitution at all, and there `φ[y/x]` replaces an element variable by an
+  element variable. `substVar` performs the replacement naively; `CaptureFree`
+  is the predicate saying no binder captures `y` on the way; rule (3) requires
+  it. This keeps α-conversion out of THAT part of the development, which is
+  what has kept it small.
+
+  **This ruling does not extend to entry point (iii).** A canonical model needs
+  Henkin witnesses, and witnesses are substitution, so
+  `MatchingLogic/EntryIII/` carries α-equivalence, a binder-renaming
+  `captureAvoidingSubst`, and α-conversion derived as an implication of rules
+  (3) and (4). See `NARRATIVE.md` §2.
 
 * **Propositional tautologies are instances of a tautologous propositional
   formula.** Rule (1) says "φ a substitution instance of a propositional

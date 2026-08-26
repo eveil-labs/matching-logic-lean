@@ -1,0 +1,59 @@
+def MatchingLogic.AlphaFreshWitnessed : {S : MatchingLogic.Signature} → Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma =>
+  ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
+    MatchingLogic.Pattern.ex x p ∈ Gamma →
+      ∃ x' p' y,
+        (MatchingLogic.Pattern.ex x p).AlphaEq (MatchingLogic.Pattern.ex x' p') ∧
+          y ∉ p'.allVars ∧
+            (MatchingLogic.Pattern.ex x' p').imp (MatchingLogic.Pattern.captureAvoidingSubst x' y p') ∈ Gamma
+MatchingLogic.fvBlocked_has_alpha_fresh_witness : ∃ x' p' y,
+  (MatchingLogic.Pattern.ex 1 ((MatchingLogic.Pattern.var 1).and (MatchingLogic.Pattern.var 0))).AlphaEq
+      (MatchingLogic.Pattern.ex x' p') ∧
+    y ∉ p'.allVars ∧
+      (MatchingLogic.Pattern.ex x' p').imp (MatchingLogic.Pattern.captureAvoidingSubst x' y p') ∈
+        MatchingLogic.witnessCollapseTheory
+@MatchingLogic.AlphaWitnessSym.rec : {motive : MatchingLogic.AlphaWitnessSym → Sort u_1} →
+  motive MatchingLogic.AlphaWitnessSym.pair → (t : MatchingLogic.AlphaWitnessSym) → motive t
+@[reducible] def MatchingLogic.AlphaWitnessSig : MatchingLogic.Signature :=
+{ Sym := MatchingLogic.AlphaWitnessSym, arity := fun x => 2 }
+def MatchingLogic.pairArgs : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ →
+  MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ →
+    Fin 2 → MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ :=
+fun p q x =>
+  match x with
+  | ⟨0, isLt⟩ => p
+  | ⟨1, isLt⟩ => q
+MatchingLogic.pairArgs_zero : ∀ (p q : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ),
+  MatchingLogic.pairArgs p q 0 = p
+MatchingLogic.pairArgs_one : ∀ (p q : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ),
+  MatchingLogic.pairArgs p q 1 = q
+@[reducible] def MatchingLogic.alphaWitnessModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun x a => if a 0 = true ∧ a 1 = true then {true} else ∅ }
+def MatchingLogic.alphaWitnessRho : ℕ → MatchingLogic.alphaWitnessModel.carrier :=
+fun n => decide (n = 0)
+def MatchingLogic.alphaWitnessTheory : Set (MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ) :=
+{p | true ∈ MatchingLogic.alphaWitnessModel.denote MatchingLogic.alphaWitnessRho p}
+MatchingLogic.alphaWitnessTheory_isMCS : MatchingLogic.IsMCS MatchingLogic.alphaWitnessTheory
+@MatchingLogic.alphaWitnessTheory_witnessed : MatchingLogic.Witnessed MatchingLogic.alphaWitnessTheory
+def MatchingLogic.alphaBlocked : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ :=
+MatchingLogic.Pattern.ex 1
+  (MatchingLogic.Pattern.app MatchingLogic.AlphaWitnessSym.pair
+    (MatchingLogic.pairArgs (MatchingLogic.Pattern.var 1) (MatchingLogic.Pattern.var 0)))
+MatchingLogic.alphaBlocked_mem : MatchingLogic.alphaBlocked ∈ MatchingLogic.alphaWitnessTheory
+@[reducible] def MatchingLogic.alphaUnitEmptyModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Unit, nonempty := ⋯, interp := fun x x_1 => ∅ }
+@[reducible] def MatchingLogic.alphaUnitFullModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Unit, nonempty := ⋯, interp := fun x x_1 => {()} }
+def MatchingLogic.alphaUnitRho : ℕ → MatchingLogic.alphaUnitEmptyModel.carrier :=
+fun x => ()
+@[reducible] def MatchingLogic.alphaFirstSelectorModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun x a => if a 0 = true ∧ a 1 = false then {true} else ∅ }
+@[reducible] def MatchingLogic.alphaCornerSelectorModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun x a => if a 0 = false ∧ a 1 = true then {true} else ∅ }
+MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed : ¬MatchingLogic.AlphaFreshWitnessed
+    MatchingLogic.alphaWitnessTheory
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample : ∃ Gamma,
+  MatchingLogic.IsMCS Gamma ∧ MatchingLogic.Witnessed Gamma ∧ ¬MatchingLogic.AlphaFreshWitnessed Gamma
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted : ¬∀
+    {Gamma : Set (MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ)},
+    MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → MatchingLogic.AlphaFreshWitnessed Gamma

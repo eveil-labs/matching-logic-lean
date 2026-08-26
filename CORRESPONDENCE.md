@@ -50,7 +50,7 @@
 | Definition 6 (Gamma subset of Delta_Gamma) | `MatchingLogic.subset_localize` | none |
 | Lemma 11 (two copies), membership form | `MatchingLogic.two_copies` | propext, Classical.choice, Quot.sound |
 | Lemma 11 (two copies), displayed form | `MatchingLogic.two_copies_set` | propext, Classical.choice, Quot.sound |
-| n-ary Existence Lemma (Section 3.7 of [4]); the engine of (L) | `MatchingLogic.canonicalExistence` | propext, Classical.choice, Quot.sound |
+| n-ary Existence Lemma (Theorem 3.5 of [4]); the engine of (L) | `MatchingLogic.canonicalExistence` | propext, Classical.choice, Quot.sound |
 | finite local model existence, arbitrary ambient signature | `MatchingLogic.finiteLocalModelExistence` | propext, Classical.choice, Quot.sound |
 | finite-list local completeness over the source variable type | `MatchingLogic.finiteLocalCompleteness` | propext, Classical.choice, Quot.sound |
 | (L) strong local completeness, at Var = Nat | `MatchingLogic.strongLocalCompleteness_nat` | propext, Classical.choice, Quot.sound |
@@ -60,5 +60,5 @@
 | BEYOND: that failure is not stable under alpha-renaming | `MatchingLogic.alpha_variant_has_a_fresh_witness` | propext, Classical.choice, Quot.sound |
 | BEYOND: an infinite witness supply upgrades Witnessed to FreshWitnessed | `MatchingLogic.freshWitnessed_of_witnessed_of_supply` | propext, Classical.choice, Quot.sound |
 | Lemma 3.22 of [4], with the raw-syntax stand-in for the V -> V+ extension | `MatchingLogic.locConsistent_extend_freshWitnessed_isMCS` | propext, Classical.choice, Quot.sound |
-| BEYOND: that variable-supply hypothesis cannot be dropped | `MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted` | propext, |
-| BEYOND: the Witnessed/FreshWitnessed separation survives alpha-equivalence | `MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted` | propext, |
+| BEYOND: that variable-supply hypothesis cannot be dropped | `MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted` | propext, Classical.choice, Quot.sound |
+| BEYOND: the Witnessed/FreshWitnessed separation survives alpha-equivalence | `MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted` | propext, Classical.choice, Quot.sound |

@@ -139,12 +139,15 @@ element is `0`, and `0` occurs in the body, so freshness over `allVars` rules it
 out.  Its α-variant `∃1. var 1` is a different raw pattern with the same
 meaning, and for it the name `0` *is* fresh — so a fresh witness exists.
 
-This locates the phenomenon exactly.  It is not that the ordinary witnessed
-condition is too weak as mathematics; it is that on RAW NAMED SYNTAX the
-choice of bound name can exhaust the supply of usable witnesses, and choosing
-another representative of the same α-class restores it.  A development that
-quotients by α — as the source does — never meets this, which is why the source
-needs no such side condition and why a non-quotiented mechanization does. -/
+This locates ONE cause of the phenomenon: on raw named syntax the choice of
+bound name can exhaust the supply of usable witnesses, and choosing another
+representative of the same α-class restores it.
+
+It does NOT show that α is the whole story, and an earlier version of this
+docstring said it was.  `AlphaFreshWitnessed.lean` refutes that: there is an MCS
+that is `Witnessed` and fails the α-RELAXED condition too, so quotienting by α
+would not remove the need for the stronger invariant.  What does remove it is an
+infinite supply of usable witnesses — see `WitnessSupply.lean`. -/
 theorem alpha_variant_has_a_fresh_witness :
     ∃ y : Nat, y ∉ (Pattern.var 1 : Pattern WitnessCollapseSig Nat).allVars ∧
       (Pattern.imp (.ex 1 (.var 1))

@@ -76,8 +76,8 @@ many* usable Henkin names, fresh-witnessedness follows, because the body has
 only finitely many variables. The proof is three lines. Its value is not
 technical — it names the mechanism, and the mechanism is not α.
 
-**And where does the source get that supply?** From a step that reads as
-bookkeeping. Lemma 3.22 begins by extending the variable set `V` to `V⁺` with
+**And where does the source get that supply?** From its variable extension.
+Lemma 3.22 begins by extending the variable set `V` to `V⁺` with
 countably many *new* variables and draws every witness from `V⁺ \ V`. We
 mechanized Lemma 3.22 at the paper's generality — arbitrary locally consistent
 sets — as `locConsistent_extend_freshWitnessed_isMCS`. Because our variables are
@@ -97,17 +97,34 @@ Nothing above corrects the source. Its Definition 3.5 needs no freshness
 condition, and its Lemma 3.22 is correct, because both live in the α-quotient
 and Lemma 3.22 performs the variable extension in its own statement.
 
-What the mechanization shows is that the extension is **doing necessary work**,
-and exactly how much. A reader of Lemma 3.22 could take `V → V⁺` for
-housekeeping. It is not: it is the hypothesis without which the lemma is false.
+Nor is the *need* for the extension news: the paragraph above Lemma 3.22 gives
+a counterexample of its own, `Γ = {¬x | x ∈ V}`, consistent and not extendable
+to a witnessed MCS without new variables.
+
+What the mechanization adds is a sharper form of the same phenomenon. The
+source's counterexample is consistent but *not maximal*, and adding variables
+repairs it. Ours is **already an MCS**, so there is nothing left to add — which
+is why, once the target is fresh-witnessedness on raw syntax, the supply has to
+appear as a hypothesis on the starting theory rather than as a step in the
+construction, and why dropping it makes the statement false.
 
 One concrete suggestion follows, and it is the only thing we ask the authors
 about. Lemma 3.22's side condition can be strengthened from *does not occur
 free* to *does not occur*, at no cost — the paper's own justification, that only
 finitely many variables of `V⁺ \ V` are in play at each stage, already delivers
-it. With that strengthening the α-renaming step in the consistency argument
-becomes unnecessary and the construction transfers to raw named syntax
-unchanged.
+it.
+
+What that buys needs stating carefully, because the first version of this
+paragraph got it wrong and this repository refutes it. The strengthening does
+**not** make the α-renaming step unnecessary: `∃xᵢ.(ψ[xᵢ/x])` and `∃x.ψ` are
+still different raw patterns, and our own mechanization of that step assumes the
+strengthened condition and renames anyway. What changes is the step's *status*.
+Under the weaker condition the identification is a meta-level appeal to the
+quotient; under the stronger one the renaming is capture-free and the
+implication is **derivable inside Figure 2**, from rules (3) and (4). The
+construction transfers to raw syntax with α-conversion as a derived rule instead
+of a convention — which is a smaller claim than the one first written here, and
+a true one.
 
 There is a general moral, for mechanizers rather than for the authors. A
 convention that is sound and invisible in prose becomes a proof obligation the
@@ -149,8 +166,10 @@ Twice while establishing the results in §3, we generalized past what a probe ha
 actually checked.
 
 Once, from a single countermodel, to the conclusion that quotienting by α *would*
-collapse the machinery. That claim is false and is preserved in an immutable
-commit message; the working repository carries the correction.
+collapse the machinery. That claim is false. It survives in an immutable commit
+message, and — until round ten pointed it out — in a docstring inside
+`WitnessedCollapse.lean` that ships with this repository. The docstring is now
+corrected; the commit message cannot be.
 
 Once, to a proposed countermodel of our own — `∃1.(var 1 ∧ var 0)`, on the
 reasoning that its only usable witness is a *free* variable and therefore beyond

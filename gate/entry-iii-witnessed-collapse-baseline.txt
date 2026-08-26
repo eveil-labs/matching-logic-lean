@@ -1,0 +1,21 @@
+@[reducible] def MatchingLogic.WitnessCollapseSig : MatchingLogic.Signature :=
+{ Sym := Empty, arity := fun e => e.elim }
+@[reducible] def MatchingLogic.witnessCollapseModel : MatchingLogic.Model MatchingLogic.WitnessCollapseSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun e => Empty.elim e }
+def MatchingLogic.witnessCollapseRho : ℕ → MatchingLogic.witnessCollapseModel.carrier :=
+fun n => decide (n = 0)
+def MatchingLogic.witnessCollapseTheory : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ) :=
+{p | true ∈ MatchingLogic.witnessCollapseModel.denote MatchingLogic.witnessCollapseRho p}
+MatchingLogic.witnessCollapseTheory_isMCS : MatchingLogic.IsMCS MatchingLogic.witnessCollapseTheory
+@MatchingLogic.witnessCollapseTheory_witnessed : MatchingLogic.Witnessed MatchingLogic.witnessCollapseTheory
+MatchingLogic.witnessCollapseTheory_not_freshWitnessed : ¬MatchingLogic.FreshWitnessed
+    MatchingLogic.witnessCollapseTheory
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample : ∃ Gamma,
+  MatchingLogic.IsMCS Gamma ∧ MatchingLogic.Witnessed Gamma ∧ ¬MatchingLogic.FreshWitnessed Gamma
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted : ¬∀
+    {Gamma : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ)},
+    MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → MatchingLogic.FreshWitnessed Gamma
+MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Pattern.var 1).allVars,
+  (MatchingLogic.Pattern.ex 1 (MatchingLogic.Pattern.var 1)).imp
+      (MatchingLogic.Pattern.captureAvoidingSubst 1 y (MatchingLogic.Pattern.var 1)) ∈
+    MatchingLogic.witnessCollapseTheory
