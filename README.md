@@ -330,7 +330,7 @@ somewhere in the development; they are **not** a defence against the
 repository's own authors, and no in-repository check could be. The trust root for
 that is review of the diff.
 
-Every gate here was fire-tested by being attacked. **Nine rounds of adversarial
+Every gate here was fire-tested by being attacked. **Ten rounds of adversarial
 review broke earlier versions**, each by a route the previous round had not
 considered:
 
@@ -359,7 +359,14 @@ considered:
    was the round-eight defect one level up: the variant gate's *slice* had been
    fixed, but what it printed was still chosen by grepping for `theorem` and
    `def` at the start of a line, so a `lemma`, an `@[simp] theorem` or a
-   `noncomputable def` was invisible.
+   `noncomputable def` was invisible;
+10. **two gates that printed `FAIL` and exited 0.** `audit-entry-iii.sh` set its
+    failure flag inside a command substitution, so the assignment died with the
+    subshell and three modules dropped out of the coverage scan silently. And
+    `audit.sh` and `correspondence.sh` read only the first physical line of each
+    `#print axioms` stanza, so a forbidden axiom after a pretty-printer wrap was
+    invisible — 33 of the 367 certified names wrap, and `CORRESPONDENCE.md` was
+    publishing two truncated axiom lists as a result.
 
 **Nothing in these gates now identifies our own code by name.** Round nine is
 the reason. `scripts/gen-pinned.sh` **asks Lean's environment** which
@@ -473,7 +480,8 @@ into fighting a definition, which produced the separation results in
 `NARRATIVE.md` §3; and to push and review on
 a machine other than the one the scripts were written on, which found a latent
 fail-open that nine review rounds, two independent reviewers and four proof
-lanes had all missed.
+lanes had all missed. A tenth round, run afterwards, found two more gates that
+printed `FAIL` and exited 0.
 
 `INCIDENTS.md` in the working repository is the full record. Errors are ours.
 
