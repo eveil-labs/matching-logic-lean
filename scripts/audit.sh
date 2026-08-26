@@ -65,7 +65,12 @@ for n in "${NAMES[@]}"; do
 done
 
 # A certified theorem must not be reachable from any `sorry` anywhere.
-if printf '%s\n' "$OUT" | grep -q sorryAx; then
+# `case`, not `printf | grep -q`. Under `set -o pipefail`, grep -q exits on
+# first match and closes the pipe, printf takes EPIPE and exits nonzero, and the
+# PIPELINE is then nonzero -- so `if ... ; then FAIL` does not fire and a real
+# sorryAx is silently accepted. Measured on CI, 2026-08-26. Pattern matching
+# uses no pipe, no subprocess and no temp file.
+if case "$OUT" in *sorryAx*) true ;; *) false ;; esac; then
   echo "FAIL: sorryAx reachable from a certified theorem"; fail=1
 fi
 

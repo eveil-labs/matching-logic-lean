@@ -114,7 +114,8 @@ kernel_scan () {           # $1 = label, $2 = lean file to append the scan to, $
   line=$(printf '%s\n' "$out" | grep '^AXIOMSCAN ' | tail -1)
   # `[ "$x" -ne 0 ]` on a non-number returns 2, which an `if` reads as false --
   # a fail-open path. Parse only a line that is exactly the expected shape.
-  if ! printf '%s' "$line" | grep -qE '^AXIOMSCAN seen=[0-9]+ raw=[0-9]+ priv=[0-9]+$'; then
+  # `[[ =~ ]]`, not `printf | grep -qE`: no pipe, so no EPIPE/pipefail race.
+  if ! [[ "$line" =~ ^AXIOMSCAN\ seen=[0-9]+\ raw=[0-9]+\ priv=[0-9]+$ ]]; then
     echo "FAIL  $label -- no well-formed scan line; a scan that produces nothing is not a scan"
     fail=1; return
   fi

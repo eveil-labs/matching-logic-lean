@@ -20,11 +20,11 @@ while IFS=$'\t' read -r f ns side _rest; do
   out=$(lake env lean "$tmp" 2>&1)
   # A file that failed to elaborate prints errors and no sentinel. Writing that
   # to the baseline would pin an empty surface, which every later run matches.
-  if ! printf '%s\n' "$out" | grep -qF "$VARIANT_SENTINEL"; then
+  if case "$out" in *"$VARIANT_SENTINEL"*) false ;; *) true ;; esac; then
     echo "FAIL  $f -- no surface marker in Lean's output; nothing was printed"
     printf '%s\n' "$out" | grep -i error | head -5; exit 1
   fi
-  if printf '%s\n' "$out" | grep -q "error"; then
+  if case "$out" in *error*) true ;; *) false ;; esac; then
     echo "FAIL  $f -- Lean reported an error; a baseline must not record error text"
     printf '%s\n' "$out" | grep error | head -5; exit 1
   fi

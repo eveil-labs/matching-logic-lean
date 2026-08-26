@@ -276,7 +276,8 @@ for name in "${names[@]}"; do
   esac
 done
 
-if printf '%s\n' "$OUT" | grep -q sorryAx; then
+# See scripts/audit.sh: `printf | grep -q` under pipefail can fail OPEN.
+if case "$OUT" in *sorryAx*) true ;; *) false ;; esac; then
   echo "FAIL  sorryAx is reachable from an entry-iii theorem"
   fail=1
 fi

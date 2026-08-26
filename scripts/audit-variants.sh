@@ -50,7 +50,9 @@ while IFS=$'\t' read -r f ns side _lemma; do
     variant_decls
   } >> "$tmp"
   out=$(lake env lean "$tmp" 2>&1); rc=$?
-  if [ $rc -ne 0 ] || printf '%s\n' "$out" | grep -q "error"; then
+  # `case` rather than `printf | grep -q`: under pipefail the latter can report
+  # the pipeline failed when grep SUCCEEDED, which would skip this failure.
+  if [ $rc -ne 0 ] || case "$out" in *error*) true ;; *) false ;; esac; then
     echo "FAIL  $f -- does not compile, or the settled side does not have the intended type"
     printf '%s\n' "$out" | grep error | head -3; fail=1; continue
   fi
@@ -72,7 +74,7 @@ while IFS=$'\t' read -r f ns side _lemma; do
   if [ ! -f "$base" ]; then echo "FAIL  $f -- no pinned baseline at $base"; fail=1; continue; fi
   # An absent sentinel would make the surface empty, and an empty surface must
   # never read as "nothing changed".
-  if ! printf '%s\n' "$out" | grep -qF "$VARIANT_SENTINEL"; then
+  if case "$out" in *"$VARIANT_SENTINEL"*) false ;; *) true ;; esac; then
     echo "FAIL  $f -- no surface marker in Lean's output; nothing was compared"; fail=1; continue
   fi
   now="$TD/now.txt"

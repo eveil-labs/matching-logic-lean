@@ -152,12 +152,21 @@ if [ "${n_pin:-0}" -lt 250 ]; then
 fi
 
 # --- every public source-written declaration must be in the pin set ---------
+# The pin set goes to a FILE, once. The previous version re-printed all 674
+# names into a `grep -qxF` for each of 575 declarations: quadratic, and -- as CI
+# demonstrated on 2026-08-26 -- flaky. grep -q exits on first match and closes
+# the pipe; printf takes EPIPE; `set -o pipefail` makes the pipeline nonzero
+# even though grep SUCCEEDED; and the `||` branch reports a declaration as
+# unpinned when it is pinned. It fails closed, so it cost a red CI rather than a
+# false green, but a gate that reports at random is not a gate.
+PINFILE=$(mktemp); trap 'rm -f "$PINFILE"' EXIT
+printf '%s\n' "$PINNED" > "$PINFILE"
 missing=0
 checked=0
 while read -r q; do
   [ -z "$q" ] && continue
   checked=$((checked+1))
-  printf '%s\n' "$PINNED" | grep -qxF "$q" \
+  grep -qxF "$q" "$PINFILE" \
     || { echo "FAIL  source declares '$q' but nothing pins it"; missing=$((missing+1)); }
 done <<< "$PUBN"
 
