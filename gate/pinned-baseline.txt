@@ -606,6 +606,8 @@ def MatchingLogic.StrongLocalCompleteness : MatchingLogic.Signature → (Var : T
 fun S Var [DecidableEq Var] =>
  ∀ (Δ : Set (MatchingLogic.Pattern S Var)) (φ : MatchingLogic.Pattern S Var),
  MatchingLogic.LocalCons Δ φ → ∃ l, (∀ δ ∈ l, δ ∈ Δ) ∧ MatchingLogic.Provable ∅ ((MatchingLogic.conj l).imp φ)
+@[reducible] def MatchingLogic.WitnessCollapseSig : MatchingLogic.Signature :=
+{ Sym := Empty, arity := fun e => e.elim }
 def MatchingLogic.Witnessed : {S : MatchingLogic.Signature} → Set (MatchingLogic.Pattern S ℕ) → Prop :=
 fun {S} Gamma =>
  ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
@@ -759,6 +761,12 @@ fun {S} M C star i p => if p.2 = i then ↑p.1 else star
 def MatchingLogic.substVar : {S : MatchingLogic.Signature} →
  {Var : Type} → [DecidableEq Var] → Var → Var → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var :=
 fun {S} {Var} [DecidableEq Var] x y x_1 => MatchingLogic.Pattern.brecOn x_1 (MatchingLogic.substVar._f x y)
+@[reducible] def MatchingLogic.witnessCollapseModel : MatchingLogic.Model MatchingLogic.WitnessCollapseSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun e => Empty.elim e }
+def MatchingLogic.witnessCollapseRho : ℕ → MatchingLogic.witnessCollapseModel.carrier :=
+fun n => decide (n = 0)
+def MatchingLogic.witnessCollapseTheory : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ) :=
+{p | true ∈ MatchingLogic.witnessCollapseModel.denote MatchingLogic.witnessCollapseRho p}
 @MatchingLogic.AppCtx.rec : {S : MatchingLogic.Signature} →
  {Var : Type} →
  {motive : MatchingLogic.AppCtx S Var → Sort u_1} →
@@ -2136,6 +2144,10 @@ MatchingLogic.Sorted.feedsStar_a_only_a : ∀ (t : MatchingLogic.Sorted.Srt3),
  ∀ (x y : Var), x ≠ y → ¬MatchingLogic.Sorted.MProvable (MatchingLogic.Sorted.Γ3 x y) (MatchingLogic.Sorted.φ3 x y)
 @MatchingLogic.Sorted.Γ3_satisfiable : ∀ {Var : Type} [DecidableEq Var] (x y : Var) [inst : DecidableEq Var],
  ∃ M, M.SatSet (MatchingLogic.Sorted.Γ3 x y)
+MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Pattern.var 1).allVars,
+ (MatchingLogic.Pattern.ex 1 (MatchingLogic.Pattern.var 1)).imp
+ (MatchingLogic.Pattern.captureAvoidingSubst 1 y (MatchingLogic.Pattern.var 1)) ∈
+ MatchingLogic.witnessCollapseTheory
 @MatchingLogic.backwardClosed_denoteSet_localize : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
  (M : MatchingLogic.Model S) (ρ : Var → M.carrier) (Γ : Set (MatchingLogic.Pattern S Var)),
  M.BackwardClosed (M.denoteSet ρ (MatchingLogic.localize Γ)) ∧
@@ -2527,6 +2539,15 @@ MatchingLogic.semantic_localization_needs_closed_Γ : ¬∀ (S : MatchingLogic.S
  (MatchingLogic.cover M C hne).denote ν ψ =
  {p | p.2 = false ∧ ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star false (ν x)) ψ} ∪
  {p | p.2 = true ∧ ↑p.1 ∈ M.denote (fun x => MatchingLogic.proj M C star true (ν x)) ψ}
+MatchingLogic.witnessCollapseTheory_isMCS : MatchingLogic.IsMCS MatchingLogic.witnessCollapseTheory
+MatchingLogic.witnessCollapseTheory_not_freshWitnessed : ¬MatchingLogic.FreshWitnessed
+ MatchingLogic.witnessCollapseTheory
+@MatchingLogic.witnessCollapseTheory_witnessed : MatchingLogic.Witnessed MatchingLogic.witnessCollapseTheory
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample : ∃ Gamma,
+ MatchingLogic.IsMCS Gamma ∧ MatchingLogic.Witnessed Gamma ∧ ¬MatchingLogic.FreshWitnessed Gamma
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted : ¬∀
+ {Gamma : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ)},
+ MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → MatchingLogic.FreshWitnessed Gamma
 @MatchingLogic.locality : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
  (M : MatchingLogic.Model S) {C : Set M.carrier},
  M.BackwardClosed C →
@@ -3818,3 +3839,16 @@ MatchingLogic.EntryIIIRegression.canonical_constructions_are_inhabited : ∃ roo
 MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised : MatchingLogic.FiniteLocalModelExistence
  MatchingLogic.EntryIIIRegression.HugeSig ℕ ∧
  MatchingLogic.StrongLocalCompleteness MatchingLogic.EntryIIIRegression.HugeSig ℕ
+MatchingLogic.witnessCollapseTheory_isMCS : MatchingLogic.IsMCS MatchingLogic.witnessCollapseTheory
+@MatchingLogic.witnessCollapseTheory_witnessed : MatchingLogic.Witnessed MatchingLogic.witnessCollapseTheory
+MatchingLogic.witnessCollapseTheory_not_freshWitnessed : ¬MatchingLogic.FreshWitnessed
+ MatchingLogic.witnessCollapseTheory
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample : ∃ Gamma,
+ MatchingLogic.IsMCS Gamma ∧ MatchingLogic.Witnessed Gamma ∧ ¬MatchingLogic.FreshWitnessed Gamma
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted : ¬∀
+ {Gamma : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ)},
+ MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → MatchingLogic.FreshWitnessed Gamma
+MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Pattern.var 1).allVars,
+ (MatchingLogic.Pattern.ex 1 (MatchingLogic.Pattern.var 1)).imp
+ (MatchingLogic.Pattern.captureAvoidingSubst 1 y (MatchingLogic.Pattern.var 1)) ∈
+ MatchingLogic.witnessCollapseTheory

@@ -55,3 +55,5 @@ MatchingLogic.finiteLocalCompleteness	finite-list local completeness over the so
 MatchingLogic.strongLocalCompleteness_nat	(L) strong local completeness, at Var = Nat	10
 MatchingLogic.strongLocalCompleteness	ENTRY POINT (iii): (L), at any countably infinite Var	10
 MatchingLogic.global_completeness_entryIII	Corollary 15 with (L) and (S) both discharged	10
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted	BEYOND: Witnessed does not imply FreshWitnessed for an MCS (raw syntax)	3
+MatchingLogic.alpha_variant_has_a_fresh_witness	BEYOND: that failure is not stable under alpha-renaming	3

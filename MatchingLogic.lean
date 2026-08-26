@@ -36,6 +36,7 @@ import MatchingLogic.EntryIII.Truth
 import MatchingLogic.EntryIII.WitnessElim
 import MatchingLogic.EntryIII.WitnessPush
 import MatchingLogic.EntryIII.Witnessed
+import MatchingLogic.EntryIII.WitnessedCollapse
 import MatchingLogic.EntryPoints
 import MatchingLogic.Independence
 import MatchingLogic.Locality

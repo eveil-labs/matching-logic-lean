@@ -363,3 +363,13 @@ MatchingLogic.EntryIIIRegression.actual_canonical_nullary_branch
 MatchingLogic.EntryIIIRegression.actual_canonical_unary_branch
 MatchingLogic.EntryIIIRegression.canonical_constructions_are_inhabited
 MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised
+
+# BEYOND THE SOURCE: on raw named syntax the ordinary witnessed condition
+# does NOT imply the fresh one, even for an MCS -- and the failure is not
+# stable under alpha-renaming. See MatchingLogic/EntryIII/WitnessedCollapse.lean
+MatchingLogic.witnessCollapseTheory_isMCS
+MatchingLogic.witnessCollapseTheory_witnessed
+MatchingLogic.witnessCollapseTheory_not_freshWitnessed
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample
+MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted
+MatchingLogic.alpha_variant_has_a_fresh_witness

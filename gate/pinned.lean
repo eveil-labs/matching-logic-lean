@@ -160,6 +160,7 @@ import MatchingLogic
 #print MatchingLogic.Sorted.φ3
 #print MatchingLogic.Soundness
 #print MatchingLogic.StrongLocalCompleteness
+#print MatchingLogic.WitnessCollapseSig
 #print MatchingLogic.Witnessed
 #print MatchingLogic.box
 #print MatchingLogic.boxes
@@ -199,6 +200,9 @@ import MatchingLogic
 #print MatchingLogic.localize
 #print MatchingLogic.proj
 #print MatchingLogic.substVar
+#print MatchingLogic.witnessCollapseModel
+#print MatchingLogic.witnessCollapseRho
+#print MatchingLogic.witnessCollapseTheory
 
 -- CONSTRUCTOR SETS. A rule or syntactic form cannot be added, dropped or
 -- reshaped without the recursor's type changing.
@@ -543,6 +547,7 @@ import MatchingLogic
 #check @MatchingLogic.Sorted.Γ3_entails_φ3
 #check @MatchingLogic.Sorted.Γ3_not_derives_φ3
 #check @MatchingLogic.Sorted.Γ3_satisfiable
+#check @MatchingLogic.alpha_variant_has_a_fresh_witness
 #check @MatchingLogic.backwardClosed_denoteSet_localize
 #check @MatchingLogic.boxes_append
 #check @MatchingLogic.boxes_cons
@@ -645,6 +650,11 @@ import MatchingLogic
 #check @MatchingLogic.subset_localize
 #check @MatchingLogic.two_copies
 #check @MatchingLogic.two_copies_set
+#check @MatchingLogic.witnessCollapseTheory_isMCS
+#check @MatchingLogic.witnessCollapseTheory_not_freshWitnessed
+#check @MatchingLogic.witnessCollapseTheory_witnessed
+#check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample
+#check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted
 
 -- Every certified statement's TYPE, read from gate/certified.txt. This
 -- repeats part of the block above on purpose: it also checks that every
@@ -1001,3 +1011,9 @@ import MatchingLogic
 #check @MatchingLogic.EntryIIIRegression.actual_canonical_unary_branch
 #check @MatchingLogic.EntryIIIRegression.canonical_constructions_are_inhabited
 #check @MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised
+#check @MatchingLogic.witnessCollapseTheory_isMCS
+#check @MatchingLogic.witnessCollapseTheory_witnessed
+#check @MatchingLogic.witnessCollapseTheory_not_freshWitnessed
+#check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample
+#check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted
+#check @MatchingLogic.alpha_variant_has_a_fresh_witness

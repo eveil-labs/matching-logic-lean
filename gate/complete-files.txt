@@ -54,3 +54,6 @@ MatchingLogic/EntryIII/Truth.lean
 MatchingLogic/EntryIII/WitnessElim.lean
 MatchingLogic/EntryIII/WitnessPush.lean
 MatchingLogic/EntryIII/Witnessed.lean
+
+# The witnessed/fresh-witnessed separation (round-nine follow-up).
+MatchingLogic/EntryIII/WitnessedCollapse.lean

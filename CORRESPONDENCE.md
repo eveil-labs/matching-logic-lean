@@ -56,3 +56,5 @@
 | (L) strong local completeness, at Var = Nat | `MatchingLogic.strongLocalCompleteness_nat` | propext, Classical.choice, Quot.sound |
 | ENTRY POINT (iii): (L), at any countably infinite Var | `MatchingLogic.strongLocalCompleteness` | propext, Classical.choice, Quot.sound |
 | Corollary 15 with (L) and (S) both discharged | `MatchingLogic.global_completeness_entryIII` | propext, Classical.choice, Quot.sound |
+| BEYOND: Witnessed does not imply FreshWitnessed for an MCS (raw syntax) | `MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted` | propext, Classical.choice, Quot.sound |
+| BEYOND: that failure is not stable under alpha-renaming | `MatchingLogic.alpha_variant_has_a_fresh_witness` | propext, Classical.choice, Quot.sound |
