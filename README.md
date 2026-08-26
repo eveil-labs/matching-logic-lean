@@ -503,38 +503,32 @@ report; adversarial review in rounds, against a stopping rule agreed in advance
 (publish on zero CRITICAL, not zero findings); and defects recorded as they
 happened rather than tidied away afterwards.
 
-**The models wrote the Lean, ran the instruments, and wrote the prose** — Claude
-Opus 5 and Sonnet 5, and OpenAI `gpt-5.6-sol`. Entry point (iii), 6,616 lines,
-took a single session of a few hours.
+**The models wrote the Lean, ran the instruments, and wrote the prose.** Four
+were used, and not interchangeably:
 
-The reason to describe the split rather than blur it is that this repository is
-unusually good evidence for where each is strong. The Lean kernel settles
-whether a proof is valid, and that turned out to be the question least likely to
-go wrong: a bad proof does not compile. Of the **twenty-seven** real defects
-recorded during the work, the kernel caught **none**. They were wrong
-statements, wrong prose, wrong claims about what had been proved, and above all
-wrong *instruments* — gates that could not fail, gates that verified themselves,
-gates that reported success having compared nothing. Models produced the proofs
-at a speed no person could match, and were systematically unreliable at judging
-their own checks and their own claims. Every one of those twenty-seven was
-caught by something the method put there: a control, a second family reading the
-same file, an instrument run against real data, or a rule that a claim is not
-established until a receipt says so.
+- **Claude Opus 5** ran the coordinating session: writing the definitions and
+  pinned statements before any proof was commissioned, building and
+  fire-testing the gates, merging the lanes, and writing the documentation. It
+  also took proof lanes of its own — `alternates/DoubleCover.inhouse.lean` is
+  its independent proof of Lemma 11.
+- **Claude Sonnet 5** took proof lanes, including the in-house side of Lemma 9
+  (`locality`).
+- **OpenAI `gpt-5.6-sol`** took proof lanes through the codex channel and much
+  of the adversarial review, so that a file was audited in a different model
+  family from the one that wrote it. `alternates/Locality.codex.lean` is its
+  independent proof of Lemma 9.
+- **Claude Fable 5** was brought in on some of the harder proof obligations.
 
-Several turns in the work were decided by the human side and would not have been
-reached otherwise: to check whether the ecosystem already maintained the
-verification tools being hand-rolled here — which brought in
-`leanprover-community/axiom-audit`, put `lake exe mk_all --check` in CI, deleted
-the hand-rolled root-import check it replaced, and turned up the kernel replay
-that now ships inside the Lean toolchain; to ask why so much effort was going
-into fighting a definition, which produced the separation results in
-`NARRATIVE.md` §3; and to push and review on
-a machine other than the one the scripts were written on, which found a latent
-fail-open that nine review rounds, two independent reviewers and four proof
-lanes had all missed. A tenth round, run afterwards, found two more gates that
-printed `FAIL` and exited 0.
+`alternates/README.md` records which family proved which target, for the two
+results that were deliberately proved twice; it is the only per-result model
+attribution in this repository that can be checked against an artifact. Where a result was proved twice,
+the two proofs came from different families in separate workspaces with no
+sight of each other, and audits were run in a different family from the code
+under audit wherever possible.
 
-`INCIDENTS.md` in the working repository is the full record. Errors are ours.
+Entry point (iii), 6,616 lines, took a single session of a few hours.
+
+Errors are ours.
 
 ## License
 
