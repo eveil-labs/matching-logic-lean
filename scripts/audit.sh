@@ -45,14 +45,14 @@ fi
 # `#print axioms` WRAPS. The kernel breaks a long axiom list across physical
 # lines, and reading only the first line stops at "[propext," -- so a forbidden
 # axiom on a continuation line is invisible. Measured on this tree: 33 of the
-# 370 certified names wrap. `scripts/audit-entry-iii.sh` found and repaired this
+# 369 certified names wrap. `scripts/audit-entry-iii.sh` found and repaired this
 # for its own gate; the repair was never carried here until round ten said so.
 #
 # Emit the whole stanza for $1, joined onto one line.
 axiom_stanza () {
   # The name must be followed by a SPACE: `denote_rho` is a prefix of
   # `denote_rho'`, and a prefix test swallowed the following stanza --
-  # caught by running this against the real 370-name output, not a sample.
+  # caught by running this against the real 369-name output, not a sample.
   # The quote character is passed in as a variable so the awk program itself
   # contains none, which is what the shell quoting requires.
   awk -v want="'$1'" -v q="'" '
@@ -99,6 +99,78 @@ done
 # uses no pipe, no subprocess and no temp file.
 if case "$OUT" in *sorryAx*) true ;; *) false ;; esac; then
   echo "FAIL: sorryAx reachable from a certified theorem"; fail=1
+fi
+
+
+# --- every certified name must be a THEOREM DECLARED IN THIS LIBRARY ---------
+# Round twelve, from an independent audit: audit.sh checked the AXIOMS of
+# whatever the certified names resolve to. A Mathlib theorem, or one of our own
+# `def`s, would sail through -- the axiom verdict would be clean because the
+# thing really is clean, and the gate would attest to a name that is not a
+# claim this library makes. Key on the DECLARING MODULE, never on how the name
+# is spelled, and on the kind reported by the kernel.
+OWNERSHIP=$(cat <<'LEANEOF'
+import MatchingLogic
+open Lean
+def certifiedNames : List String := [
+LEANEOF
+)
+while read -r n; do
+  [ -z "$n" ] && continue
+  OWNERSHIP="$OWNERSHIP
+  \"$n\","
+done < <(grep -vE '^#|^$' gate/certified.txt)
+OWNERSHIP="$OWNERSHIP
+  \"\" ]
+
+open Lean in
+run_cmd do
+  let env <- getEnv
+  let mut bad : Array String := #[]
+  let mut checked := 0
+  for s in certifiedNames do
+    if s.isEmpty then continue
+    checked := checked + 1
+    let n := s.toName
+    match env.find? n with
+    | none => bad := bad.push s!\"{s} -- no such declaration\"
+    | some ci =>
+      match ci with
+      | .thmInfo _ => pure ()
+      | _          => bad := bad.push s!\"{s} -- certified but not a theorem\"
+      match env.getModuleIdxFor? n with
+      | none     => bad := bad.push s!\"{s} -- not declared in any imported module\"
+      | some idx =>
+        let m := (env.header.moduleNames[idx.toNat]!).toString
+        unless m.startsWith \"MatchingLogic\" do
+          bad := bad.push s!\"{s} -- declared in {m}, not in this library\"
+  IO.println s!\"OWNERSHIP checked={checked} bad={bad.size}\"
+  for x in bad do IO.println s!\"BAD {x}\"
+"
+OWNFILE=$(mktemp "${TMPDIR:-/tmp}/ml-ownership.XXXXXX.lean")
+printf '%s\n' "$OWNERSHIP" > "$OWNFILE"
+OWNOUT=$(lake env lean "$OWNFILE" 2>&1)
+OWNRC=$?
+rm -f "$OWNFILE"
+if [ "$OWNRC" -ne 0 ]; then
+  echo "FAIL  ownership check did not elaborate"
+  printf '%s\n' "$OWNOUT" | head -20
+  fail=1
+else
+  own_line=$(printf '%s\n' "$OWNOUT" | grep '^OWNERSHIP ')
+  if [ -z "$own_line" ]; then
+    echo "FAIL  ownership check produced no verdict line"
+    fail=1
+  else
+    own_bad=$(printf '%s\n' "$OWNOUT" | grep -c '^BAD ')
+    if [ "$own_bad" -ne 0 ]; then
+      printf '%s\n' "$OWNOUT" | grep '^BAD ' | head -20
+      echo "FAIL  $own_bad certified names are not theorems of this library"
+      fail=1
+    else
+      echo "ok    $own_line"
+    fi
+  fi
 fi
 
 if [ $fail -eq 0 ]; then echo "== AUDIT PASS =="; else echo "== AUDIT FAIL =="; fi

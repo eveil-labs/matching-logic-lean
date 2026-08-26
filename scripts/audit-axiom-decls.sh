@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Declaration-KIND gate: no `axiom`, no `opaque`, no private definition.
+# Declaration-KIND gate: no `axiom`, no `opaque`, no private name in a public
+# type. (Private definitions themselves are allowed; see the note below.)
 #
 # Round eight: `axiom localCompleteness : StrongLocalCompleteness S Var`
 # compiles, contains no `sorry`, and passed EVERY gate here. `scripts/audit.sh`

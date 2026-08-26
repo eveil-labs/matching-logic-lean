@@ -278,7 +278,6 @@ MatchingLogic.generatingContext_nil
 MatchingLogic.generatingContext_append
 MatchingLogic.GeneratedCarrier.isMCS
 MatchingLogic.GeneratedCarrier.witnessed
-MatchingLogic.generatedRoot
 MatchingLogic.mem_generatedInterp
 MatchingLogic.generatedModel_interp
 MatchingLogic.mem_generatedModel_interp

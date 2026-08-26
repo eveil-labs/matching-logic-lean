@@ -6,7 +6,7 @@
 # statement and coverage checks.
 set -uo pipefail
 cd "$(dirname "$0")/.."
-export PATH="/Users/aurelien/.elan/bin:$PATH"
+export PATH="$HOME/.elan/bin:$PATH"
 
 fail=0
 pin_files=(gate/entry-iii-*-pins.lean)
@@ -223,11 +223,21 @@ for pin in "${pin_files[@]}"; do
 done
 check_source_coverage
 
-if rg -n '(^|[^A-Za-z])(sorry|axiom|native_decide)([^A-Za-z_]|$)' MatchingLogic/EntryIII; then
+# Plain grep, not rg: the old `if rg ...; then` treated exit 127 (rg not
+# installed) the same as "no matches" and printed ok without scanning anything.
+# grep is everywhere; exit 0 = matches, 1 = no matches, >=2 = error. Fail
+# closed on anything but a clean no-match.
+GREP_OUT=$(grep -rEn --include='*.lean' '(^|[^A-Za-z])(sorry|axiom|native_decide)([^A-Za-z_]|$)' MatchingLogic/EntryIII 2>&1)
+GREP_STATUS=$?
+if [ "$GREP_STATUS" -eq 1 ]; then
+  echo "ok    no sorry, axiom, or native_decide in entry-iii sources"
+elif [ "$GREP_STATUS" -eq 0 ]; then
+  printf '%s\n' "$GREP_OUT"
   echo "FAIL  forbidden declaration or proof shortcut in entry-iii sources"
   fail=1
 else
-  echo "ok    no sorry, axiom, or native_decide in entry-iii sources"
+  echo "FAIL  source scan errored (exit $GREP_STATUS): $GREP_OUT"
+  fail=1
 fi
 
 parser_self_test

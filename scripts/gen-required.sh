@@ -11,6 +11,7 @@ cd "$(dirname "$0")/.."
   echo "#"
   echo "# CANNOT: it is derived from the list it is checked against, so it is a"
   echo "# snapshot guard, not an independent source of truth. Regenerating both"
-  echo "# together defeats it. CI never runs this script; the file is committed."
+  echo "# together defeats it. CI reruns this script and diffs the committed file"
+  echo "# (the 'Pinned files are regenerable' step), which catches hand-edits only."
   grep -vE '^#|^$' gate/certified.txt; } > gate/required.txt
 echo "gate/required.txt: $(grep -cvE '^#|^$' gate/required.txt) required"

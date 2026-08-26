@@ -20,12 +20,14 @@ assumed*, which is `global_completeness` above. But (S) is not an assumption
 here — `soundness` proves it — so it can be supplied rather than hypothesised,
 leaving (L) as the only remaining black box.
 
-This is the honest statement of how far the mechanization gets: entry point (ii)
-in full, plus (S) discharged -- which (ii) permitted us to assume, so it is
-beyond (ii) rather than part of (iii). Entry point (iii) asks only for (L) to be
-discharged, and is not attempted here. Doing so would
-require the canonical-model construction that the paper cites to its references
-[3], [4] and [5], and which appears nowhere in the paper itself. -/
+This is entry point (ii) in full, plus (S) discharged -- which (ii) permitted
+us to assume, so it is beyond (ii) rather than part of (iii). Entry point (iii)
+asks for (L) to be discharged as well; that is done in `MatchingLogic/EntryIII/`
+(see `strongLocalCompleteness` and `global_completeness_entryIII` in
+`EntryIII/Conclusion.lean`), via the canonical-model construction the paper
+cites to its references [3], [4] and [5]. The theorem below deliberately keeps
+(L) as a hypothesis: it holds at an *arbitrary* element-variable type, whereas
+the (iii) discharge is at the paper's scope `[Denumerable Var]`. -/
 theorem global_completeness_of_localCompleteness
     (hL : StrongLocalCompleteness S Var)
     {Γ : Set (Pattern S Var)} {φ : Pattern S Var}

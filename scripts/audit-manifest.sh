@@ -63,8 +63,13 @@ n_req=$(grep -cvE '^#|^$' gate/required.txt)
 # PASS`. A gate over an empty list is not a gate; the round-seven "0/0 PASS"
 # shape had survived here.
 n_mod=$(printf '%s\n' "$LIBFILES" | grep -c . || true)
-[ "$n_cert" -ge 90 ] || { echo "FAIL  only $n_cert certified names; the manifest has been truncated"; fail=1; }
-[ "$n_mod" -ge 15 ] || { echo "FAIL  only $n_mod library modules; the tree has been truncated"; fail=1; }
+# Round twelve: these floors were 90 and 15 against actuals of 369 and 53, so a
+# coordinated shrink to a fifth of the library passed. Raised to just under the
+# current values -- high enough that a truncation is caught, low enough that
+# removing a handful of results legitimately does not trip the gate. They are a
+# tripwire, not a census: audit-coverage.sh is what proves nothing was dropped.
+[ "$n_cert" -ge 350 ] || { echo "FAIL  only $n_cert certified names; the manifest has been truncated"; fail=1; }
+[ "$n_mod" -ge 50 ] || { echo "FAIL  only $n_mod library modules; the tree has been truncated"; fail=1; }
 n_cf=$(grep -cvE '^#|^$' gate/complete-files.txt)
 [ "$n_cf" -ge "$n_mod" ] || { echo "FAIL  complete-files lists $n_cf of $n_mod modules"; fail=1; }
 echo "-- $n_cert certified, $n_var variants, $n_mod modules, all imported by the root --"

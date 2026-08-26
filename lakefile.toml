@@ -22,7 +22,10 @@ name = "MatchingLogic"
 # our scripts three times. Fire-tested here against round nine's own exploit: it
 # reports `Smuggle.soundness`, which sits outside the `MatchingLogic` namespace
 # entirely, and a `private axiom`, both of which name-based scans walked past.
+# Pinned to a commit hash, not `main`: this tool's exit code alone decides the
+# flagship kernel-level CI gate, so its revision should move only by a reviewed
+# edit here -- never as a side effect of `lake update`.
 [[require]]
 name = "axiomAudit"
 git = "https://github.com/leanprover-community/axiom-audit"
-rev = "main"
+rev = "1a9c3c28cbaf4a04ba29aae7fa4d5ef04e000e9d"

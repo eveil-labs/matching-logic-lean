@@ -33,7 +33,7 @@ theorems rather than just different codebases:
 proved with no `sorry`, and depends only on `propext`, `Classical.choice`,
 `Quot.sound` — many on strictly fewer.
 
-`gate/certified.txt` is the enforced list of what is claimed: 370 names. The
+`gate/certified.txt` is the enforced list of what is claimed: 369 names. The
 five variant refutations in `variants/` are claimed too, and enforced separately
 by `scripts/audit-variants.sh`. **Nothing outside those two is claimed.** CI
 runs every gate on every push except `scripts/audit-additive.sh`, which compares
@@ -233,7 +233,7 @@ lake build MatchingLogic
 ./scripts/audit-pinned.sh     # every certified statement type and pinned definition body unchanged
 ./scripts/audit-manifest.sh   # the manifests those gates read have not been shrunk
 ./scripts/audit-coverage.sh   # Lean's own declaration list is fully pinned
-./scripts/audit-axiom-decls.sh # no `axiom`, `opaque`, or private definition
+./scripts/audit-axiom-decls.sh # no `axiom` or `opaque`; no private name in a public type
 ./scripts/audit-entry-iii.sh  # the (L) construction's own statement pins
 ```
 
@@ -372,7 +372,7 @@ closed:
     subshell and three modules dropped out of the coverage scan silently. And
     `audit.sh` and `correspondence.sh` read only the first physical line of each
     `#print axioms` stanza, so a forbidden axiom after a pretty-printer wrap was
-    invisible — 33 of the 370 certified names wrap, and `CORRESPONDENCE.md` was
+    invisible — 33 of the 369 certified names wrap, and `CORRESPONDENCE.md` was
     publishing two truncated axiom lists as a result.
 
 **Nothing in these gates now identifies our own code by the name of a
@@ -390,7 +390,7 @@ recursor's type), **theorem** and **axiom** (its type).
 axioms, and it does not ask what anything is called. It asks Lean for every
 declaration whose **declaring module** is one of ours — or which has no module,
 meaning the file being compiled declared it — and rejects any `axiom`, any
-`opaque`, and any private *definition*. Keying on the module rather than the
+`opaque`, and any private name appearing in a public type. Keying on the module rather than the
 name is what closes round nine: an axiom at the root of a file, or a `private`
 one, is still declared in `MatchingLogic.EntryPoints`. Every compilable file that declares
 anything is scanned this way, `alternates/` included, since nothing imports

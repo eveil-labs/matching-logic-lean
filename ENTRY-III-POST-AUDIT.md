@@ -27,6 +27,10 @@ merely rerunning the original scripts.
 4. `lake build MatchingLogic` does not import additive subdirectories.  The new
    aggregate module `MatchingLogic.EntryIII.All` imports the final conclusion and
    regression suite and is discovered and built by the EntryIII gate.
+   *(Superseded after the merge: the library root `MatchingLogic.lean` now
+   imports every `EntryIII` module directly, so the root build, `mk_all --check`,
+   and the root gates all cover the (iii) development. This item records the
+   state on the development branch at the time of the audit.)*
 
 ## Proof and dependency simplifications
 

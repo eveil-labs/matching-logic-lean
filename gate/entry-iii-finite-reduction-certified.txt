@@ -1,4 +1,0 @@
-# Entry point (iii): finite-premise reduction results.
-MatchingLogic.Model.denote_conj_eq_denoteSet_list
-MatchingLogic.localCons_list_iff
-MatchingLogic.strongLocalCompleteness_of_finiteLocalCompleteness

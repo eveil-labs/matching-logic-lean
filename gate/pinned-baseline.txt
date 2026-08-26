@@ -3590,8 +3590,6 @@ MatchingLogic.Sorted.feedsStar_a_only_a : ∀ (t : MatchingLogic.Sorted.Srt3),
  (world : MatchingLogic.GeneratedCarrier root), MatchingLogic.IsMCS ↑↑world
 @MatchingLogic.GeneratedCarrier.witnessed : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
  (world : MatchingLogic.GeneratedCarrier root), MatchingLogic.Witnessed ↑↑world
-@MatchingLogic.generatedRoot : {S : MatchingLogic.Signature} →
- (root : MatchingLogic.CanonicalCarrier S) → MatchingLogic.GeneratedCarrier root
 @MatchingLogic.mem_generatedInterp : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
  {sigma : S.Sym} {components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root}
  {world : MatchingLogic.GeneratedCarrier root},

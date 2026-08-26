@@ -23,7 +23,7 @@ theorem finiteLocalModelExistence : FiniteLocalModelExistence S Nat := by
   classical
   apply finiteLocalModelExistence_of_restricted
   intro F
-  letI : Countable (Pattern (S.restrict F) Nat) :=
+  haveI : Countable (Pattern (S.restrict F) Nat) :=
     restrictedPatternNatCountable F
   exact finiteLocalModelExistence_of_canonicalExistence canonicalExistence
 

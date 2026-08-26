@@ -8,7 +8,8 @@
 #
 # CANNOT: it is derived from the list it is checked against, so it is a
 # snapshot guard, not an independent source of truth. Regenerating both
-# together defeats it. CI never runs this script; the file is committed.
+# together defeats it. CI reruns this script and diffs the committed file
+# (the 'Pinned files are regenerable' step), which catches hand-edits only.
 MatchingLogic.locality
 MatchingLogic.two_copies
 MatchingLogic.two_copies_set
@@ -276,7 +277,6 @@ MatchingLogic.generatingContext_nil
 MatchingLogic.generatingContext_append
 MatchingLogic.GeneratedCarrier.isMCS
 MatchingLogic.GeneratedCarrier.witnessed
-MatchingLogic.generatedRoot
 MatchingLogic.mem_generatedInterp
 MatchingLogic.generatedModel_interp
 MatchingLogic.mem_generatedModel_interp

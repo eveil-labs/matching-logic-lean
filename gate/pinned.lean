@@ -958,7 +958,6 @@ import MatchingLogic
 #check @MatchingLogic.generatingContext_append
 #check @MatchingLogic.GeneratedCarrier.isMCS
 #check @MatchingLogic.GeneratedCarrier.witnessed
-#check @MatchingLogic.generatedRoot
 #check @MatchingLogic.mem_generatedInterp
 #check @MatchingLogic.generatedModel_interp
 #check @MatchingLogic.mem_generatedModel_interp

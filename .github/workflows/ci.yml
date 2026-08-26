@@ -43,10 +43,12 @@ jobs:
       - name: Every module is imported by the root
         run: lake exe mk_all --check
 
-      # Ours, and narrower than the two above: it rejects an `axiom`, `opaque`
-      # or private-definition DECLARATION even when nothing depends on it, which
-      # is a policy the dependency audit does not express.
-      - name: No axiom, opaque or private-definition declarations
+      # Ours, and narrower than the two above: it rejects an `axiom` or `opaque`
+      # DECLARATION even when nothing depends on it, and any private name leaking
+      # into a public type, which is a policy the dependency audit does not
+      # express. (Private definitions themselves are allowed; the (iii)
+      # development needs them.)
+      - name: No axiom or opaque declarations, no private names in public types
         run: ./scripts/audit-axiom-decls.sh
 
       # Pins what each name SAYS, not merely that it exists with clean axioms.
