@@ -30,8 +30,17 @@ run_cmd do
   let mut ts := #[]
   let mut ax := #[]
   for (n, ci) in env.constants.toList do
+    -- OURS by DECLARING MODULE, not by name. Round nine walked past three
+    -- name-based ownership tests elsewhere in this repository (an axiom at a
+    -- file's root is not called `MatchingLogic.*`); the same test was here, and
+    -- is removed for the same reason. A declaration our modules introduce gets
+    -- pinned whatever it is called.
+    let ours ←
+      match env.getModuleIdxFor? n with
+      | none     => pure true
+      | some idx => pure ((env.header.moduleNames[idx.toNat]!).toString.startsWith "MatchingLogic")
+    unless ours do continue
     let s := n.toString
-    unless s.startsWith "MatchingLogic" do continue
     if n.isInternal then continue
     if (s.splitOn "._").length > 1 then continue
     if s.endsWith ".rec" || s.endsWith ".recOn" || s.endsWith ".casesOn" || s.endsWith ".below"
