@@ -80,7 +80,9 @@ refutations (checked by `scripts/audit-variants.sh`).
 visible in the statement and the axiom gate stays meaningful. **(S) is
 discharged**: every rule of Figure 2 is proved sound, so
 `global_completeness_of_localCompleteness` needs only (L). That is entry
-point (ii) in full, plus the (S) half of entry point (iii).
+point (ii) in full, plus (S) discharged — which (ii) permitted us to assume, so
+that is *beyond* (ii) rather than part of (iii). **Entry point (iii) asks for one
+thing, discharging (L), and is not attempted.**
 
 ### Also complete
 

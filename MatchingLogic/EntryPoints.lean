@@ -21,7 +21,9 @@ here — `soundness` proves it — so it can be supplied rather than hypothesise
 leaving (L) as the only remaining black box.
 
 This is the honest statement of how far the mechanization gets: entry point (ii)
-in full, and the (S) half of entry point (iii). Discharging (L) as well would
+in full, plus (S) discharged -- which (ii) permitted us to assume, so it is
+beyond (ii) rather than part of (iii). Entry point (iii) asks only for (L) to be
+discharged, and is not attempted here. Doing so would
 require the canonical-model construction that the paper cites to its references
 [3], [4] and [5], and which appears nowhere in the paper itself. -/
 theorem global_completeness_of_localCompleteness
