@@ -373,3 +373,9 @@ MatchingLogic.witnessCollapseTheory_not_freshWitnessed
 MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample
 MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted
 MatchingLogic.alpha_variant_has_a_fresh_witness
+
+# The variable supply, not the alpha-quotient, is what makes fresh Henkin
+# witnesses available -- and the hypothesis is NECESSARY, not decorative.
+MatchingLogic.freshWitnessed_of_witnessed_of_supply
+MatchingLogic.locConsistent_extend_freshWitnessed_isMCS
+MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted

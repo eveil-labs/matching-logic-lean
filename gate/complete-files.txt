@@ -57,3 +57,6 @@ MatchingLogic/EntryIII/Witnessed.lean
 
 # The witnessed/fresh-witnessed separation (round-nine follow-up).
 MatchingLogic/EntryIII/WitnessedCollapse.lean
+
+# What the variable supply buys: the raw-syntax stand-in for V -> V+.
+MatchingLogic/EntryIII/WitnessSupply.lean

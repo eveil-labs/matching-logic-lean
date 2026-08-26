@@ -56,6 +56,8 @@ import MatchingLogic
 #print MatchingLogic.Generated
 #print MatchingLogic.GeneratedCarrier
 #print MatchingLogic.GlobalCons
+#print MatchingLogic.InfiniteFreshVariableSupply
+#print MatchingLogic.InfiniteWitnessSupply
 #print MatchingLogic.IsMCS
 #print MatchingLogic.LocConsistent
 #print MatchingLogic.LocProvable
@@ -203,6 +205,7 @@ import MatchingLogic
 #print MatchingLogic.witnessCollapseModel
 #print MatchingLogic.witnessCollapseRho
 #print MatchingLogic.witnessCollapseTheory
+#print MatchingLogic.witnessSupplyDecidableEqPattern
 
 -- CONSTRUCTOR SETS. A rule or syntactic form cannot be added, dropped or
 -- reshaped without the recursor's type changing.
@@ -603,6 +606,7 @@ import MatchingLogic
 #check @MatchingLogic.finite_locConsistent_extend_freshWitnessed_isMCS_of_surjective
 #check @MatchingLogic.finite_locConsistent_extend_witnessed_isMCS
 #check @MatchingLogic.finite_locConsistent_extend_witnessed_isMCS_of_surjective
+#check @MatchingLogic.freshWitnessed_of_witnessed_of_supply
 #check @MatchingLogic.generatedModel_interp
 #check @MatchingLogic.generated_singleton_variables
 #check @MatchingLogic.generatingContext_append
@@ -613,6 +617,8 @@ import MatchingLogic
 #check @MatchingLogic.global_completeness
 #check @MatchingLogic.global_completeness_entryIII
 #check @MatchingLogic.global_completeness_of_localCompleteness
+#check @MatchingLogic.locConsistent_extend_freshWitnessed_isMCS
+#check @MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted
 #check @MatchingLogic.locConsistent_extend_isMCS
 #check @MatchingLogic.locConsistent_insert_captureAvoidingWitness
 #check @MatchingLogic.locProvable_empty_iff
@@ -1017,3 +1023,6 @@ import MatchingLogic
 #check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample
 #check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted
 #check @MatchingLogic.alpha_variant_has_a_fresh_witness
+#check @MatchingLogic.freshWitnessed_of_witnessed_of_supply
+#check @MatchingLogic.locConsistent_extend_freshWitnessed_isMCS
+#check @MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted

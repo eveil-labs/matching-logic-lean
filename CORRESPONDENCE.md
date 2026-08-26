@@ -58,3 +58,6 @@
 | Corollary 15 with (L) and (S) both discharged | `MatchingLogic.global_completeness_entryIII` | propext, Classical.choice, Quot.sound |
 | BEYOND: Witnessed does not imply FreshWitnessed for an MCS (raw syntax) | `MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted` | propext, Classical.choice, Quot.sound |
 | BEYOND: that failure is not stable under alpha-renaming | `MatchingLogic.alpha_variant_has_a_fresh_witness` | propext, Classical.choice, Quot.sound |
+| BEYOND: an infinite witness supply upgrades Witnessed to FreshWitnessed | `MatchingLogic.freshWitnessed_of_witnessed_of_supply` | propext, Classical.choice, Quot.sound |
+| Lemma 3.22 of [4], with the raw-syntax stand-in for the V -> V+ extension | `MatchingLogic.locConsistent_extend_freshWitnessed_isMCS` | propext, Classical.choice, Quot.sound |
+| BEYOND: that variable-supply hypothesis cannot be dropped | `MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted` | propext, |

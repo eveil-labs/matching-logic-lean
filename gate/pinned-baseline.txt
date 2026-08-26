@@ -192,6 +192,14 @@ fun {S} root => { world // MatchingLogic.Generated root world }
 def MatchingLogic.GlobalCons : {S : MatchingLogic.Signature} →
  {Var : Type} → [DecidableEq Var] → Set (MatchingLogic.Pattern S Var) → MatchingLogic.Pattern S Var → Prop :=
 fun {S} {Var} [DecidableEq Var] Γ φ => ∀ (M : MatchingLogic.Model S), M.SatSet Γ → M.Sat φ
+def MatchingLogic.InfiniteFreshVariableSupply : {S : MatchingLogic.Signature} →
+ Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma => {y | ∀ q ∈ Gamma, y ∉ MatchingLogic.FV q}.Infinite
+def MatchingLogic.InfiniteWitnessSupply : {S : MatchingLogic.Signature} → Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma =>
+ ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
+ MatchingLogic.Pattern.ex x p ∈ Gamma →
+ {y | (MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x y p) ∈ Gamma}.Infinite
 def MatchingLogic.IsMCS : {S : MatchingLogic.Signature} →
  {Var : Type} → [DecidableEq Var] → Set (MatchingLogic.Pattern S Var) → Prop :=
 fun {S} {Var} [DecidableEq Var] Gamma =>
@@ -767,6 +775,9 @@ def MatchingLogic.witnessCollapseRho : ℕ → MatchingLogic.witnessCollapseMode
 fun n => decide (n = 0)
 def MatchingLogic.witnessCollapseTheory : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ) :=
 {p | true ∈ MatchingLogic.witnessCollapseModel.denote MatchingLogic.witnessCollapseRho p}
+@[instance_reducible] def MatchingLogic.witnessSupplyDecidableEqPattern : {S : MatchingLogic.Signature} →
+ DecidableEq (MatchingLogic.Pattern S ℕ) :=
+fun {S} => Classical.decEq (MatchingLogic.Pattern S ℕ)
 @MatchingLogic.AppCtx.rec : {S : MatchingLogic.Signature} →
  {Var : Type} →
  {motive : MatchingLogic.AppCtx S Var → Sort u_1} →
@@ -2347,6 +2358,10 @@ MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Patte
  ∀ (base : List (MatchingLogic.Pattern S ℕ)),
  MatchingLogic.LocConsistent {q | q ∈ base} →
  ∃ Delta, {q | q ∈ base} ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.Witnessed Delta
+@MatchingLogic.freshWitnessed_of_witnessed_of_supply : ∀ {S : MatchingLogic.Signature}
+ {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+ MatchingLogic.IsMCS Gamma →
+ MatchingLogic.Witnessed Gamma → MatchingLogic.InfiniteWitnessSupply Gamma → MatchingLogic.FreshWitnessed Gamma
 @MatchingLogic.generatedModel_interp : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
  (sigma : S.Sym) (components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root),
  (MatchingLogic.generatedModel root).interp sigma components = MatchingLogic.generatedInterp root sigma components
@@ -2388,6 +2403,15 @@ MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Patte
  ∀ {Γ : Set (MatchingLogic.Pattern S Var)} {φ : MatchingLogic.Pattern S Var},
  (∀ γ ∈ Γ, MatchingLogic.Closed γ) →
  MatchingLogic.Closed φ → (MatchingLogic.GlobalCons Γ φ ↔ MatchingLogic.Provable Γ φ)
+@MatchingLogic.locConsistent_extend_freshWitnessed_isMCS : ∀ {S : MatchingLogic.Signature}
+ [Countable (MatchingLogic.Pattern S ℕ)] {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+ MatchingLogic.LocConsistent Gamma →
+ MatchingLogic.InfiniteFreshVariableSupply Gamma →
+ ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta
+MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted : ¬∀
+ {Gamma : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ)},
+ MatchingLogic.LocConsistent Gamma →
+ ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta
 @MatchingLogic.locConsistent_extend_isMCS : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
  {Gamma : Set (MatchingLogic.Pattern S Var)},
  MatchingLogic.LocConsistent Gamma → ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta
@@ -3852,3 +3876,16 @@ MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Patte
  (MatchingLogic.Pattern.ex 1 (MatchingLogic.Pattern.var 1)).imp
  (MatchingLogic.Pattern.captureAvoidingSubst 1 y (MatchingLogic.Pattern.var 1)) ∈
  MatchingLogic.witnessCollapseTheory
+@MatchingLogic.freshWitnessed_of_witnessed_of_supply : ∀ {S : MatchingLogic.Signature}
+ {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+ MatchingLogic.IsMCS Gamma →
+ MatchingLogic.Witnessed Gamma → MatchingLogic.InfiniteWitnessSupply Gamma → MatchingLogic.FreshWitnessed Gamma
+@MatchingLogic.locConsistent_extend_freshWitnessed_isMCS : ∀ {S : MatchingLogic.Signature}
+ [Countable (MatchingLogic.Pattern S ℕ)] {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+ MatchingLogic.LocConsistent Gamma →
+ MatchingLogic.InfiniteFreshVariableSupply Gamma →
+ ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta
+MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted : ¬∀
+ {Gamma : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ)},
+ MatchingLogic.LocConsistent Gamma →
+ ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta

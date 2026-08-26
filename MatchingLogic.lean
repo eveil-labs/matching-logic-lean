@@ -35,6 +35,7 @@ import MatchingLogic.EntryIII.SymbolSupport
 import MatchingLogic.EntryIII.Truth
 import MatchingLogic.EntryIII.WitnessElim
 import MatchingLogic.EntryIII.WitnessPush
+import MatchingLogic.EntryIII.WitnessSupply
 import MatchingLogic.EntryIII.Witnessed
 import MatchingLogic.EntryIII.WitnessedCollapse
 import MatchingLogic.EntryPoints
