@@ -57,6 +57,7 @@ OUT=$(lake env lean "$ENUM" 2>/dev/null | grep -vE '\.(eq_[0-9]|match_[0-9]|proo
 n_d=$(printf '%s\n' "$OUT" | grep -c '^D ' || true)
 n_i=$(printf '%s\n' "$OUT" | grep -c '^I ' || true)
 n_t=$(printf '%s\n' "$OUT" | grep -c '^T ' || true)
+n_a=$(printf '%s\n' "$OUT" | grep -c '^A ' || true)
 if [ "$n_d" -lt 50 ] || [ "$n_i" -lt 5 ] || [ "$n_t" -lt 50 ]; then
   echo "FAIL  enumeration returned $n_d definitions, $n_i types, $n_t theorems; it did not run" >&2
   exit 1
@@ -87,4 +88,4 @@ fi
   echo "-- name the manifest claims still exists."
   grep -vE '^#|^$' gate/certified.txt | sed 's/^/#check @/'
 } > gate/pinned.lean
-echo "gate/pinned.lean: $(grep -c '^#print' gate/pinned.lean) bodies, $(grep -c '^#check @.*\.rec$' gate/pinned.lean) constructor sets, $n_t theorem/axiom types, $(grep -cvE '^#|^$' gate/certified.txt) certified statements"
+echo "gate/pinned.lean: $(grep -c '^#print' gate/pinned.lean) bodies, $(grep -c '^#check @.*\.rec$' gate/pinned.lean) constructor sets, $n_t theorem types, $n_a axiom types, $(grep -cvE '^#|^$' gate/certified.txt) certified statements"

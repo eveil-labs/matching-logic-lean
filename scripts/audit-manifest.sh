@@ -27,6 +27,15 @@ n_var=$(grep -cvE '^#|^$' gate/variants-expected.tsv)
 n_req=$(grep -cvE '^#|^$' gate/required.txt)
 [ "$n_cert" -eq "$n_req" ] || { echo "FAIL  certified ($n_cert) and required ($n_req) disagree"; fail=1; }
 [ "$n_var" -eq 5 ] || { echo "FAIL  expected 5 variants, found $n_var"; fail=1; }
+# Round nine: this was the one gate with no floor. Emptying BOTH manifests left
+# `n_cert -eq n_req` true at 0 and it reported `-- 0 certified -- MANIFEST GATE
+# PASS`. A gate over an empty list is not a gate; the round-seven "0/0 PASS"
+# shape had survived here.
+n_mod=$(ls MatchingLogic/*.lean 2>/dev/null | wc -l | tr -d ' ')
+[ "$n_cert" -ge 90 ] || { echo "FAIL  only $n_cert certified names; the manifest has been truncated"; fail=1; }
+[ "$n_mod" -ge 15 ] || { echo "FAIL  only $n_mod library modules; the tree has been truncated"; fail=1; }
+n_cf=$(grep -cvE '^#|^$' gate/complete-files.txt)
+[ "$n_cf" -ge "$n_mod" ] || { echo "FAIL  complete-files lists $n_cf of $n_mod modules"; fail=1; }
 echo "-- $n_cert certified, $n_var variants, $(ls MatchingLogic/*.lean | wc -l | tr -d ' ') modules --"
 [ $fail -eq 0 ] && echo "== MANIFEST GATE PASS ==" || echo "== MANIFEST GATE FAIL =="
 exit $fail

@@ -111,9 +111,12 @@ you say matters.
 **The last is one the paper argues but does not prove.** Section 4 explains that
 the generated submodel C alone will not serve once element variables and ∃ are
 present — that this is *why* Definition 10 doubles it — without giving a
-counterexample. Here is one. Over the empty signature with C = {true} ⊆ Bool,
-take ψ = ∀x∀y.(x → y), which is total exactly on a one-element carrier. The
-single sheet is a singleton and satisfies ψ; but ⟦ψ⟧_M = ∅, so C ⊄ ⟦ψ⟧_M and
+counterexample. Here are two, proved independently in different model families.
+`variants/V5SingleSheet.lean` takes the empty signature, carrier Bool,
+C = {false}, star = true, and ψ = ∀x. x;
+`alternates/V5SingleSheet.inhouse.lean` takes C = {true}, star = false, and
+ψ = ∀x∀y.(x → y). In both, ψ is total exactly on a one-element carrier: the
+single sheet is a singleton and satisfies ψ, but ⟦ψ⟧_M = ∅, so C ⊄ ⟦ψ⟧_M and
 Corollary 12 fails left-to-right. The double cover has two elements and agrees
 with M, which is what Corollary 12 needs. The mechanism is that **a closed
 pattern can detect the cardinality of the carrier**, and passing from M to C
@@ -230,9 +233,14 @@ source of truth: it stops `gate/certified.txt` being shrunk on its own, and it
 does not stop the two being regenerated together.
 
 The hypotheses (L) and (S) are `Prop` arguments of the theorems that use them,
-never axioms; `scripts/audit-axiom-decls.sh` fails if any `axiom` or `opaque`
-declaration exists under `MatchingLogic/` or `variants/`. Before round eight
-nothing checked this, and an `axiom` passed every gate.
+never axioms. `scripts/audit-axiom-decls.sh` asks Lean for every declaration
+whose declaring module is one of ours — or which has no module, meaning the file
+being compiled declared it — and rejects any `axiom`, any `opaque`, and any
+private definition, in the library, in each variant, and in each file under
+`alternates/`. It identifies our declarations by module, never by name: before
+round eight nothing checked this at all and an `axiom` passed every gate, and
+the first repair still let one through when it was written outside the namespace
+or marked `private`, because it tested the name.
 
 There are six `sorry`s, all deliberate and none reachable from any claimed
 result: the five `vN_holds` stubs in `variants/`, which are the *refuted* side of
@@ -246,9 +254,9 @@ Sections 7 and 9 are not mechanized. Theorem 19 routes through Hilbert's tenth
 problem, which is a project of its own. Section 9's obstruction theorem is
 formalizable and we simply did not get to it.
 
-We also did not attempt (L). Having read the proof — Theorem 3.7 of [4],
-pp. 58–69 — we estimate three to four thousand lines of Lean, dominated by the
-n-ary Existence Lemma. Nothing existing transfers: the closest mechanized
+We also did not attempt (L). Having read the proof — Theorem 3.7 of [4], stated
+at pp. 68–69, resting on the development from p. 58 onward — we estimate three
+to four thousand lines of Lean, dominated by the n-ary Existence Lemma. Nothing existing transfers: the closest mechanized
 completeness proof for a neighbouring logic uses nominals as its Henkin
 witnesses, and this fragment has none.
 

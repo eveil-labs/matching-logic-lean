@@ -47,7 +47,7 @@ while IFS=$'\t' read -r f ns side _lemma; do
     echo "#print axioms MatchingLogic.$ns.v${num}_${side}"
     echo "#print axioms MatchingLogic.$ns.v${num}_${other}"
     # (4) the pinned surface. LAST, so that everything after the sentinel is it.
-    variant_decls "$f" "$ns" "$num"
+    variant_decls
   } >> "$tmp"
   out=$(lake env lean "$tmp" 2>&1); rc=$?
   if [ $rc -ne 0 ] || printf '%s\n' "$out" | grep -q "error"; then

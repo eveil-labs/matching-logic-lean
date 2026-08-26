@@ -1,3 +1,4 @@
+declared here: 6 definitions, 7 theorems, 0 types, 0 private
 def MatchingLogic.VariantSingleSheet.V5Claim : Prop :=
 ∀ (S : MatchingLogic.Signature) (Var : Type) (x : DecidableEq Var) (M : MatchingLogic.Model S) (C : Set M.carrier),
  M.BackwardClosed C →
@@ -6,26 +7,26 @@ def MatchingLogic.VariantSingleSheet.V5Claim : Prop :=
  ∀ (ψ : MatchingLogic.Pattern S Var),
  MatchingLogic.Closed ψ →
  ∀ (ρ : Var → M.carrier), (MatchingLogic.VariantSingleSheet.single M C hne).Sat ψ ↔ C ⊆ M.denote ρ ψ
-MatchingLogic.VariantSingleSheet.v5_holds : MatchingLogic.VariantSingleSheet.V5Claim
-MatchingLogic.VariantSingleSheet.ssC_nonempty : MatchingLogic.VariantSingleSheet.ssC.Nonempty
-MatchingLogic.VariantSingleSheet.ssC_backwardClosed : MatchingLogic.VariantSingleSheet.ssModel.BackwardClosed
- MatchingLogic.VariantSingleSheet.ssC
-MatchingLogic.VariantSingleSheet.ssStar : true ∉ MatchingLogic.VariantSingleSheet.ssC
-MatchingLogic.VariantSingleSheet.ssPat_closed : MatchingLogic.Closed MatchingLogic.VariantSingleSheet.ssPat
-MatchingLogic.VariantSingleSheet.v5_fails : ¬MatchingLogic.VariantSingleSheet.V5Claim
-MatchingLogic.VariantSingleSheet.ss_real_cover_not_sat : ¬(MatchingLogic.cover MatchingLogic.VariantSingleSheet.ssModel
- MatchingLogic.VariantSingleSheet.ssC MatchingLogic.VariantSingleSheet.ssC_nonempty).Sat
- MatchingLogic.VariantSingleSheet.ssPat
 def MatchingLogic.VariantSingleSheet.single : {S : MatchingLogic.Signature} →
  (M : MatchingLogic.Model S) → (C : Set M.carrier) → C.Nonempty → MatchingLogic.Model S :=
 fun {S} M C hne => { carrier := ↑C, nonempty := ⋯, interp := fun σ A => {u | ↑u ∈ M.interp σ fun j => ↑(A j)} }
-@[reducible] def MatchingLogic.VariantSingleSheet.ssSig : MatchingLogic.Signature :=
-{ Sym := Empty, arity := fun σ => σ.elim }
+@[reducible] def MatchingLogic.VariantSingleSheet.ssC : Set MatchingLogic.VariantSingleSheet.ssModel.carrier :=
+{false}
 @[reducible] def MatchingLogic.VariantSingleSheet.ssModel : MatchingLogic.Model
  MatchingLogic.VariantSingleSheet.ssSig :=
 { carrier := Bool, nonempty := ⋯, interp := fun σ x => Empty.elim σ }
-@[reducible] def MatchingLogic.VariantSingleSheet.ssC : Set MatchingLogic.VariantSingleSheet.ssModel.carrier :=
-{false}
 @[reducible] def MatchingLogic.VariantSingleSheet.ssPat : MatchingLogic.Pattern MatchingLogic.VariantSingleSheet.ssSig
  Unit :=
 MatchingLogic.Pattern.al () (MatchingLogic.Pattern.var ())
+@[reducible] def MatchingLogic.VariantSingleSheet.ssSig : MatchingLogic.Signature :=
+{ Sym := Empty, arity := fun σ => σ.elim }
+MatchingLogic.VariantSingleSheet.ssC_backwardClosed : MatchingLogic.VariantSingleSheet.ssModel.BackwardClosed
+ MatchingLogic.VariantSingleSheet.ssC
+MatchingLogic.VariantSingleSheet.ssC_nonempty : MatchingLogic.VariantSingleSheet.ssC.Nonempty
+MatchingLogic.VariantSingleSheet.ssPat_closed : MatchingLogic.Closed MatchingLogic.VariantSingleSheet.ssPat
+MatchingLogic.VariantSingleSheet.ssStar : true ∉ MatchingLogic.VariantSingleSheet.ssC
+MatchingLogic.VariantSingleSheet.ss_real_cover_not_sat : ¬(MatchingLogic.cover MatchingLogic.VariantSingleSheet.ssModel
+ MatchingLogic.VariantSingleSheet.ssC MatchingLogic.VariantSingleSheet.ssC_nonempty).Sat
+ MatchingLogic.VariantSingleSheet.ssPat
+MatchingLogic.VariantSingleSheet.v5_fails : ¬MatchingLogic.VariantSingleSheet.V5Claim
+MatchingLogic.VariantSingleSheet.v5_holds : MatchingLogic.VariantSingleSheet.V5Claim

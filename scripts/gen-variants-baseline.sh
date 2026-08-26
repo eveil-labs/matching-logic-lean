@@ -16,7 +16,7 @@ while IFS=$'\t' read -r f ns side _rest; do
   [ -f "$f" ] || { echo "FAIL  $f -- listed but missing"; exit 1; }
   num=$(printf '%s' "$f" | sed -E 's|.*/V([0-9]+).*|\1|')
   tmp="$TD/$(basename "$f")"; cp "$f" "$tmp"
-  { echo ""; variant_decls "$f" "$ns" "$num"; } >> "$tmp"
+  { echo ""; variant_decls; } >> "$tmp"
   out=$(lake env lean "$tmp" 2>&1)
   # A file that failed to elaborate prints errors and no sentinel. Writing that
   # to the baseline would pin an empty surface, which every later run matches.

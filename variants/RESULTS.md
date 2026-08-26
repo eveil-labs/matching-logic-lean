@@ -82,11 +82,15 @@ converged on the same mechanism: **a closed pattern can detect the cardinality
 of the carrier**, and passing from `M` to `C` changes it.
 
 Empty signature — so every subset is backward closed and the hypotheses cost
-nothing. Carrier `Bool`, `C = {true}`, `star = false`, and
+nothing. The two lanes chose different data, and **both files are in the
+repository**, so check the one you are reading:
 
-    ψ := ∀x. ∀y. (x → y)
+| file | `C` | `star` | `ψ` |
+|---|---|---|---|
+| `variants/V5SingleSheet.lean` (the gated one) | `{false}` | `true` | `∀x. x` |
+| `alternates/V5SingleSheet.inhouse.lean` | `{true}` | `false` | `∀x. ∀y. (x → y)` |
 
-which is total exactly on a one-element carrier. The single sheet has carrier
+Each `ψ` is total exactly on a one-element carrier. The single sheet has carrier
 `↥C`, a singleton, so it satisfies `ψ`. But `⟦ψ⟧_M = ∅` because `M` has two
 elements, so `C ⊆ ⟦ψ⟧_M` fails. Corollary 12's left-to-right direction breaks.
 
