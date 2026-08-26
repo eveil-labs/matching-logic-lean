@@ -36,7 +36,8 @@ proved with no `sorry`, and depends only on `propext`, `Classical.choice`,
 `gate/certified.txt` is the enforced list of what is claimed: 370 names. The
 five variant refutations in `variants/` are claimed too, and enforced separately
 by `scripts/audit-variants.sh`. **Nothing outside those two is claimed.** CI
-runs every gate on every push.
+runs every gate on every push except `scripts/audit-additive.sh`, which compares
+against the development branch's base and cannot run in a standalone clone.
 
 Two of the checks are **not ours**:
 
@@ -61,7 +62,10 @@ kernel reports. Membership and the axiom column are generated, and CI
 regenerates and diffs the file.
 
 **It is not an inventory of claims.** It omits definitions, supporting lemmas,
-controls, and the variant refutations — all of which are certified — and it
+controls, and the variant refutations. The lemmas and controls are certified;
+the definitions are *pinned*, which is weaker — `scripts/audit-pinned.sh`
+compares the kernel's printing of each body against a baseline; the variants are
+enforced by `scripts/audit-variants.sh`. Nothing it omits is ungated. It
 carries rows marked BEYOND for results proved on top of the paper. The English
 description in each row comes from the hand-maintained `gate/paper-map.tsv`,
 which CI cannot check for faithfulness.
@@ -256,7 +260,8 @@ lake build MatchingLogic
     MatchingLogic/Definedness.lean   Corollary 16
     MatchingLogic/SetVariables.lean  Remark 17
     MatchingLogic/EntryIII/          entry point (iii): the canonical-model
-                                     construction discharging (L), 30 modules
+                                     construction discharging (L): 30 modules,
+                                     plus 3 holding the separation results
     variants/                        five neighbouring readings, all refuted
     alternates/                      the independent second proof of a target
     gate/                            the enforced lists the gates read
@@ -278,7 +283,9 @@ lake build MatchingLogic
    **Entry point (iii) changes that.** A canonical model needs Henkin witnesses,
    and witnesses are substitution. `MatchingLogic/EntryIII/` therefore carries
    α-equivalence, a binder-renaming `captureAvoidingSubst`, and derived
-   α-conversion rules — about 2,700 of its 6,616 lines. That is the price of
+   α-conversion rules, and the Henkin-witness plumbing they support: about 2,700
+   of its 6,616 lines, of which the α machinery alone is about 1,100. That is
+   the price of
    refusing the quotient, and `NARRATIVE.md` argues it is worth paying.
 2. **`Fin (arity σ) → Pattern` for symbol arguments**, giving a usable
    structural recursor: `denote` compiles via `brecOn` and its equation lemmas
@@ -332,7 +339,7 @@ that is review of the diff.
 
 Every gate here was fire-tested by being attacked. **Ten rounds of adversarial
 review broke earlier versions**, each by a route the previous round had not
-considered:
+closed:
 
 1. swapping a certified theorem for `def X : True`;
 2. replacing a variant refutation with an unrelated theorem of the same name;
@@ -368,7 +375,8 @@ considered:
     invisible — 33 of the 370 certified names wrap, and `CORRESPONDENCE.md` was
     publishing two truncated axiom lists as a result.
 
-**Nothing in these gates now identifies our own code by name.** Round nine is
+**Nothing in these gates now identifies our own code by the name of a
+declaration.** Round nine is
 the reason. `scripts/gen-pinned.sh` **asks Lean's environment** which
 declarations exist, so the pin list cannot miss one because of how its name is
 spelled — the failure the regex version had, which silently dropped every name
@@ -384,9 +392,10 @@ declaration whose **declaring module** is one of ours — or which has no module
 meaning the file being compiled declared it — and rejects any `axiom`, any
 `opaque`, and any private *definition*. Keying on the module rather than the
 name is what closes round nine: an axiom at the root of a file, or a `private`
-one, is still declared in `MatchingLogic.EntryPoints`. Every compilable file
-this repository ships is scanned this way, `alternates/` included, since nothing
-imports those. A line-oriented source grep runs as well, and is the weaker of
+one, is still declared in `MatchingLogic.EntryPoints`. Every compilable file that declares
+anything is scanned this way, `alternates/` included, since nothing imports
+those; the generated pin files under `gate/` declare nothing and get the source
+scan only. A line-oriented source grep runs as well, and is the weaker of
 the two — a declaration written after `in` on a `set_option` line is invisible
 to it, which is precisely why the kernel scan cannot be a name test.
 

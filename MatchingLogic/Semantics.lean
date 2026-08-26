@@ -2,7 +2,7 @@
 Free variables, closed patterns, and the three consequence relations
 (arXiv:2608.13306v1, Section 2, Definition 1).
 
-Definitions are desk-authored from the paper; the statements below were pinned
+Definitions are written by the coordinating session from the paper; the statements below were pinned
 before any proof was attempted.
 -/
 import MatchingLogic.Core

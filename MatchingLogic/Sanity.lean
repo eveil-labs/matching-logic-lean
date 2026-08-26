@@ -1,5 +1,5 @@
 /-
-Desk-authored controls on `Core.lean` (2026-08-25).  These are not part of the
+Written by the coordinating session: controls on `Core.lean` (2026-08-25).  These are not part of the
 paper; they exist so that a wrong definition cannot pass unnoticed.  Each one
 would FAIL if the corresponding clause of Section 2 were mis-encoded.
 -/

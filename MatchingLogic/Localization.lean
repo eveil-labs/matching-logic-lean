@@ -2,7 +2,7 @@
 Localization: Definition 6, Lemma 7 and Lemma 8 of arXiv:2608.13306v1,
 Section 3.
 
-Definitions are desk-authored from the paper; the statements below were pinned
+Definitions are written by the coordinating session from the paper; the statements below were pinned
 before any proof was attempted.
 
 Note on Lemma 7.  The paper obtains `M ⊨ Γ iff M ⊨ Δ_Γ` proof-theoretically:

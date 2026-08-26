@@ -108,5 +108,7 @@ not at the `Γ` step.
 
 Where a lemma fails under a neighbouring reading, that reading is excluded and
 the authors' intent is pinned. Where it survives, the result is robust to the
-choice. Five refutations mean these five definitional choices are all forced —
-none of them is a convention that could have gone the other way.
+choice. Five refutations mean these five neighbouring readings are excluded: each of
+them breaks a lemma the paper states. That is weaker than saying the paper's
+choices are the only ones that could work, which these countermodels do not
+show.

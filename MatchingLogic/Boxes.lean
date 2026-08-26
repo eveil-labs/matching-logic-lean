@@ -2,7 +2,7 @@
 Coordinates, boxes, and word-indexed reachability
 (arXiv:2608.13306v1, Section 3, Definitions 2-3 and Lemma 4).
 
-Definitions are desk-authored from the paper; the statements below were pinned
+Definitions are written by the coordinating session from the paper; the statements below were pinned
 before any proof was attempted.
 -/
 import MatchingLogic.Semantics

@@ -70,8 +70,9 @@ run_cmd do
     -- the TYPE of something PUBLIC: then a public statement says something the
     -- pin list cannot see. Round nine banned private definitions outright;
     -- meeting the entry-(iii) development showed that rule was too strong --
-    -- 17 construction internals are private and not one surfaces in a public
-    -- type. So check the thing that actually matters.
+    -- many internals of the construction are private definitions and not one
+    -- surfaces in a public type. So check the thing that actually matters.
+    -- (No apostrophes in this block: it is inside a single-quoted shell string.)
     unless isPrivateName n do
       for c in ci.type.getUsedConstants do
         if isPrivateName c then

@@ -10,7 +10,7 @@ member is kept here as the independent confirmation.
 | Lemma 9 (`locality`) | in-house Sonnet 5 | codex `gpt-5.6-sol` (`Locality.codex.lean`) |
 | Lemma 11 (`two_copies`) | codex `gpt-5.6-sol` | in-house Opus 5 (`DoubleCover.inhouse.lean`) |
 
-Both members of each pair passed the same desk checks **at the time they were
+Both members of each pair passed the same gates **at the time they were
 written**: build clean, no `sorry` of their own, pinned statement types and
 pinned definition bodies byte-identical to baseline as printed by the kernel,
 and no edit outside the assigned file.

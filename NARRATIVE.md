@@ -51,7 +51,8 @@ The construction carries a stronger invariant than the source states. Where the
 source's witnessed condition asks for some Henkin witness, and its Lemma 3.22
 picks one not occurring free in the theory so far and the body, ours,
 `FreshWitnessed`, demands a witness avoiding every variable of the body,
-bound ones included. Four questions, each settled by machine-checked proof.
+bound ones included. Five steps. Four are settled by machine-checked proof; the fourth is a reading
+of the source and is marked as one.
 
 **The two conditions do differ.** `witnessed_freshWitnessed_of_isMCS_refuted`
 exhibits a maximal locally consistent set that is witnessed and not

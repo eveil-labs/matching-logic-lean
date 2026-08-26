@@ -2,7 +2,7 @@
 Definition 10 (the double cover) and Lemma 11 (two copies) of
 arXiv:2608.13306v1, Section 4.
 
-DEFINITION 10 AND THE STATEMENT OF LEMMA 11 ARE PINNED BY THE DESK.  A lane may
+DEFINITION 10 AND THE STATEMENT OF LEMMA 11 ARE PINNED BEFORE ANY PROOF WAS ATTEMPTED.  A lane may
 add auxiliary lemmas and must replace the `sorry`s, but may NOT change `cover`,
 `proj`, or the statements of `two_copies` / `two_copies_set`.
 

@@ -1,7 +1,7 @@
 # Entry point (iii): source-scope audit
 
 This is a separate finding about the verified base.  It is not folded into the
-canonical-model development because `START-HERE.md` requires any suspected
+canonical-model development because the project's working rules requires any suspected
 mis-encoding of an existing statement to be reported explicitly.
 
 ## Finding: the source does not quantify over arbitrary variable types

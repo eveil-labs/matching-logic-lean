@@ -1,5 +1,5 @@
 /-
-Desk-authored adversarial check on Lemma 9 (2026-08-25).
+Written by the coordinating session: adversarial check on Lemma 9 (2026-08-25).
 
 A mechanized lemma is worth only what it forbids.  `locality` carries a
 backward-closure hypothesis; if the conclusion held without it, our encoding of

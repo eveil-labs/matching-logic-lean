@@ -4,7 +4,7 @@
 #
 #   scripts/audit.sh
 #
-# Run from the repository root. Used by CI and by the desk after every merge.
+# Run from the repository root. Used by CI and after every merge.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 export PATH="$HOME/.elan/bin:$PATH"

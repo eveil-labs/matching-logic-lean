@@ -9,7 +9,7 @@ Its definitions were written first, then audited against the paper by independen
 readers before any proof was commissioned on them, and their kernel-printed
 bodies are pinned by `scripts/audit-pinned.sh`.
 
-Representation rulings (desk, binding on all lanes):
+Representation rulings (fixed before any proof was written):
 * Element variables are NAMED, and there is no syntactic substitution anywhere in
   this file or in the semantic development built on it.  The single exception is
   rule (3) of Figure 2, which needs variable-for-variable substitution;

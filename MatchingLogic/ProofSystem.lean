@@ -6,7 +6,7 @@ and including Theorem 13 nothing here was needed: `semantic_localization` (in
 `Composite.lean`) depends on neither of the paper's black boxes, and the module
 graph enforces it -- this file imports that one, not the reverse. Theorem 14 and Corollary 15 do.
 
-DESIGN RULINGS, binding on all lanes:
+DESIGN DECISIONS, fixed before any proof was written:
 
 * **Substitution is variable-for-variable only, and capture-avoidance is a
   side condition rather than a renaming.** Rule (3) is the one place the

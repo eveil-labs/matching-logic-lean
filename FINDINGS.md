@@ -11,8 +11,9 @@ this note were written by language models — Claude Opus 5 and Sonnet 5, and
 OpenAI `gpt-5.6-sol` — working under a method and a review process designed and
 run by Aurelien Bocquet, who is accountable for everything here. The
 `Attribution` section of `README.md` describes the division of work and what
-each side proved unreliable at. Every claim below is machine-checked, or is
-marked as a claim about how the work was done.
+each side proved unreliable at. Every claim below about the Lean development is
+machine-checked and says which theorem carries it. The rest, our readings of
+your papers and the notes on how the work was done, are marked as such.
 
 We are not proposing any of this as a correction to the mathematics. The one
 item that is an actual erratum is a citation, item 1. Item 7 is the one we would
@@ -66,10 +67,12 @@ and, on how the two relate:
 Theorem 83 there is `Γ ⊨loc φ implies Γ ⊩ φ` — the shape of (L). So a citation
 for (L) should land on the *strong* statement, which in the thesis is 3.7.
 
-*Checked by downloading the thesis and the 2019 technical report and reading
-both directly. We deliberately make no claim about the numbering in [3] or [5]:
-we could not retrieve either, so we do not know whether the paragraph's other
-citations are affected, and this erratum does not depend on them.*
+*Checked by downloading Chen's thesis and the 2019 Matching µ-Logic technical
+report and reading both directly. Those two documents are the whole basis of
+this erratum. We have not checked the numbering in the paper's [3] or [5], so we
+make no claim about it, and nothing here depends on it. If the µ-logic report is
+itself one of those references, the quotations above are from it and the point
+stands unchanged.*
 
 ---
 
@@ -175,9 +178,12 @@ This one came out of mechanizing (L) and is, we think, the most interesting
 thing we can report. It is not a correction — nothing below says anything of
 yours is wrong, and the one place we thought it did turned out to be our own
 error. What it does is isolate the hypothesis your variable extension supplies,
-and show it is load-bearing in a case the extension itself cannot repair.
+and show that once the variable set is fixed, so the extension step is not
+available, that hypothesis cannot be dropped even from a theory that is already
+maximal.
 
-**The setting.** Your Definition 3.5 asks that a witnessed MCS have, for each
+**The setting**, in the thesis's numbering ([4], Definition 3.5 and Lemma
+3.22). Definition 3.5 asks that a witnessed MCS have, for each
 `∃x.φ ∈ Γ`, *some* `y` with `(∃x.φ) → φ[y/x] ∈ Γ`. Lemma 3.22 then builds one,
 choosing `y` from `V⁺ \ V` — a set of countably many *new* variables — subject
 to it not occurring **free** in `Γₙ₋₁` and `ψ`. All of this is correct in your
@@ -208,7 +214,9 @@ Maximality is discharged, not assumed.
 
 **2. The separation is not an α artifact**
 (`witnessed_alphaFreshWitnessed_of_isMCS_refuted`). Allowing the witness to be
-fresh for *any* α-variant does not repair it. Over a signature with one binary
+fresh for *any* α-variant does not repair it. Our α-relation is mutual
+derivability in Figure 2 together with equal structural complexity, so it is
+coarser than syntactic α and the refutation covers the quotient a fortiori. Over a signature with one binary
 symbol, `∃1. pair(var 1, var 0)` blocks every representative, because the
 application depends on both arguments and so has no vacuously quantified
 equivalent to escape into. Quotienting by α would therefore not remove the need
@@ -285,8 +293,12 @@ See `CORRESPONDENCE.md`. It is a convenience index from a paper result to the
 Lean name that carries it, with the axioms the kernel reports; membership and the
 axiom column are generated. **It is not an inventory of claims and should not be
 read as one** — it omits supporting lemmas, controls, definitions, and the
-variant refutations, all of which are certified. `gate/certified.txt` is the
-list of what is claimed.
+variant refutations. The lemmas and controls are certified in
+`gate/certified.txt`; the definitions are *pinned*, which is a different and
+weaker guarantee — `scripts/audit-pinned.sh` compares the kernel's printing of
+each body against a baseline; the five variant refutations are enforced by
+`scripts/audit-variants.sh`. Nothing the table omits is ungated, but not
+everything it omits is certified.
 
 Proposition 30 is complete, including the non-derivability half and Corollary 31
 at that data. **(L) is discharged** — the canonical-model construction the rest
@@ -331,8 +343,8 @@ we have misread.
    should we widen ours to match?
 
 5. **The closedness conventions.** You assume Γ and φ closed throughout, without
-   loss of generality. We found `Closed φ` is never needed and `Closed γ` is,
-   with the countermodel in item 3 above. Would you want the paper's statements
+   loss of generality. We found `Closed φ` is not needed in Theorem 13 or Lemma 7, while `Closed γ` is,
+   with the countermodel in item 3 of this note. Would you want the paper's statements
    as they stand, or the sharper ones?
 
 6. **The erratum in item 1.** Please confirm — we may have misread the
@@ -347,7 +359,7 @@ we have misread.
 | commit | `https://github.com/eveil-labs/matching-logic-lean`, tag `separation-results` |
 | toolchain | Lean 4.33.0 |
 | Mathlib | pinned to the public tag `v4.33.0` |
-| build | `lake exe cache get && lake build MatchingLogic` — about 90 s from a clean clone |
+| build | `lake exe cache get && lake build MatchingLogic` — the cache fetch is minutes on a first run; the library then builds in about 30 s on ten cores |
 | gates | `scripts/audit-manifest.sh`, `scripts/audit-files.sh`, `scripts/audit.sh`, `scripts/audit-variants.sh`, `scripts/audit-pinned.sh`, `scripts/audit-coverage.sh`, `scripts/audit-axiom-decls.sh`, `scripts/audit-entry-iii.sh` — all eight run in CI, alongside `lake exe axiom-audit` and `lake exe mk_all --check` |
 | independent check | the `MatchingLogic` library also compiles on a second Lean service at `lean-4.33.0`: 0 errors, 0 incomplete declarations, same axiom verdict. The deliberate stubs in `variants/` and `alternates/` are outside that library. |
 

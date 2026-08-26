@@ -1,6 +1,6 @@
 # Theorems claimed COMPLETE: no sorry, only [propext, Classical.choice, Quot.sound].
 # scripts/audit.sh fails if any of these gains a sorry or an unexpected axiom.
-# A theorem is added here only after it is proved and desk-verified.
+# A theorem is added here only after it is proved and verified against the gates.
 MatchingLogic.locality
 MatchingLogic.two_copies
 MatchingLogic.two_copies_set

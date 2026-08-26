@@ -6,7 +6,7 @@ Lemma 9 (locality) of arXiv:2608.13306v1, Section 4.
 
 Throughout, C is backward closed (Definition 2).
 
-STATEMENT PINNED BY THE DESK -- a lane may add auxiliary lemmas above it and
+STATEMENT PINNED BEFORE ANY PROOF WAS ATTEMPTED -- a lane may add auxiliary lemmas above it and
 must replace the `sorry`, but may NOT weaken, restate, or add hypotheses to
 `locality` itself.
 -/
