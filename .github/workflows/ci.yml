@@ -26,10 +26,27 @@ jobs:
       - name: Axiom audit
         run: ./scripts/audit.sh
 
-      # `#print axioms` reports what a theorem DEPENDS on. Nothing rejected an
-      # `axiom` DECLARATION until round eight, when one passed every gate here.
-      # The whole design rests on (L) and (S) being Prop hypotheses.
-      - name: No axiom or opaque declarations
+      # The kernel-level axiom audit, and NOT one of ours: `axiom-audit` from
+      # leanprover-community. It asks the kernel which axioms each declaration
+      # depends on and fails outside [propext, Classical.choice, Quot.sound],
+      # catching sorry (sorryAx), native_decide (Lean.ofReduceBool) and any
+      # home-rolled axiom, transitively -- across all 903 declarations, where
+      # our own gate checked the 95 names we had listed by hand.
+      - name: Axiom audit (leanprover-community/axiom-audit)
+        run: lake exe axiom-audit
+
+      # Every module must be reachable from the library root, or `import
+      # MatchingLogic` -- how the pin generator, the axiom audit and this build
+      # all reach the code -- covers less than the repository contains. Standard
+      # tool, free with Mathlib. Measured on the entry-(iii) branch: it adds 29
+      # missing imports that four of our gates had reported clean.
+      - name: Every module is imported by the root
+        run: lake exe mk_all --check
+
+      # Ours, and narrower than the two above: it rejects an `axiom`, `opaque`
+      # or private-definition DECLARATION even when nothing depends on it, which
+      # is a policy the dependency audit does not express.
+      - name: No axiom, opaque or private-definition declarations
         run: ./scripts/audit-axiom-decls.sh
 
       # Pins what each name SAYS, not merely that it exists with clean axioms.

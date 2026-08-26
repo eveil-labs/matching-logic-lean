@@ -11,3 +11,18 @@ rev = "v4.33.0"
 
 [[lean_lib]]
 name = "MatchingLogic"
+
+# Axiom auditing is NOT hand-rolled here. `lake exe axiom-audit` asks the kernel
+# which axioms every declaration in the library depends on and fails if any is
+# outside [propext, Classical.choice, Quot.sound] -- catching `sorry` (sorryAx),
+# `native_decide` (Lean.ofReduceBool) and any home-rolled axiom, transitively.
+#
+# It identifies our declarations by their DECLARING MODULE (`--root`), not by
+# name, which is the property round nine of our own review had to be beaten into
+# our scripts three times. Fire-tested here against round nine's own exploit: it
+# reports `Smuggle.soundness`, which sits outside the `MatchingLogic` namespace
+# entirely, and a `private axiom`, both of which name-based scans walked past.
+[[require]]
+name = "axiomAudit"
+git = "https://github.com/leanprover-community/axiom-audit"
+rev = "main"

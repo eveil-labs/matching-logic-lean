@@ -135,7 +135,10 @@ for f in alternates/*.lean;   do kernel_scan "$f" "$f" 75; n=$((n+1)); done
 echo "== source scan =="
 # Secondary and line-oriented. Every compilable file is covered above; this is
 # for text, and for the two files with nothing to compile.
-FILES=$(ls MatchingLogic.lean MatchingLogic/*.lean variants/*.lean alternates/*.lean gate/pinned.lean 2>/dev/null)
+# `find`, not a flat glob: on the entry-point-(iii) branch a flat glob reported
+# "30 Lean files" while 29 more sat one directory down, unscanned.
+FILES=$( { echo MatchingLogic.lean; echo gate/pinned.lean; \
+           find MatchingLogic variants alternates -name '*.lean'; } 2>/dev/null | sort)
 nf=$(printf '%s\n' "$FILES" | grep -c . || true)
 if [ "${nf:-0}" -lt 25 ]; then
   echo "FAIL  source scan found only ${nf:-0} Lean files; the file list is broken"; fail=1

@@ -8,7 +8,7 @@ nchecked=0
 # An emptied gate/complete-files.txt would check nothing and pass. The floor is
 # the number of library modules, which audit-manifest.sh independently requires
 # every one of to be listed.
-n_mod=$(ls MatchingLogic/*.lean 2>/dev/null | wc -l | tr -d ' ')
+n_mod=$(find MatchingLogic -name '*.lean' 2>/dev/null | wc -l | tr -d ' ')
 while IFS= read -r f; do
   case "$f" in ''|'#'*) continue ;; esac
   if [ ! -f "$f" ]; then echo "FAIL  $f -- listed but missing"; fail=1; continue; fi

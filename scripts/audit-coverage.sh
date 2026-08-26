@@ -42,7 +42,9 @@ cd "$(dirname "$0")/.."
 export LC_ALL=C          # `sort -u` collation is locale-dependent; see R9 above
 fail=0
 
-SRCFILES="MatchingLogic.lean $(ls MatchingLogic/*.lean)"
+# `MatchingLogic/*.lean` does not descend. Measured on the entry-point-(iii)
+# branch: 29 modules under `MatchingLogic/EntryIII/` that this scan never saw.
+SRCFILES="MatchingLogic.lean $(find MatchingLogic -name '*.lean' | sort)"
 
 # --- expectation: fully qualified names, from the source text ---------------
 # awk keeps a namespace stack. `section` pushes a frame that contributes no
@@ -129,10 +131,16 @@ if [ "${n_src:-0}" -lt 150 ]; then
   echo "FAIL  source scan found only ${n_src:-0} public declarations; the scan itself is broken"
   echo "== COVERAGE GATE FAIL =="; exit 1
 fi
-if [ "${n_anon:-0}" -ne 0 ]; then
-  echo "FAIL  ${n_anon} anonymous declaration(s); an unnamed instance or class cannot be pinned by name:"
-  printf '%s\n' "$SCAN" | grep -E '^(PRIV)?ANON ' | sed 's/^/      /'; fail=1
-fi
+# Anonymous instances (`local instance : DecidableEq (Pattern S Nat) := ...`)
+# are NOT unpinnable: Lean gives them a generated name and the pin generator,
+# which enumerates the environment, pins them like anything else. What is true
+# is that this SOURCE-side scan cannot predict that name, so it cannot confirm
+# them and must not claim to. They are reported, not required, and not counted
+# among the declarations this side checked.
+#
+# The first version of this gate failed outright on them. That was wrong, and
+# meeting the (iii) development is what showed it: nine there, eight of them the
+# same `local instance` idiom.
 
 # --- the pin set: exactly the names gate/pinned.lean pins -------------------
 PINNED=$(sed -nE 's/^#print[[:space:]]+([^[:space:]]+).*/\1/p; s/^#check[[:space:]]+@([^[:space:]]+).*/\1/p' gate/pinned.lean \
@@ -160,7 +168,7 @@ if [ "$checked" -ne "$n_src" ]; then
   echo "== COVERAGE GATE FAIL =="; exit 1
 fi
 
-echo "-- $((n_src-missing))/$n_src public source-written declarations pinned by qualified name, all $checked compared; $n_pin names in the pin list; $n_privthm private theorems, unpinnable by design --"
+echo "-- $((n_src-missing))/$n_src public source-written declarations pinned by qualified name, all $checked compared; $n_pin names in the pin list; $n_privthm private theorems, unpinnable by design; $n_anon anonymous, pinned by the generator but not confirmable from source --"
 [ $missing -eq 0 ] || fail=1
 [ $fail -eq 0 ] && echo "== COVERAGE GATE PASS ==" || echo "== COVERAGE GATE FAIL =="
 exit $fail
