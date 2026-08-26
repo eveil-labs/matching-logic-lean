@@ -1,0 +1,3 @@
+@MatchingLogic.locConsistent_extend_isMCS : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)},
+  MatchingLogic.LocConsistent Gamma → ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta

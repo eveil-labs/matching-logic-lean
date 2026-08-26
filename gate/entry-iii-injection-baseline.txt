@@ -1,0 +1,28 @@
+@MatchingLogic.Pattern.mem_FV_rename_injective : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [DecidableEq Var]
+  [DecidableEq Var'] (f : Var → Var'),
+  Function.Injective f →
+    ∀ (p : MatchingLogic.Pattern S Var) (x : Var),
+      f x ∈ MatchingLogic.FV (MatchingLogic.Pattern.rename f p) ↔ x ∈ MatchingLogic.FV p
+@MatchingLogic.Pattern.substVar_rename_injective : ∀ {S : MatchingLogic.Signature} {Var Var' : Type}
+  [inst : DecidableEq Var] [inst_1 : DecidableEq Var'] (f : Var → Var'),
+  Function.Injective f →
+    ∀ (x y : Var) (p : MatchingLogic.Pattern S Var),
+      MatchingLogic.Pattern.rename f (MatchingLogic.substVar x y p) =
+        MatchingLogic.substVar (f x) (f y) (MatchingLogic.Pattern.rename f p)
+@MatchingLogic.Pattern.captureFree_rename_injective : ∀ {S : MatchingLogic.Signature} {Var Var' : Type}
+  [DecidableEq Var] [DecidableEq Var'] (f : Var → Var'),
+  Function.Injective f →
+    ∀ {x y : Var} {p : MatchingLogic.Pattern S Var},
+      MatchingLogic.CaptureFree x y p → MatchingLogic.CaptureFree (f x) (f y) (MatchingLogic.Pattern.rename f p)
+@MatchingLogic.AppCtx.plug_rename_injective : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (f : Var → Var'),
+  Function.Injective f →
+    ∀ (C : MatchingLogic.AppCtx S Var) (p : MatchingLogic.Pattern S Var),
+      MatchingLogic.Pattern.rename f (C.plug p) =
+        (MatchingLogic.AppCtx.rename f C).plug (MatchingLogic.Pattern.rename f p)
+@MatchingLogic.Provable.renameInjective : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (f : Var → Var'),
+  Function.Injective f →
+    ∀ {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+      MatchingLogic.Provable Gamma phi →
+        MatchingLogic.Provable (MatchingLogic.Pattern.rename f '' Gamma) (MatchingLogic.Pattern.rename f phi)

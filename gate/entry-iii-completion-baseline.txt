@@ -1,0 +1,94 @@
+def MatchingLogic.Missing : {S : MatchingLogic.Signature} → MatchingLogic.CanonicalCarrier S → Prop :=
+fun {S} root => ∃ x, ∀ (world : MatchingLogic.GeneratedCarrier root), MatchingLogic.Pattern.var x ∉ ↑↑world
+def MatchingLogic.CompletedCarrier : {S : MatchingLogic.Signature} → MatchingLogic.CanonicalCarrier S → Type :=
+fun {S} root => { o // o = none → MatchingLogic.Missing root }
+def MatchingLogic.CompletedCarrier.isStar : {S : MatchingLogic.Signature} →
+  {root : MatchingLogic.CanonicalCarrier S} → MatchingLogic.CompletedCarrier root → Prop :=
+fun {S} {root} point => ↑point = none
+def MatchingLogic.completedEmbed : {S : MatchingLogic.Signature} →
+  (root : MatchingLogic.CanonicalCarrier S) →
+    MatchingLogic.GeneratedCarrier root → MatchingLogic.CompletedCarrier root :=
+fun {S} root world => ⟨some world, ⋯⟩
+def MatchingLogic.completedStar : {S : MatchingLogic.Signature} →
+  {root : MatchingLogic.CanonicalCarrier S} → MatchingLogic.Missing root → MatchingLogic.CompletedCarrier root :=
+fun {S} {root} hmissing => ⟨none, ⋯⟩
+@MatchingLogic.completedEmbed_injective : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S),
+  Function.Injective (MatchingLogic.completedEmbed root)
+@MatchingLogic.completedStar_ne_embed : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  (hmissing : MatchingLogic.Missing root) (world : MatchingLogic.GeneratedCarrier root),
+  MatchingLogic.completedStar hmissing ≠ MatchingLogic.completedEmbed root world
+@MatchingLogic.exists_completedStar_iff_missing : ∀ {S : MatchingLogic.Signature}
+  (root : MatchingLogic.CanonicalCarrier S), (∃ point, point.isStar) ↔ MatchingLogic.Missing root
+@MatchingLogic.completedCarrier_cases : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  (point : MatchingLogic.CompletedCarrier root),
+  (∃ world, point = MatchingLogic.completedEmbed root world) ∨
+    ∃ (hmissing : MatchingLogic.Missing root), point = MatchingLogic.completedStar hmissing
+def MatchingLogic.completedInterp : {S : MatchingLogic.Signature} →
+  (root : MatchingLogic.CanonicalCarrier S) →
+    (sigma : S.Sym) →
+      (Fin (S.arity sigma) → MatchingLogic.CompletedCarrier root) → Set (MatchingLogic.CompletedCarrier root) :=
+fun {S} root sigma inputs =>
+  {output |
+    ∃ components,
+      (∀ (i : Fin (S.arity sigma)), inputs i = MatchingLogic.completedEmbed root (components i)) ∧
+        ((∃ world,
+            output = MatchingLogic.completedEmbed root world ∧
+              world ∈ MatchingLogic.generatedInterp root sigma components) ∨
+          output.isStar ∧ ∃ i, components i = MatchingLogic.generatedRoot root)}
+@[reducible] def MatchingLogic.completedModel : {S : MatchingLogic.Signature} →
+  MatchingLogic.CanonicalCarrier S → MatchingLogic.Model S :=
+fun {S} root =>
+  { carrier := MatchingLogic.CompletedCarrier root, nonempty := ⋯, interp := MatchingLogic.completedInterp root }
+@MatchingLogic.mem_completedInterp : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  {sigma : S.Sym} {inputs : Fin (S.arity sigma) → MatchingLogic.CompletedCarrier root}
+  {output : MatchingLogic.CompletedCarrier root},
+  output ∈ MatchingLogic.completedInterp root sigma inputs ↔
+    ∃ components,
+      (∀ (i : Fin (S.arity sigma)), inputs i = MatchingLogic.completedEmbed root (components i)) ∧
+        ((∃ world,
+            output = MatchingLogic.completedEmbed root world ∧
+              world ∈ MatchingLogic.generatedInterp root sigma components) ∨
+          output.isStar ∧ ∃ i, components i = MatchingLogic.generatedRoot root)
+@MatchingLogic.completedModel_interp : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
+  (sigma : S.Sym) (inputs : Fin (S.arity sigma) → MatchingLogic.CompletedCarrier root),
+  (MatchingLogic.completedModel root).interp sigma inputs = MatchingLogic.completedInterp root sigma inputs
+@MatchingLogic.mem_completedModel_interp : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  {sigma : S.Sym} {inputs : Fin (S.arity sigma) → MatchingLogic.CompletedCarrier root}
+  {output : MatchingLogic.CompletedCarrier root},
+  output ∈ (MatchingLogic.completedModel root).interp sigma inputs ↔
+    output ∈ MatchingLogic.completedInterp root sigma inputs
+@MatchingLogic.completedInterp_eq_empty_of_input_star : ∀ {S : MatchingLogic.Signature}
+  {root : MatchingLogic.CanonicalCarrier S} {sigma : S.Sym}
+  {inputs : Fin (S.arity sigma) → MatchingLogic.CompletedCarrier root} (i : Fin (S.arity sigma)),
+  (inputs i).isStar → MatchingLogic.completedInterp root sigma inputs = ∅
+@MatchingLogic.completedEmbed_mem_completedInterp_iff : ∀ {S : MatchingLogic.Signature}
+  (root : MatchingLogic.CanonicalCarrier S) {sigma : S.Sym}
+  (components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root)
+  (world : MatchingLogic.GeneratedCarrier root),
+  (MatchingLogic.completedEmbed root world ∈
+      MatchingLogic.completedInterp root sigma fun i => MatchingLogic.completedEmbed root (components i)) ↔
+    world ∈ MatchingLogic.generatedInterp root sigma components
+@MatchingLogic.completedStar_mem_completedInterp_iff : ∀ {S : MatchingLogic.Signature}
+  {root : MatchingLogic.CanonicalCarrier S} (hmissing : MatchingLogic.Missing root) {sigma : S.Sym}
+  (components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root),
+  (MatchingLogic.completedStar hmissing ∈
+      MatchingLogic.completedInterp root sigma fun i => MatchingLogic.completedEmbed root (components i)) ↔
+    ∃ i, components i = MatchingLogic.generatedRoot root
+def MatchingLogic.completedValuation : {S : MatchingLogic.Signature} →
+  (root : MatchingLogic.CanonicalCarrier S) → ℕ → MatchingLogic.CompletedCarrier root :=
+fun {S} root x =>
+  if h : ∃ world, MatchingLogic.Pattern.var x ∈ ↑↑world then MatchingLogic.completedEmbed root (Classical.choose h)
+  else ⟨none, ⋯⟩
+@MatchingLogic.completedValuation_isStar_iff : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
+  (x : ℕ),
+  (MatchingLogic.completedValuation root x).isStar ↔
+    ∀ (world : MatchingLogic.GeneratedCarrier root), MatchingLogic.Pattern.var x ∉ ↑↑world
+@MatchingLogic.completedValuation_eq_embed_iff : ∀ {S : MatchingLogic.Signature}
+  (root : MatchingLogic.CanonicalCarrier S) (x : ℕ) (world : MatchingLogic.GeneratedCarrier root),
+  MatchingLogic.completedValuation root x = MatchingLogic.completedEmbed root world ↔
+    MatchingLogic.Pattern.var x ∈ ↑↑world
+@MatchingLogic.completedValuation_surjective : ∀ {S : MatchingLogic.Signature}
+  (root : MatchingLogic.CanonicalCarrier S), Function.Surjective (MatchingLogic.completedValuation root)
+'MatchingLogic.completedStar_mem_completedInterp_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.completedValuation_eq_embed_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.completedValuation_surjective' depends on axioms: [propext, Classical.choice, Quot.sound]

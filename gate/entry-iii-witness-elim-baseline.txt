@@ -1,0 +1,49 @@
+@MatchingLogic.Provable.captureAvoidingSubst_theorem : ∀ {S : MatchingLogic.Signature} {r : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.Provable ∅ r → ∀ (x y : ℕ), MatchingLogic.Provable ∅ (MatchingLogic.Pattern.captureAvoidingSubst x y r)
+@MatchingLogic.Pattern.AlphaEq.captureAvoidingSubst : ∀ {S : MatchingLogic.Signature} {p q : MatchingLogic.Pattern S ℕ},
+  p.AlphaEq q →
+    ∀ (x y : ℕ),
+      (MatchingLogic.Pattern.captureAvoidingSubst x y p).AlphaEq (MatchingLogic.Pattern.captureAvoidingSubst x y q)
+@MatchingLogic.Pattern.captureAvoidingSubst_comp_alphaEq : ∀ {S : MatchingLogic.Signature} {x y z : ℕ}
+  {p : MatchingLogic.Pattern S ℕ},
+  y ∉ MatchingLogic.FV p →
+    (MatchingLogic.Pattern.captureAvoidingSubst y z (MatchingLogic.Pattern.captureAvoidingSubst x y p)).AlphaEq
+      (MatchingLogic.Pattern.captureAvoidingSubst x z p)
+@MatchingLogic.IsMCS.exList_witness_elim : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.FreshWitnessed Gamma →
+      ∀ {sigma : S.Sym} (Phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ) (p : MatchingLogic.Pattern S ℕ) (x : ℕ)
+        (y : Fin (S.arity sigma) → ℕ),
+        Function.Injective y →
+          (∀ (i : Fin (S.arity sigma)), y i ∉ p.allVars) →
+            (∀ (i j : Fin (S.arity sigma)), y i ∉ (Phi j).allVars) →
+              MatchingLogic.Pattern.exList (List.ofFn y)
+                    (MatchingLogic.Pattern.app sigma fun i =>
+                      (Phi i).and
+                        ((MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x (y i) p))) ∈
+                  Gamma →
+                ∃ z,
+                  (∀ (i : Fin (S.arity sigma)), z i ∉ p.allVars) ∧
+                    (∀ (i j : Fin (S.arity sigma)), z i ∉ (Phi j).allVars) ∧
+                      (MatchingLogic.Pattern.app sigma fun i =>
+                          (Phi i).and
+                            ((MatchingLogic.Pattern.ex x p).imp
+                              (MatchingLogic.Pattern.captureAvoidingSubst x (z i) p))) ∈
+                        Gamma
+@MatchingLogic.IsMCS.witnessPush_elim : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.FreshWitnessed Gamma →
+      ∀ {sigma : S.Sym} (Phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ) (p : MatchingLogic.Pattern S ℕ) (x : ℕ)
+        (y : Fin (S.arity sigma) → ℕ),
+        Function.Injective y →
+          (∀ (i : Fin (S.arity sigma)), y i ∉ p.allVars) →
+            (∀ (i j : Fin (S.arity sigma)), y i ∉ (Phi j).allVars) →
+              MatchingLogic.Pattern.app sigma Phi ∈ Gamma →
+                ∃ z,
+                  (∀ (i : Fin (S.arity sigma)), z i ∉ p.allVars) ∧
+                    (∀ (i j : Fin (S.arity sigma)), z i ∉ (Phi j).allVars) ∧
+                      (MatchingLogic.Pattern.app sigma fun i =>
+                          (Phi i).and
+                            ((MatchingLogic.Pattern.ex x p).imp
+                              (MatchingLogic.Pattern.captureAvoidingSubst x (z i) p))) ∈
+                        Gamma

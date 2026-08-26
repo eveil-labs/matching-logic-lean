@@ -1,0 +1,14 @@
+@MatchingLogic.finiteLocalModelExistence : ∀ {S : MatchingLogic.Signature}, MatchingLogic.FiniteLocalModelExistence S ℕ
+@MatchingLogic.finiteLocalCompleteness : ∀ {S : MatchingLogic.Signature}, MatchingLogic.FiniteLocalCompleteness S ℕ
+@MatchingLogic.strongLocalCompleteness_nat : ∀ {S : MatchingLogic.Signature}, MatchingLogic.StrongLocalCompleteness S ℕ
+@MatchingLogic.strongLocalCompleteness : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [Denumerable Var], MatchingLogic.StrongLocalCompleteness S Var
+@MatchingLogic.global_completeness_entryIII : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [Denumerable Var] {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  (∀ gamma ∈ Gamma, MatchingLogic.Closed gamma) →
+    MatchingLogic.Closed phi → (MatchingLogic.GlobalCons Gamma phi ↔ MatchingLogic.Provable Gamma phi)
+'MatchingLogic.finiteLocalModelExistence' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.finiteLocalCompleteness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.strongLocalCompleteness_nat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.strongLocalCompleteness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.global_completeness_entryIII' depends on axioms: [propext, Classical.choice, Quot.sound]

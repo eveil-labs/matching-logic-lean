@@ -1,0 +1,101 @@
+def MatchingLogic.EntryIII.relLanguage : MatchingLogic.Signature → FirstOrder.Language :=
+fun S => { Functions := fun x => Empty, Relations := fun n => { sigma // S.arity sigma + 1 = n } }
+def MatchingLogic.EntryIII.relSym : {S : MatchingLogic.Signature} →
+  (sigma : S.Sym) → (MatchingLogic.EntryIII.relLanguage S).Relations (S.arity sigma + 1) :=
+fun {S} sigma => ⟨sigma, ⋯⟩
+def MatchingLogic.EntryIII.Pattern.toFOAux.{u} : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [DecidableEq Var] →
+      MatchingLogic.Pattern S Var →
+        {alpha : Type u} → (Var → alpha) → alpha → (MatchingLogic.EntryIII.relLanguage S).Formula alpha :=
+fun {S} {Var} [DecidableEq Var] x x_1 x_2 x_3 =>
+  MatchingLogic.Pattern.brecOn (motive := fun x =>
+    (x : Type u) → (Var → x) → x → (MatchingLogic.EntryIII.relLanguage S).Formula x) x
+    MatchingLogic.EntryIII.Pattern.toFOAux._f x_1 x_2 x_3
+def MatchingLogic.EntryIII.Pattern.toFOFormula : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [DecidableEq Var] → MatchingLogic.Pattern S Var → (MatchingLogic.EntryIII.relLanguage S).Formula (Option Var) :=
+fun {S} {Var} [DecidableEq Var] p => MatchingLogic.EntryIII.Pattern.toFOAux p some none
+def MatchingLogic.EntryIII.Pattern.toFOSentence : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [DecidableEq Var] →
+      MatchingLogic.Pattern S Var → ((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Sentence :=
+fun {S} {Var} [DecidableEq Var] p =>
+  FirstOrder.Language.Formula.equivSentence (MatchingLogic.EntryIII.Pattern.toFOFormula p)
+@[instance_reducible] def MatchingLogic.EntryIII.Model.toFOStructure : {S : MatchingLogic.Signature} →
+  (M : MatchingLogic.Model S) → (MatchingLogic.EntryIII.relLanguage S).Structure M.carrier :=
+fun {S} M =>
+  { funMap := fun {n} a => isEmptyElim a,
+    RelMap := fun {n} r xs =>
+      have ys := fun i => xs (Fin.cast ⋯ i);
+      ys 0 ∈ M.interp ↑r fun i => ys i.succ }
+@[reducible] def MatchingLogic.EntryIII.Model.ofFOStructure : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    (A : Type) →
+      [Nonempty A] →
+        [((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Structure A] → MatchingLogic.Model S :=
+fun {S} {Var} A [Nonempty A] [((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Structure A] =>
+  { carrier := A, nonempty := ⋯,
+    interp := fun sigma args =>
+      {out | FirstOrder.Language.Structure.RelMap (Sum.inl (MatchingLogic.EntryIII.relSym sigma)) (Fin.cons out args)} }
+def MatchingLogic.EntryIII.Model.ofFOValuation : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    (A : Type) → [((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Structure A] → Var → A :=
+fun {S} {Var} A [((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Structure A] x =>
+  ↑((MatchingLogic.EntryIII.relLanguage S).con (some x))
+def MatchingLogic.EntryIII.Model.ofFOCurrent : {S : MatchingLogic.Signature} →
+  {Var : Type} → (A : Type) → [((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Structure A] → A :=
+fun {S} {Var} A [((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Structure A] =>
+  ↑((MatchingLogic.EntryIII.relLanguage S).con none)
+def MatchingLogic.EntryIII.Model.toFOParameters : {S : MatchingLogic.Signature} →
+  {Var : Type} → (M : MatchingLogic.Model S) → (Var → M.carrier) → M.carrier → Option Var → M.carrier :=
+fun {S} {Var} M rho u x =>
+  match x with
+  | none => u
+  | some x => rho x
+@MatchingLogic.EntryIII.realize_toFOAux_of_rel : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (M : MatchingLogic.Model S) [inst_1 : (MatchingLogic.EntryIII.relLanguage S).Structure M.carrier],
+  (∀ (sigma : S.Sym) (out : M.carrier) (args : Fin (S.arity sigma) → M.carrier),
+      FirstOrder.Language.Structure.RelMap (MatchingLogic.EntryIII.relSym sigma) (Fin.cons out args) ↔
+        out ∈ M.interp sigma args) →
+    ∀ (p : MatchingLogic.Pattern S Var) {alpha : Type u_1} (eta : Var → alpha) (cur : alpha) (v : alpha → M.carrier),
+      (MatchingLogic.EntryIII.Pattern.toFOAux p eta cur).Realize v ↔ v cur ∈ M.denote (v ∘ eta) p
+@MatchingLogic.EntryIII.realize_toFOAux : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (M : MatchingLogic.Model S) (p : MatchingLogic.Pattern S Var) {alpha : Type u_1} (eta : Var → alpha) (cur : alpha)
+  (v : alpha → M.carrier), (MatchingLogic.EntryIII.Pattern.toFOAux p eta cur).Realize v ↔ v cur ∈ M.denote (v ∘ eta) p
+@MatchingLogic.EntryIII.realize_toFOSentence : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (M : MatchingLogic.Model S) (rho : Var → M.carrier) (u : M.carrier) (p : MatchingLogic.Pattern S Var),
+  M.carrier ⊨ MatchingLogic.EntryIII.Pattern.toFOSentence p ↔ u ∈ M.denote rho p
+@MatchingLogic.EntryIII.realize_toFOSentence_ofFOStructure : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] (A : Type) [inst_1 : Nonempty A]
+  [inst_2 : ((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Structure A]
+  (p : MatchingLogic.Pattern S Var),
+  A ⊨ MatchingLogic.EntryIII.Pattern.toFOSentence p ↔
+    MatchingLogic.EntryIII.Model.ofFOCurrent A ∈
+      (MatchingLogic.EntryIII.Model.ofFOStructure A).denote (MatchingLogic.EntryIII.Model.ofFOValuation A) p
+def MatchingLogic.EntryIII.counterTheory : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [DecidableEq Var] →
+      Set (MatchingLogic.Pattern S Var) →
+        MatchingLogic.Pattern S Var → ((MatchingLogic.EntryIII.relLanguage S).withConstants (Option Var)).Theory :=
+fun {S} {Var} [DecidableEq Var] Delta phi =>
+  MatchingLogic.EntryIII.Pattern.toFOSentence '' Delta ∪
+    {FirstOrder.Language.Formula.not (MatchingLogic.EntryIII.Pattern.toFOSentence phi)}
+@MatchingLogic.EntryIII.not_counterTheory_isSatisfiable : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] {Delta : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocalCons Delta phi → ¬(MatchingLogic.EntryIII.counterTheory Delta phi).IsSatisfiable
+@MatchingLogic.EntryIII.counterTheory_isSatisfiable_of_counterexample : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] {Delta : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var}
+  (M : MatchingLogic.Model S) (rho : Var → M.carrier),
+  ∀ u ∈ M.denoteSet rho Delta, u ∉ M.denote rho phi → (MatchingLogic.EntryIII.counterTheory Delta phi).IsSatisfiable
+@MatchingLogic.EntryIII.localCons_iff_not_counterTheory_isSatisfiable : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] {Delta : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocalCons Delta phi ↔ ¬(MatchingLogic.EntryIII.counterTheory Delta phi).IsSatisfiable
+@MatchingLogic.EntryIII.localCons_compact : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Delta : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocalCons Delta phi →
+    ∃ l, (∀ delta ∈ l, delta ∈ Delta) ∧ MatchingLogic.LocalCons {delta | delta ∈ l} phi
+@MatchingLogic.localCons_compact : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Delta : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocalCons Delta phi →
+    ∃ l, (∀ delta ∈ l, delta ∈ Delta) ∧ MatchingLogic.LocalCons {delta | delta ∈ l} phi

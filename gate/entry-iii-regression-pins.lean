@@ -1,0 +1,61 @@
+-- Entry-point (iii): adversarial non-vacuity regressions.
+import MatchingLogic.EntryIII.Regression
+
+#check MatchingLogic.EntryIIIRegression.AuditSym
+#check @MatchingLogic.EntryIIIRegression.AuditSig
+#check @MatchingLogic.EntryIIIRegression.auditModel
+#check @MatchingLogic.EntryIIIRegression.auditRho
+#check @MatchingLogic.EntryIIIRegression.nullaryPattern
+#check @MatchingLogic.EntryIIIRegression.unaryPattern
+#check @MatchingLogic.EntryIIIRegression.bot_not_global_consequence
+#check @MatchingLogic.EntryIIIRegression.open_var_not_global_consequence
+#check @MatchingLogic.EntryIIIRegression.bot_not_empty_theorem
+#check @MatchingLogic.EntryIIIRegression.open_var_not_empty_theorem
+#check @MatchingLogic.EntryIIIRegression.global_completeness_bottom_both_false
+#check @MatchingLogic.EntryIIIRegression.nullary_closed
+#check @MatchingLogic.EntryIIIRegression.nullary_not_empty_theorem
+#check @MatchingLogic.EntryIIIRegression.unary_open
+#check @MatchingLogic.EntryIIIRegression.unary_not_empty_theorem
+#check @MatchingLogic.EntryIIIRegression.locConsistent_of_semantic_point
+#check @MatchingLogic.EntryIIIRegression.nullary_has_semantic_point
+#check @MatchingLogic.EntryIIIRegression.unary_has_semantic_point
+#check @MatchingLogic.EntryIIIRegression.nullary_singleton_locConsistent
+#check @MatchingLogic.EntryIIIRegression.unary_singleton_locConsistent
+#check @MatchingLogic.EntryIIIRegression.reflexive_local_antecedent
+#check @MatchingLogic.EntryIIIRegression.strong_completeness_has_nonempty_witness
+#check @MatchingLogic.EntryIIIRegression.empty_list_locConsistent
+#check @MatchingLogic.EntryIIIRegression.top_list_locConsistent
+#check @MatchingLogic.EntryIIIRegression.finite_model_existence_returns_actual_point
+#check @MatchingLogic.EntryIIIRegression.canonical_existence_nullary_branch
+#check @MatchingLogic.EntryIIIRegression.canonical_existence_unary_branch
+#check @MatchingLogic.EntryIIIRegression.actual_canonical_nullary_branch
+#check @MatchingLogic.EntryIIIRegression.actual_canonical_unary_branch
+#check @MatchingLogic.EntryIIIRegression.canonical_constructions_are_inhabited
+#check @MatchingLogic.EntryIIIRegression.HugeSig
+#check @MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised
+
+#print axioms MatchingLogic.EntryIIIRegression.bot_not_global_consequence
+#print axioms MatchingLogic.EntryIIIRegression.open_var_not_global_consequence
+#print axioms MatchingLogic.EntryIIIRegression.bot_not_empty_theorem
+#print axioms MatchingLogic.EntryIIIRegression.open_var_not_empty_theorem
+#print axioms MatchingLogic.EntryIIIRegression.global_completeness_bottom_both_false
+#print axioms MatchingLogic.EntryIIIRegression.nullary_closed
+#print axioms MatchingLogic.EntryIIIRegression.nullary_not_empty_theorem
+#print axioms MatchingLogic.EntryIIIRegression.unary_open
+#print axioms MatchingLogic.EntryIIIRegression.unary_not_empty_theorem
+#print axioms MatchingLogic.EntryIIIRegression.locConsistent_of_semantic_point
+#print axioms MatchingLogic.EntryIIIRegression.nullary_has_semantic_point
+#print axioms MatchingLogic.EntryIIIRegression.unary_has_semantic_point
+#print axioms MatchingLogic.EntryIIIRegression.nullary_singleton_locConsistent
+#print axioms MatchingLogic.EntryIIIRegression.unary_singleton_locConsistent
+#print axioms MatchingLogic.EntryIIIRegression.reflexive_local_antecedent
+#print axioms MatchingLogic.EntryIIIRegression.strong_completeness_has_nonempty_witness
+#print axioms MatchingLogic.EntryIIIRegression.empty_list_locConsistent
+#print axioms MatchingLogic.EntryIIIRegression.top_list_locConsistent
+#print axioms MatchingLogic.EntryIIIRegression.finite_model_existence_returns_actual_point
+#print axioms MatchingLogic.EntryIIIRegression.canonical_existence_nullary_branch
+#print axioms MatchingLogic.EntryIIIRegression.canonical_existence_unary_branch
+#print axioms MatchingLogic.EntryIIIRegression.actual_canonical_nullary_branch
+#print axioms MatchingLogic.EntryIIIRegression.actual_canonical_unary_branch
+#print axioms MatchingLogic.EntryIIIRegression.canonical_constructions_are_inhabited
+#print axioms MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised

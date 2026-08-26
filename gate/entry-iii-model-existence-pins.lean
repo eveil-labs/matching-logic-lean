@@ -1,0 +1,9 @@
+-- Entry-point (iii): conditional model existence and completeness compositions.
+import MatchingLogic.EntryIII.ModelExistence
+
+#check @MatchingLogic.finiteLocalModelExistence_of_canonicalExistence
+#check @MatchingLogic.finiteLocalCompleteness_of_canonicalExistence
+#check @MatchingLogic.strongLocalCompleteness_nat_of_canonicalExistence
+#print axioms MatchingLogic.finiteLocalModelExistence_of_canonicalExistence
+#print axioms MatchingLogic.finiteLocalCompleteness_of_canonicalExistence
+#print axioms MatchingLogic.strongLocalCompleteness_nat_of_canonicalExistence

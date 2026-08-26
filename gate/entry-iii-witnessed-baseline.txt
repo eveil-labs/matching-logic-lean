@@ -1,0 +1,50 @@
+def MatchingLogic.Witnessed : {S : MatchingLogic.Signature} → Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma =>
+  ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
+    MatchingLogic.Pattern.ex x p ∈ Gamma →
+      ∃ y, (MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x y p) ∈ Gamma
+def MatchingLogic.FreshWitnessed : {S : MatchingLogic.Signature} → Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma =>
+  ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
+    MatchingLogic.Pattern.ex x p ∈ Gamma →
+      ∃ y ∉ p.allVars, (MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x y p) ∈ Gamma
+@MatchingLogic.FreshWitnessed.toWitnessed : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.FreshWitnessed Gamma → MatchingLogic.Witnessed Gamma
+@MatchingLogic.Provable.swap_not : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {p q : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.Provable Gamma (p.imp q.nt) → MatchingLogic.Provable Gamma (q.imp p.nt)
+@MatchingLogic.LocProvable.not_ex_of_not_fresh : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)} {y : ℕ} {q : MatchingLogic.Pattern S ℕ},
+  (∀ p ∈ Gamma, y ∉ MatchingLogic.FV p) →
+    MatchingLogic.LocProvable Gamma q.nt → MatchingLogic.LocProvable Gamma (MatchingLogic.Pattern.ex y q).nt
+@MatchingLogic.locConsistent_insert_captureAvoidingWitness : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)} {x y : ℕ} {p : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.LocConsistent Gamma →
+    (∀ q ∈ Gamma, y ∉ MatchingLogic.FV q) →
+      y ∉ p.allVars →
+        MatchingLogic.LocConsistent
+          (insert ((MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x y p)) Gamma)
+@MatchingLogic.finite_locConsistent_extend_witnessed_isMCS_of_surjective : ∀ {S : MatchingLogic.Signature}
+  (enum : ℕ → MatchingLogic.Pattern S ℕ),
+  Function.Surjective enum →
+    ∀ (base : List (MatchingLogic.Pattern S ℕ)),
+      MatchingLogic.LocConsistent {q | q ∈ base} →
+        ∃ Delta, {q | q ∈ base} ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.Witnessed Delta
+@MatchingLogic.finite_locConsistent_extend_witnessed_isMCS : ∀ {S : MatchingLogic.Signature}
+  [Countable (MatchingLogic.Pattern S ℕ)] (base : List (MatchingLogic.Pattern S ℕ)),
+  MatchingLogic.LocConsistent {q | q ∈ base} →
+    ∃ Delta, {q | q ∈ base} ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.Witnessed Delta
+@MatchingLogic.finite_locConsistent_extend_freshWitnessed_isMCS_of_surjective : ∀ {S : MatchingLogic.Signature}
+  (enum : ℕ → MatchingLogic.Pattern S ℕ),
+  Function.Surjective enum →
+    ∀ (base : List (MatchingLogic.Pattern S ℕ)),
+      MatchingLogic.LocConsistent {q | q ∈ base} →
+        ∃ Delta, {q | q ∈ base} ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta
+@MatchingLogic.finite_locConsistent_extend_freshWitnessed_isMCS : ∀ {S : MatchingLogic.Signature}
+  [Countable (MatchingLogic.Pattern S ℕ)] (base : List (MatchingLogic.Pattern S ℕ)),
+  MatchingLogic.LocConsistent {q | q ∈ base} →
+    ∃ Delta, {q | q ∈ base} ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta
+'MatchingLogic.finite_locConsistent_extend_witnessed_isMCS' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.finite_locConsistent_extend_freshWitnessed_isMCS' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

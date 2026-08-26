@@ -1,0 +1,31 @@
+-- Entry-point (iii), wave A: local Hilbert/MCS API fixed before proofs.
+import MatchingLogic.EntryIII.LocalTheory
+
+#check @MatchingLogic.Provable.weaken
+#check @MatchingLogic.Provable.weaken_empty
+#check @MatchingLogic.Provable.imp_trans
+#check @MatchingLogic.Provable.imp_refl
+#check @MatchingLogic.Provable.imp_of
+#check @MatchingLogic.provable_top
+#check @MatchingLogic.Provable.and_intro
+#check @MatchingLogic.Provable.imp_and
+#check @MatchingLogic.Provable.and_elim_left
+#check @MatchingLogic.Provable.and_elim_right
+#check @MatchingLogic.Provable.or_intro_left
+#check @MatchingLogic.Provable.or_intro_right
+#check @MatchingLogic.provable_conj
+#check MatchingLogic.LocProvable
+#check MatchingLogic.LocConsistent
+#check MatchingLogic.IsMCS
+#check @MatchingLogic.LocProvable.mono
+#check @MatchingLogic.LocProvable.of_mem
+#check @MatchingLogic.LocProvable.of_provable
+#check @MatchingLogic.LocProvable.mp
+#check @MatchingLogic.LocProvable.and_intro
+#check @MatchingLogic.LocProvable.deduction_insert
+#check @MatchingLogic.IsMCS.mem_iff_locProvable
+#check @MatchingLogic.IsMCS.neg_mem_iff_not_mem
+#check @MatchingLogic.IsMCS.and_mem_iff
+#check @MatchingLogic.IsMCS.conj_mem_iff
+#check @MatchingLogic.IsMCS.or_mem_iff
+#check @MatchingLogic.IsMCS.mp_mem

@@ -1,0 +1,12 @@
+def MatchingLogic.FiniteLocalModelExistence : MatchingLogic.Signature → (Var : Type) → [DecidableEq Var] → Prop :=
+fun S Var [DecidableEq Var] =>
+  ∀ (l : List (MatchingLogic.Pattern S Var)),
+    MatchingLogic.LocConsistent {delta | delta ∈ l} → ∃ M rho u, u ∈ M.denoteSet rho {delta | delta ∈ l}
+@MatchingLogic.locProvable_empty_iff : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {phi : MatchingLogic.Pattern S Var}, MatchingLogic.LocProvable ∅ phi ↔ MatchingLogic.Provable ∅ phi
+@MatchingLogic.countertheory_locConsistent_of_not_provable : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] {l : List (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  ¬MatchingLogic.Provable ∅ ((MatchingLogic.conj l).imp phi) →
+    MatchingLogic.LocConsistent {delta | delta ∈ [MatchingLogic.conj l, phi.nt]}
+@MatchingLogic.finiteLocalCompleteness_of_finiteLocalModelExistence : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var], MatchingLogic.FiniteLocalModelExistence S Var → MatchingLogic.FiniteLocalCompleteness S Var

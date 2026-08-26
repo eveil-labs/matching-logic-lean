@@ -1,0 +1,70 @@
+@MatchingLogic.Signature.restrict : {S : MatchingLogic.Signature} →
+  [DecidableEq S.Sym] → Finset S.Sym → MatchingLogic.Signature
+@MatchingLogic.Pattern.liftSignature : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [inst : DecidableEq S.Sym] →
+      (F : Finset S.Sym) → MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var → MatchingLogic.Pattern S Var
+@MatchingLogic.Pattern.restrictSignature : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [inst : DecidableEq S.Sym] →
+      (F : Finset S.Sym) →
+        (p : MatchingLogic.Pattern S Var) →
+          p.symbolSupport ⊆ F → MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var
+@MatchingLogic.Pattern.lift_restrictSignature : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq S.Sym]
+  (F : Finset S.Sym) (p : MatchingLogic.Pattern S Var) (h : p.symbolSupport ⊆ F),
+  MatchingLogic.Pattern.liftSignature F (MatchingLogic.Pattern.restrictSignature F p h) = p
+@MatchingLogic.Pattern.liftSignature_substVar : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq S.Sym] (F : Finset S.Sym) (x y : Var)
+  (p : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var),
+  MatchingLogic.Pattern.liftSignature F (MatchingLogic.substVar x y p) =
+    MatchingLogic.substVar x y (MatchingLogic.Pattern.liftSignature F p)
+@MatchingLogic.Pattern.FV_liftSignature : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq S.Sym]
+  (F : Finset S.Sym) (p : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var),
+  MatchingLogic.FV (MatchingLogic.Pattern.liftSignature F p) = MatchingLogic.FV p
+@MatchingLogic.Pattern.captureFree_liftSignature : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq S.Sym] (F : Finset S.Sym) {x y : Var}
+  {p : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var},
+  MatchingLogic.CaptureFree x y p → MatchingLogic.CaptureFree x y (MatchingLogic.Pattern.liftSignature F p)
+@MatchingLogic.Pattern.liftSignature_update : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq S.Sym]
+  (F : Finset S.Sym) {n : ℕ} (args : Fin n → MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var) (i : Fin n)
+  (p : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var),
+  (fun j => MatchingLogic.Pattern.liftSignature F (Function.update args i p j)) =
+    Function.update (fun j => MatchingLogic.Pattern.liftSignature F (args j)) i
+      (MatchingLogic.Pattern.liftSignature F p)
+@MatchingLogic.Pattern.liftSignature_app_update : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq S.Sym] (F : Finset S.Sym) (sigma : (MatchingLogic.Signature.restrict F).Sym)
+  (args :
+    Fin ((MatchingLogic.Signature.restrict F).arity sigma) →
+      MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var)
+  (i : Fin ((MatchingLogic.Signature.restrict F).arity sigma))
+  (p : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var),
+  MatchingLogic.Pattern.liftSignature F (MatchingLogic.Pattern.app sigma (Function.update args i p)) =
+    MatchingLogic.Pattern.app (↑sigma)
+      (Function.update (fun j => MatchingLogic.Pattern.liftSignature F (args j)) i
+        (MatchingLogic.Pattern.liftSignature F p))
+@MatchingLogic.PForm.subst_liftSignature : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq S.Sym]
+  (F : Finset S.Sym) (p : MatchingLogic.PForm)
+  (theta : ℕ → MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var),
+  MatchingLogic.Pattern.liftSignature F (MatchingLogic.PForm.subst theta p) =
+    MatchingLogic.PForm.subst (fun n => MatchingLogic.Pattern.liftSignature F (theta n)) p
+@MatchingLogic.AppCtx.liftSignature : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [inst : DecidableEq S.Sym] →
+      (F : Finset S.Sym) → MatchingLogic.AppCtx (MatchingLogic.Signature.restrict F) Var → MatchingLogic.AppCtx S Var
+@MatchingLogic.AppCtx.plug_liftSignature : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq S.Sym] (F : Finset S.Sym) (C : MatchingLogic.AppCtx (MatchingLogic.Signature.restrict F) Var)
+  (p : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var),
+  MatchingLogic.Pattern.liftSignature F (C.plug p) =
+    (MatchingLogic.AppCtx.liftSignature F C).plug (MatchingLogic.Pattern.liftSignature F p)
+@MatchingLogic.Pattern.signatureNatCode : {T : MatchingLogic.Signature} →
+  [Encodable T.Sym] → MatchingLogic.Pattern T ℕ → ℕ
+@MatchingLogic.Pattern.signatureNatCode_injective : ∀ {T : MatchingLogic.Signature} [inst : Encodable T.Sym],
+  Function.Injective MatchingLogic.Pattern.signatureNatCode
+@MatchingLogic.restrictedPatternNatCountable : ∀ {S : MatchingLogic.Signature} [inst : DecidableEq S.Sym]
+  (F : Finset S.Sym), Countable (MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) ℕ)
+@MatchingLogic.Provable.liftSignature : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq S.Sym] (F : Finset S.Sym)
+  {Gamma : Set (MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var)}
+  {phi : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var},
+  MatchingLogic.Provable Gamma phi →
+    MatchingLogic.Provable (MatchingLogic.Pattern.liftSignature F '' Gamma) (MatchingLogic.Pattern.liftSignature F phi)

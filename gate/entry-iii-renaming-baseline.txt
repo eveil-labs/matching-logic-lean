@@ -1,0 +1,59 @@
+def MatchingLogic.Pattern.rename : {S : MatchingLogic.Signature} →
+  {Var Var' : Type} → (Var → Var') → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var' :=
+fun {S} {Var Var'} f x => MatchingLogic.Pattern.brecOn x (MatchingLogic.Pattern.rename._f f)
+def MatchingLogic.AppCtx.rename : {S : MatchingLogic.Signature} →
+  {Var Var' : Type} → (Var → Var') → MatchingLogic.AppCtx S Var → MatchingLogic.AppCtx S Var' :=
+fun {S} {Var Var'} f x => MatchingLogic.AppCtx.brecOn x (MatchingLogic.AppCtx.rename._f f)
+@MatchingLogic.Pattern.rename_id : ∀ {S : MatchingLogic.Signature} {Var : Type} (p : MatchingLogic.Pattern S Var),
+  MatchingLogic.Pattern.rename id p = p
+@MatchingLogic.Pattern.rename_comp : ∀ {S : MatchingLogic.Signature} {Var Var' Var'' : Type} (g : Var' → Var'')
+  (f : Var → Var') (p : MatchingLogic.Pattern S Var),
+  MatchingLogic.Pattern.rename g (MatchingLogic.Pattern.rename f p) = MatchingLogic.Pattern.rename (g ∘ f) p
+@MatchingLogic.Pattern.mem_FV_renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [DecidableEq Var]
+  [DecidableEq Var'] (e : Var ≃ Var') (p : MatchingLogic.Pattern S Var) (y : Var'),
+  y ∈ MatchingLogic.FV (MatchingLogic.Pattern.rename (⇑e) p) ↔ e.symm y ∈ MatchingLogic.FV p
+@MatchingLogic.Pattern.substVar_renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (e : Var ≃ Var') (x y : Var) (p : MatchingLogic.Pattern S Var),
+  MatchingLogic.Pattern.rename (⇑e) (MatchingLogic.substVar x y p) =
+    MatchingLogic.substVar (e x) (e y) (MatchingLogic.Pattern.rename (⇑e) p)
+@MatchingLogic.Pattern.captureFree_renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [DecidableEq Var]
+  [DecidableEq Var'] (e : Var ≃ Var') {x y : Var} {p : MatchingLogic.Pattern S Var},
+  MatchingLogic.CaptureFree x y p → MatchingLogic.CaptureFree (e x) (e y) (MatchingLogic.Pattern.rename (⇑e) p)
+@MatchingLogic.Pattern.rename_update : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} (f : Var → Var') {n : ℕ}
+  (args : Fin n → MatchingLogic.Pattern S Var) (i : Fin n) (p : MatchingLogic.Pattern S Var),
+  (fun j => MatchingLogic.Pattern.rename f (Function.update args i p j)) =
+    Function.update (fun j => MatchingLogic.Pattern.rename f (args j)) i (MatchingLogic.Pattern.rename f p)
+@MatchingLogic.PForm.subst_rename : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} (f : Var → Var')
+  (p : MatchingLogic.PForm) (theta : ℕ → MatchingLogic.Pattern S Var),
+  MatchingLogic.Pattern.rename f (MatchingLogic.PForm.subst theta p) =
+    MatchingLogic.PForm.subst (fun n => MatchingLogic.Pattern.rename f (theta n)) p
+@MatchingLogic.AppCtx.plug_renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (e : Var ≃ Var') (C : MatchingLogic.AppCtx S Var) (p : MatchingLogic.Pattern S Var),
+  MatchingLogic.Pattern.rename (⇑e) (C.plug p) =
+    (MatchingLogic.AppCtx.rename (⇑e) C).plug (MatchingLogic.Pattern.rename (⇑e) p)
+@MatchingLogic.rename_conj : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} (f : Var → Var')
+  (l : List (MatchingLogic.Pattern S Var)),
+  MatchingLogic.Pattern.rename f (MatchingLogic.conj l) =
+    MatchingLogic.conj (List.map (MatchingLogic.Pattern.rename f) l)
+@MatchingLogic.Model.denote_renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (M : MatchingLogic.Model S) (e : Var ≃ Var') (rho : Var' → M.carrier)
+  (p : MatchingLogic.Pattern S Var), M.denote rho (MatchingLogic.Pattern.rename (⇑e) p) = M.denote (rho ∘ ⇑e) p
+@MatchingLogic.Model.denoteSet_renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (M : MatchingLogic.Model S) (e : Var ≃ Var') (rho : Var' → M.carrier)
+  (Delta : Set (MatchingLogic.Pattern S Var)),
+  M.denoteSet rho (MatchingLogic.Pattern.rename ⇑e '' Delta) = M.denoteSet (rho ∘ ⇑e) Delta
+@MatchingLogic.Provable.renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (e : Var ≃ Var') {Gamma : Set (MatchingLogic.Pattern S Var)}
+  {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.Provable Gamma phi →
+    MatchingLogic.Provable (MatchingLogic.Pattern.rename ⇑e '' Gamma) (MatchingLogic.Pattern.rename (⇑e) phi)
+@MatchingLogic.localCons_renameEquiv : ∀ {S : MatchingLogic.Signature} {Var Var' : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq Var'] (e : Var ≃ Var') {Delta : Set (MatchingLogic.Pattern S Var)}
+  {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocalCons Delta phi ↔
+    MatchingLogic.LocalCons (MatchingLogic.Pattern.rename ⇑e '' Delta) (MatchingLogic.Pattern.rename (⇑e) phi)
+@MatchingLogic.strongLocalCompleteness_congr : ∀ {S : MatchingLogic.Signature} {Var Var' : Type}
+  [inst : DecidableEq Var] [inst_1 : DecidableEq Var'] (e : Var ≃ Var'),
+  MatchingLogic.StrongLocalCompleteness S Var ↔ MatchingLogic.StrongLocalCompleteness S Var'
+@MatchingLogic.strongLocalCompleteness_iff_nat : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [Denumerable Var], MatchingLogic.StrongLocalCompleteness S Var ↔ MatchingLogic.StrongLocalCompleteness S ℕ

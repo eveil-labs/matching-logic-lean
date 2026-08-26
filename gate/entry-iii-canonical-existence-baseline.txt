@@ -1,0 +1,107 @@
+def MatchingLogic.CanonicalExistenceProperty : MatchingLogic.Signature → Prop :=
+fun S =>
+  ∀ (Gamma : MatchingLogic.CanonicalCarrier S) (sigma : S.Sym) (args : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ),
+    MatchingLogic.Pattern.app sigma args ∈ ↑Gamma →
+      ∃ components,
+        (∀ (i : Fin (S.arity sigma)), args i ∈ ↑(components i)) ∧ Gamma ∈ MatchingLogic.canonicalInterp sigma components
+@MatchingLogic.Pattern.tupleAllVars : {S : MatchingLogic.Signature} →
+  {n : ℕ} → MatchingLogic.Pattern S ℕ → (Fin n → MatchingLogic.Pattern S ℕ) → Finset ℕ
+@MatchingLogic.Pattern.freshTuple : {S : MatchingLogic.Signature} →
+  {n : ℕ} → MatchingLogic.Pattern S ℕ → (Fin n → MatchingLogic.Pattern S ℕ) → Fin n → ℕ
+@MatchingLogic.Pattern.freshTuple_injective : ∀ {S : MatchingLogic.Signature} {n : ℕ} (p : MatchingLogic.Pattern S ℕ)
+  (Phi : Fin n → MatchingLogic.Pattern S ℕ), Function.Injective (p.freshTuple Phi)
+@MatchingLogic.Pattern.freshTuple_not_mem_body_allVars : ∀ {S : MatchingLogic.Signature} {n : ℕ}
+  (p : MatchingLogic.Pattern S ℕ) (Phi : Fin n → MatchingLogic.Pattern S ℕ) (i : Fin n), p.freshTuple Phi i ∉ p.allVars
+@MatchingLogic.Pattern.freshTuple_not_mem_component_allVars : ∀ {S : MatchingLogic.Signature} {n : ℕ}
+  (p : MatchingLogic.Pattern S ℕ) (Phi : Fin n → MatchingLogic.Pattern S ℕ) (i j : Fin n),
+  p.freshTuple Phi i ∉ (Phi j).allVars
+@MatchingLogic.Pattern.freshTuple_not_mem_body_FV : ∀ {S : MatchingLogic.Signature} {n : ℕ}
+  (p : MatchingLogic.Pattern S ℕ) (Phi : Fin n → MatchingLogic.Pattern S ℕ) (i : Fin n),
+  p.freshTuple Phi i ∉ MatchingLogic.FV p
+@MatchingLogic.Pattern.freshTuple_not_mem_component_FV : ∀ {S : MatchingLogic.Signature} {n : ℕ}
+  (p : MatchingLogic.Pattern S ℕ) (Phi : Fin n → MatchingLogic.Pattern S ℕ) (i j : Fin n),
+  p.freshTuple Phi i ∉ MatchingLogic.FV (Phi j)
+@MatchingLogic.NaryStageSystem : {S : MatchingLogic.Signature} →
+  (sigma : S.Sym) →
+    MatchingLogic.CanonicalCarrier S →
+      (Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ) → (ℕ → MatchingLogic.Pattern S ℕ) → Type
+@MatchingLogic.NaryStageSystem.stages : {S : MatchingLogic.Signature} →
+  {sigma : S.Sym} →
+    {Gamma : MatchingLogic.CanonicalCarrier S} →
+      {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ} →
+        {enum : ℕ → MatchingLogic.Pattern S ℕ} →
+          MatchingLogic.NaryStageSystem sigma Gamma phi enum →
+            ℕ → Fin (S.arity sigma) → List (MatchingLogic.Pattern S ℕ)
+@MatchingLogic.NaryStageSystem.base : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (self : MatchingLogic.NaryStageSystem sigma Gamma phi enum)
+  (i : Fin (S.arity sigma)), phi i ∈ self.stages 0 i
+@MatchingLogic.NaryStageSystem.mono : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (self : MatchingLogic.NaryStageSystem sigma Gamma phi enum) (k : ℕ)
+  (i : Fin (S.arity sigma)), ∀ q ∈ self.stages k i, q ∈ self.stages (k + 1) i
+@MatchingLogic.NaryStageSystem.app_mem : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (self : MatchingLogic.NaryStageSystem sigma Gamma phi enum) (k : ℕ),
+  (MatchingLogic.Pattern.app sigma fun i => MatchingLogic.conj (self.stages k i)) ∈ ↑Gamma
+@MatchingLogic.NaryStageSystem.decide : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (self : MatchingLogic.NaryStageSystem sigma Gamma phi enum) (k : ℕ)
+  (i : Fin (S.arity sigma)), enum k ∈ self.stages (k + 1) i ∨ (enum k).nt ∈ self.stages (k + 1) i
+@MatchingLogic.NaryStageSystem.witness : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (self : MatchingLogic.NaryStageSystem sigma Gamma phi enum) (k : ℕ)
+  (i : Fin (S.arity sigma)) (x : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  enum k = MatchingLogic.Pattern.ex x p →
+    ∃ y ∉ p.allVars,
+      (MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x y p) ∈ self.stages (k + 1) i
+@MatchingLogic.NaryStageSystem.limit : {S : MatchingLogic.Signature} →
+  {sigma : S.Sym} →
+    {Gamma : MatchingLogic.CanonicalCarrier S} →
+      {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ} →
+        {enum : ℕ → MatchingLogic.Pattern S ℕ} →
+          MatchingLogic.NaryStageSystem sigma Gamma phi enum → Fin (S.arity sigma) → Set (MatchingLogic.Pattern S ℕ)
+@MatchingLogic.NaryStageSystem.stage_mono : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum) {k l : ℕ},
+  k ≤ l → ∀ (i : Fin (S.arity sigma)) {q : MatchingLogic.Pattern S ℕ}, q ∈ T.stages k i → q ∈ T.stages l i
+@MatchingLogic.NaryStageSystem.stage_locConsistent : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum) (k : ℕ)
+  (i : Fin (S.arity sigma)), MatchingLogic.LocConsistent {q | q ∈ T.stages k i}
+@MatchingLogic.NaryStageSystem.limit_locConsistent : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum)
+  (i : Fin (S.arity sigma)), MatchingLogic.LocConsistent (T.limit i)
+@MatchingLogic.NaryStageSystem.limit_freshWitnessed : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum),
+  Function.Surjective enum → ∀ (i : Fin (S.arity sigma)), MatchingLogic.FreshWitnessed (T.limit i)
+@MatchingLogic.NaryStageSystem.limit_witnessed : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum),
+  Function.Surjective enum → ∀ (i : Fin (S.arity sigma)), MatchingLogic.Witnessed (T.limit i)
+@MatchingLogic.NaryStageSystem.limit_isMCS : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum),
+  Function.Surjective enum → ∀ (i : Fin (S.arity sigma)), MatchingLogic.IsMCS (T.limit i)
+@MatchingLogic.NaryStageSystem.limit_contains_base : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum)
+  (i : Fin (S.arity sigma)), phi i ∈ T.limit i
+@MatchingLogic.NaryStageSystem.root_mem_canonicalInterp : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum)
+  (henum : Function.Surjective enum), Gamma ∈ MatchingLogic.canonicalInterp sigma fun i => ⟨T.limit i, ⋯⟩
+@MatchingLogic.NaryStageSystem.canonicalExistence_of_stageSystem : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ}
+  {enum : ℕ → MatchingLogic.Pattern S ℕ} (T : MatchingLogic.NaryStageSystem sigma Gamma phi enum),
+  Function.Surjective enum →
+    ∃ components,
+      (∀ (i : Fin (S.arity sigma)), phi i ∈ ↑(components i)) ∧ Gamma ∈ MatchingLogic.canonicalInterp sigma components
+@MatchingLogic.canonicalExistence_zero : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {Gamma : MatchingLogic.CanonicalCarrier S} {phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ},
+  S.arity sigma = 0 →
+    MatchingLogic.Pattern.app sigma phi ∈ ↑Gamma →
+      ∃ components,
+        (∀ (i : Fin (S.arity sigma)), phi i ∈ ↑(components i)) ∧ Gamma ∈ MatchingLogic.canonicalInterp sigma components

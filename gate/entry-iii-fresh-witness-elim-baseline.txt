@@ -1,0 +1,45 @@
+@MatchingLogic.Pattern.captureAvoidingSubst_comp_eq_of_fresh_result : ∀ {S : MatchingLogic.Signature} {x y z : ℕ}
+  {p : MatchingLogic.Pattern S ℕ},
+  y ∉ p.allVars →
+    z ∉ p.allVars →
+      z ∉ (MatchingLogic.substVar x y p).allVars →
+        MatchingLogic.Pattern.captureAvoidingSubst y z (MatchingLogic.Pattern.captureAvoidingSubst x y p) =
+          MatchingLogic.Pattern.captureAvoidingSubst x z p
+@MatchingLogic.IsMCS.freshWitness_elim : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.FreshWitnessed Gamma →
+      ∀ {y : ℕ} {q : MatchingLogic.Pattern S ℕ},
+        MatchingLogic.Pattern.ex y q ∈ Gamma → ∃ z ∉ q.allVars, MatchingLogic.Pattern.captureAvoidingSubst y z q ∈ Gamma
+@MatchingLogic.Pattern.substList : {S : MatchingLogic.Signature} →
+  List ℕ → List ℕ → MatchingLogic.Pattern S ℕ → MatchingLogic.Pattern S ℕ
+@MatchingLogic.Pattern.FreshExListTrace : {S : MatchingLogic.Signature} →
+  List ℕ → List ℕ → MatchingLogic.Pattern S ℕ → Prop
+@MatchingLogic.IsMCS.exList_freshWitness_elim : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.FreshWitnessed Gamma →
+      ∀ (ys : List ℕ),
+        ys.Nodup →
+          ∀ (p : MatchingLogic.Pattern S ℕ),
+            MatchingLogic.Pattern.exList ys p ∈ Gamma →
+              ∃ zs, MatchingLogic.Pattern.FreshExListTrace ys zs p ∧ MatchingLogic.Pattern.substList ys zs p ∈ Gamma
+@MatchingLogic.IsMCS.witnessPush_freshTrace : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.FreshWitnessed Gamma →
+      ∀ {sigma : S.Sym} (Phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ) (p : MatchingLogic.Pattern S ℕ) (x : ℕ)
+        (y : Fin (S.arity sigma) → ℕ),
+        Function.Injective y →
+          (∀ (i : Fin (S.arity sigma)), y i ∉ p.allVars) →
+            (∀ (i j : Fin (S.arity sigma)), y i ∉ (Phi j).allVars) →
+              MatchingLogic.Pattern.app sigma Phi ∈ Gamma →
+                ∃ z,
+                  MatchingLogic.Pattern.FreshExListTrace (List.ofFn y) z
+                      (MatchingLogic.Pattern.app sigma fun i =>
+                        (Phi i).and
+                          ((MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x (y i) p))) ∧
+                    MatchingLogic.Pattern.substList (List.ofFn y) z
+                        (MatchingLogic.Pattern.app sigma fun i =>
+                          (Phi i).and
+                            ((MatchingLogic.Pattern.ex x p).imp
+                              (MatchingLogic.Pattern.captureAvoidingSubst x (y i) p))) ∈
+                      Gamma

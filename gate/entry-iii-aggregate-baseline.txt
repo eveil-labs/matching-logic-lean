@@ -1,0 +1,20 @@
+@MatchingLogic.canonicalExistence : ∀ {S : MatchingLogic.Signature} [Countable (MatchingLogic.Pattern S ℕ)],
+  MatchingLogic.CanonicalExistenceProperty S
+@MatchingLogic.strongLocalCompleteness : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [Denumerable Var], MatchingLogic.StrongLocalCompleteness S Var
+@MatchingLogic.global_completeness_entryIII : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [Denumerable Var] {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  (∀ gamma ∈ Gamma, MatchingLogic.Closed gamma) →
+    MatchingLogic.Closed phi → (MatchingLogic.GlobalCons Gamma phi ↔ MatchingLogic.Provable Gamma phi)
+MatchingLogic.EntryIIIRegression.strong_completeness_has_nonempty_witness : ∃ l,
+  l ≠ [] ∧
+    (∀ delta ∈ l, delta ∈ {MatchingLogic.Pattern.var 0}) ∧
+      MatchingLogic.Provable ∅ ((MatchingLogic.conj l).imp (MatchingLogic.Pattern.var 0))
+MatchingLogic.EntryIIIRegression.actual_canonical_nullary_branch : ∃ root components,
+  root ∈ MatchingLogic.canonicalInterp MatchingLogic.EntryIIIRegression.AuditSym.nullary components
+MatchingLogic.EntryIIIRegression.actual_canonical_unary_branch : ∃ root components,
+  MatchingLogic.Pattern.var 0 ∈ ↑(components ⟨0, ⋯⟩) ∧
+    root ∈ MatchingLogic.canonicalInterp MatchingLogic.EntryIIIRegression.AuditSym.unary components
+MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised : MatchingLogic.FiniteLocalModelExistence
+    MatchingLogic.EntryIIIRegression.HugeSig ℕ ∧
+  MatchingLogic.StrongLocalCompleteness MatchingLogic.EntryIIIRegression.HugeSig ℕ

@@ -1,0 +1,20 @@
+@MatchingLogic.Pattern.substVar_eq_self_of_not_mem_allVars : ∀ {S : MatchingLogic.Signature} {x y : ℕ}
+  {p : MatchingLogic.Pattern S ℕ}, x ∉ p.allVars → MatchingLogic.substVar x y p = p
+@MatchingLogic.Pattern.substVar_roundtrip : ∀ {S : MatchingLogic.Signature} {x y : ℕ} {p : MatchingLogic.Pattern S ℕ},
+  y ∉ p.allVars → MatchingLogic.substVar y x (MatchingLogic.substVar x y p) = p
+@MatchingLogic.Pattern.captureFree_of_not_mem_allVars : ∀ {S : MatchingLogic.Signature} {x y : ℕ}
+  {p : MatchingLogic.Pattern S ℕ}, y ∉ p.allVars → MatchingLogic.CaptureFree x y p
+@MatchingLogic.Pattern.captureFree_reverse_substVar : ∀ {S : MatchingLogic.Signature} {x y : ℕ}
+  {p : MatchingLogic.Pattern S ℕ}, y ∉ p.allVars → MatchingLogic.CaptureFree y x (MatchingLogic.substVar x y p)
+@MatchingLogic.Pattern.substVar_source_not_mem_FV : ∀ {S : MatchingLogic.Signature} {x y : ℕ}
+  (p : MatchingLogic.Pattern S ℕ), x ≠ y → x ∉ MatchingLogic.FV (MatchingLogic.substVar x y p)
+@MatchingLogic.Provable.alphaEx_forward : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {x y : ℕ} {p : MatchingLogic.Pattern S ℕ},
+  y ∉ p.allVars →
+    MatchingLogic.Provable Gamma
+      ((MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.ex y (MatchingLogic.substVar x y p)))
+@MatchingLogic.Provable.alphaEx_backward : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {x y : ℕ} {p : MatchingLogic.Pattern S ℕ},
+  y ∉ p.allVars →
+    MatchingLogic.Provable Gamma
+      ((MatchingLogic.Pattern.ex y (MatchingLogic.substVar x y p)).imp (MatchingLogic.Pattern.ex x p))

@@ -1,0 +1,11 @@
+def MatchingLogic.Pattern.allVars : {S : MatchingLogic.Signature} →
+  {Var : Type} → [DecidableEq Var] → MatchingLogic.Pattern S Var → Finset Var :=
+fun {S} {Var} [DecidableEq Var] x => MatchingLogic.Pattern.brecOn x MatchingLogic.Pattern.allVars._f
+@MatchingLogic.Pattern.FV_subset_allVars : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (p : MatchingLogic.Pattern S Var), MatchingLogic.FV p ⊆ ↑p.allVars
+def MatchingLogic.Pattern.fresh : {S : MatchingLogic.Signature} → MatchingLogic.Pattern S ℕ → ℕ :=
+fun {S} p => (insert 0 p.allVars).max' ⋯ + 1
+@MatchingLogic.Pattern.fresh_not_mem_allVars : ∀ {S : MatchingLogic.Signature} (p : MatchingLogic.Pattern S ℕ),
+  p.fresh ∉ p.allVars
+@MatchingLogic.Pattern.fresh_not_mem_FV : ∀ {S : MatchingLogic.Signature} (p : MatchingLogic.Pattern S ℕ),
+  p.fresh ∉ MatchingLogic.FV p

@@ -1,0 +1,24 @@
+@MatchingLogic.Provable.and_decide : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  (Phi psi : MatchingLogic.Pattern S ℕ), MatchingLogic.Provable Gamma (Phi.imp ((Phi.and psi).or (Phi.and psi.nt)))
+@MatchingLogic.IsMCS.app_choice_at : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    ∀ {sigma : S.Sym} (args : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ) (i : Fin (S.arity sigma))
+      (psi : MatchingLogic.Pattern S ℕ),
+      MatchingLogic.Pattern.app sigma args ∈ Gamma →
+        ∃ b,
+          MatchingLogic.Pattern.app sigma (Function.update args i ((args i).and (if b = true then psi else psi.nt))) ∈
+            Gamma
+@MatchingLogic.IsMCS.app_joint_choice : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    ∀ {sigma : S.Sym} (Phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ) (psi : MatchingLogic.Pattern S ℕ),
+      MatchingLogic.Pattern.app sigma Phi ∈ Gamma →
+        ∃ choose,
+          (MatchingLogic.Pattern.app sigma fun i => (Phi i).and (if choose i = true then psi else psi.nt)) ∈ Gamma
+@MatchingLogic.IsMCS.exists_joint_choice : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    ∀ {sigma : S.Sym} (L : Fin (S.arity sigma) → List (MatchingLogic.Pattern S ℕ)) (psi : MatchingLogic.Pattern S ℕ),
+      (MatchingLogic.Pattern.app sigma fun i => MatchingLogic.conj (L i)) ∈ Gamma →
+        ∃ choose,
+          (MatchingLogic.Pattern.app sigma fun i =>
+              (MatchingLogic.conj (L i)).and (if choose i = true then psi else psi.nt)) ∈
+            Gamma

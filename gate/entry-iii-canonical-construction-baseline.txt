@@ -1,0 +1,2 @@
+@MatchingLogic.canonicalExistence : ∀ {S : MatchingLogic.Signature} [Countable (MatchingLogic.Pattern S ℕ)],
+  MatchingLogic.CanonicalExistenceProperty S

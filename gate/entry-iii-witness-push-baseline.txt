@@ -1,0 +1,48 @@
+def MatchingLogic.Pattern.exList : {S : MatchingLogic.Signature} →
+  List ℕ → MatchingLogic.Pattern S ℕ → MatchingLogic.Pattern S ℕ :=
+fun {S} x x_1 =>
+  List.brecOn (motive := fun x => MatchingLogic.Pattern S ℕ → MatchingLogic.Pattern S ℕ) x
+    MatchingLogic.Pattern.exList._f x_1
+@MatchingLogic.Pattern.captureAvoidingSubst_not_mem_FV_of_ne : ∀ {S : MatchingLogic.Signature} {x y z : ℕ}
+  {p : MatchingLogic.Pattern S ℕ},
+  z ≠ y → z ∉ MatchingLogic.FV p → z ∉ MatchingLogic.FV (MatchingLogic.Pattern.captureAvoidingSubst x y p)
+@MatchingLogic.Provable.exists_captureAvoidingSubst : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)} {x y : ℕ} {p : MatchingLogic.Pattern S ℕ},
+  y ∉ MatchingLogic.FV p →
+    MatchingLogic.Provable Gamma
+      ((MatchingLogic.Pattern.ex x p).imp
+        (MatchingLogic.Pattern.ex y (MatchingLogic.Pattern.captureAvoidingSubst x y p)))
+@MatchingLogic.Provable.imp_exists_to_exists_imp : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)} {y : ℕ} {a q : MatchingLogic.Pattern S ℕ},
+  y ∉ MatchingLogic.FV a →
+    MatchingLogic.Provable Gamma ((a.imp (MatchingLogic.Pattern.ex y q)).imp (MatchingLogic.Pattern.ex y (a.imp q)))
+@MatchingLogic.Provable.and_exists : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)} {y : ℕ}
+  {p q : MatchingLogic.Pattern S ℕ},
+  y ∉ MatchingLogic.FV p →
+    MatchingLogic.Provable Gamma ((p.and (MatchingLogic.Pattern.ex y q)).imp (MatchingLogic.Pattern.ex y (p.and q)))
+@MatchingLogic.Provable.witnessPushArg : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {x y : ℕ} {phi Phi : MatchingLogic.Pattern S ℕ},
+  y ∉ MatchingLogic.FV phi →
+    y ∉ MatchingLogic.FV Phi →
+      MatchingLogic.Provable Gamma
+        (Phi.imp
+          (MatchingLogic.Pattern.ex y
+            (Phi.and ((MatchingLogic.Pattern.ex x phi).imp (MatchingLogic.Pattern.captureAvoidingSubst x y phi)))))
+@MatchingLogic.Provable.app_exists_list : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {sigma : S.Sym} (y : Fin (S.arity sigma) → ℕ) (body : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ),
+  (∀ (i j : Fin (S.arity sigma)), i ≠ j → y i ∉ MatchingLogic.FV (body j)) →
+    MatchingLogic.Provable Gamma
+      ((MatchingLogic.Pattern.app sigma fun i => MatchingLogic.Pattern.ex (y i) (body i)).imp
+        (MatchingLogic.Pattern.exList (List.ofFn y) (MatchingLogic.Pattern.app sigma body)))
+@MatchingLogic.Provable.witnessPush : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  (Phi : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ) (phi : MatchingLogic.Pattern S ℕ) (x : ℕ)
+  (y : Fin (S.arity sigma) → ℕ),
+  Function.Injective y →
+    (∀ (i : Fin (S.arity sigma)), y i ∉ MatchingLogic.FV phi) →
+      (∀ (i j : Fin (S.arity sigma)), y i ∉ MatchingLogic.FV (Phi j)) →
+        MatchingLogic.Provable ∅
+          ((MatchingLogic.Pattern.app sigma Phi).imp
+            (MatchingLogic.Pattern.exList (List.ofFn y)
+              (MatchingLogic.Pattern.app sigma fun i =>
+                (Phi i).and
+                  ((MatchingLogic.Pattern.ex x phi).imp (MatchingLogic.Pattern.captureAvoidingSubst x (y i) phi)))))

@@ -28,7 +28,12 @@ done
 # Nothing is allowed to sit in the tree unexamined.
 for f in $(find . -name '*.lean' -not -path './.lake/*' | sed 's|^\./||' | sort); do
   case "$f" in
-    MatchingLogic.lean|gate/pinned.lean) continue ;;
+    MatchingLogic.lean) continue ;;
+    # gate/*.lean are PIN FILES -- lists of `#print`/`#check` directives, no
+    # declarations of their own. gate/pinned.lean is elaborated by
+    # audit-pinned.sh, the gate/entry-iii-*-pins.lean by audit-entry-iii.sh,
+    # and all of them are scanned for axioms by audit-axiom-decls.sh.
+    gate/*.lean) continue ;;
     MatchingLogic/*) grep -qxF "$f" gate/complete-files.txt && continue ;;
     variants/*)  grep -qF "$f" gate/variants-expected.tsv && continue
                  case "$f" in variants/README*|variants/RESULTS*) continue ;; esac ;;

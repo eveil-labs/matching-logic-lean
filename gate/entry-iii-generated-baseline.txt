@@ -1,0 +1,101 @@
+def MatchingLogic.AppCtx.comp : {S : MatchingLogic.Signature} →
+  {Var : Type} → MatchingLogic.AppCtx S Var → MatchingLogic.AppCtx S Var → MatchingLogic.AppCtx S Var :=
+fun {S} {Var} outer inner => MatchingLogic.AppCtx.brecOn outer (MatchingLogic.AppCtx.comp._f inner)
+@MatchingLogic.AppCtx.plug_comp : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (outer inner : MatchingLogic.AppCtx S Var) (p : MatchingLogic.Pattern S Var),
+  (outer.comp inner).plug p = outer.plug (inner.plug p)
+def MatchingLogic.canonicalStep : {S : MatchingLogic.Signature} →
+  MatchingLogic.CanonicalCarrier S → MatchingLogic.CanonicalCarrier S → MatchingLogic.CanonicalCarrier S → Prop :=
+fun {S} root parent child => (MatchingLogic.canonicalModel root).Step parent child
+@MatchingLogic.canonicalStep_iff : ∀ {S : MatchingLogic.Signature}
+  (root parent child : MatchingLogic.CanonicalCarrier S),
+  MatchingLogic.canonicalStep root parent child ↔
+    ∃ sigma components i, parent ∈ MatchingLogic.canonicalInterp sigma components ∧ child = components i
+def MatchingLogic.Generated : {S : MatchingLogic.Signature} →
+  MatchingLogic.CanonicalCarrier S → MatchingLogic.CanonicalCarrier S → Prop :=
+fun {S} root world => Relation.ReflTransGen (MatchingLogic.canonicalStep root) root world
+inductive MatchingLogic.GeneratingPath : {S : MatchingLogic.Signature} →
+  MatchingLogic.CanonicalCarrier S → MatchingLogic.CanonicalCarrier S → List (MatchingLogic.Coord S) → Prop
+number of parameters: 2
+constructors:
+MatchingLogic.GeneratingPath.root : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S},
+  MatchingLogic.GeneratingPath root root []
+MatchingLogic.GeneratingPath.tail : ∀ {S : MatchingLogic.Signature} {root parent : MatchingLogic.CanonicalCarrier S}
+  {path : List (MatchingLogic.Coord S)} {sigma : S.Sym}
+  {components : Fin (S.arity sigma) → MatchingLogic.CanonicalCarrier S} {i : Fin (S.arity sigma)},
+  MatchingLogic.GeneratingPath root parent path →
+    parent ∈ MatchingLogic.canonicalInterp sigma components →
+      MatchingLogic.GeneratingPath root (components i) (path ++ [⟨sigma, i⟩])
+def MatchingLogic.generatingStepContext : {S : MatchingLogic.Signature} →
+  MatchingLogic.Coord S → MatchingLogic.AppCtx S ℕ :=
+fun {S} e => MatchingLogic.AppCtx.node e.fst e.snd (fun x => MatchingLogic.Pattern.tp) MatchingLogic.AppCtx.hole
+@MatchingLogic.generatingStepContext_plug : ∀ {S : MatchingLogic.Signature} (e : MatchingLogic.Coord S)
+  (p : MatchingLogic.Pattern S ℕ),
+  (MatchingLogic.generatingStepContext e).plug p =
+    MatchingLogic.Pattern.app e.fst (Function.update (fun x => MatchingLogic.Pattern.tp) e.snd p)
+def MatchingLogic.generatingContext : {S : MatchingLogic.Signature} →
+  List (MatchingLogic.Coord S) → MatchingLogic.AppCtx S ℕ :=
+fun {S} path => List.foldl (fun C e => C.comp (MatchingLogic.generatingStepContext e)) MatchingLogic.AppCtx.hole path
+@MatchingLogic.generatingContext_nil : ∀ {S : MatchingLogic.Signature},
+  MatchingLogic.generatingContext [] = MatchingLogic.AppCtx.hole
+@MatchingLogic.generatingContext_append : ∀ {S : MatchingLogic.Signature} (path : List (MatchingLogic.Coord S))
+  (e : MatchingLogic.Coord S),
+  MatchingLogic.generatingContext (path ++ [e]) =
+    (MatchingLogic.generatingContext path).comp (MatchingLogic.generatingStepContext e)
+@[reducible] def MatchingLogic.GeneratedCarrier : {S : MatchingLogic.Signature} →
+  MatchingLogic.CanonicalCarrier S → Type :=
+fun {S} root => { world // MatchingLogic.Generated root world }
+@MatchingLogic.GeneratedCarrier.isMCS : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  (world : MatchingLogic.GeneratedCarrier root), MatchingLogic.IsMCS ↑↑world
+@MatchingLogic.GeneratedCarrier.witnessed : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  (world : MatchingLogic.GeneratedCarrier root), MatchingLogic.Witnessed ↑↑world
+@MatchingLogic.generatedRoot : {S : MatchingLogic.Signature} →
+  (root : MatchingLogic.CanonicalCarrier S) → MatchingLogic.GeneratedCarrier root
+def MatchingLogic.generatedInterp : {S : MatchingLogic.Signature} →
+  (root : MatchingLogic.CanonicalCarrier S) →
+    (sigma : S.Sym) →
+      (Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root) → Set (MatchingLogic.GeneratedCarrier root) :=
+fun {S} root sigma components => {world | ↑world ∈ MatchingLogic.canonicalInterp sigma fun i => ↑(components i)}
+@[reducible] def MatchingLogic.generatedModel : {S : MatchingLogic.Signature} →
+  MatchingLogic.CanonicalCarrier S → MatchingLogic.Model S :=
+fun {S} root =>
+  { carrier := MatchingLogic.GeneratedCarrier root, nonempty := ⋯, interp := MatchingLogic.generatedInterp root }
+@MatchingLogic.mem_generatedInterp : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  {sigma : S.Sym} {components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root}
+  {world : MatchingLogic.GeneratedCarrier root},
+  world ∈ MatchingLogic.generatedInterp root sigma components ↔
+    ↑world ∈ MatchingLogic.canonicalInterp sigma fun i => ↑(components i)
+@MatchingLogic.generatedModel_interp : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
+  (sigma : S.Sym) (components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root),
+  (MatchingLogic.generatedModel root).interp sigma components = MatchingLogic.generatedInterp root sigma components
+@MatchingLogic.mem_generatedModel_interp : ∀ {S : MatchingLogic.Signature} {root : MatchingLogic.CanonicalCarrier S}
+  {sigma : S.Sym} {components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root}
+  {world : MatchingLogic.GeneratedCarrier root},
+  world ∈ (MatchingLogic.generatedModel root).interp sigma components ↔
+    ↑world ∈ MatchingLogic.canonicalInterp sigma fun i => ↑(components i)
+@MatchingLogic.CanonicalCarrier.top_mem : ∀ {S : MatchingLogic.Signature} (world : MatchingLogic.CanonicalCarrier S),
+  MatchingLogic.Pattern.tp ∈ ↑world
+@MatchingLogic.GeneratingPath.generated : ∀ {S : MatchingLogic.Signature}
+  {root world : MatchingLogic.CanonicalCarrier S} {path : List (MatchingLogic.Coord S)},
+  MatchingLogic.GeneratingPath root world path → MatchingLogic.Generated root world
+@MatchingLogic.Generated.exists_generatingPath : ∀ {S : MatchingLogic.Signature}
+  {root world : MatchingLogic.CanonicalCarrier S},
+  MatchingLogic.Generated root world → ∃ path, MatchingLogic.GeneratingPath root world path
+@MatchingLogic.GeneratingPath.plug_mem_root : ∀ {S : MatchingLogic.Signature}
+  {root world : MatchingLogic.CanonicalCarrier S} {path : List (MatchingLogic.Coord S)},
+  MatchingLogic.GeneratingPath root world path →
+    ∀ {p : MatchingLogic.Pattern S ℕ}, p ∈ ↑world → (MatchingLogic.generatingContext path).plug p ∈ ↑root
+@MatchingLogic.Generated.exists_generatingContext : ∀ {S : MatchingLogic.Signature}
+  {root world : MatchingLogic.CanonicalCarrier S},
+  MatchingLogic.Generated root world → ∃ C, ∀ p ∈ ↑world, C.plug p ∈ ↑root
+@MatchingLogic.generated_singleton_variables : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
+  {left right : MatchingLogic.CanonicalCarrier S},
+  MatchingLogic.Generated root left →
+    MatchingLogic.Generated root right →
+      ∀ {x : ℕ}, MatchingLogic.Pattern.var x ∈ ↑left → MatchingLogic.Pattern.var x ∈ ↑right → left = right
+@MatchingLogic.GeneratedCarrier.eq_of_var_mem : ∀ {S : MatchingLogic.Signature}
+  {root : MatchingLogic.CanonicalCarrier S} (left right : MatchingLogic.GeneratedCarrier root) {x : ℕ},
+  MatchingLogic.Pattern.var x ∈ ↑↑left → MatchingLogic.Pattern.var x ∈ ↑↑right → left = right
+'MatchingLogic.GeneratingPath.plug_mem_root' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.generated_singleton_variables' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.GeneratedCarrier.eq_of_var_mem' depends on axioms: [propext, Classical.choice, Quot.sound]

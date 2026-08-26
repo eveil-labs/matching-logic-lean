@@ -1,0 +1,12 @@
+def MatchingLogic.Pattern.symbolSupport : {S : MatchingLogic.Signature} →
+  {Var : Type} → [DecidableEq S.Sym] → MatchingLogic.Pattern S Var → Finset S.Sym :=
+fun {S} {Var} [DecidableEq S.Sym] x => MatchingLogic.Pattern.brecOn x MatchingLogic.Pattern.symbolSupport._f
+@MatchingLogic.Pattern.head_mem_symbolSupport : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq S.Sym]
+  (sigma : S.Sym) (args : Fin (S.arity sigma) → MatchingLogic.Pattern S Var),
+  sigma ∈ (MatchingLogic.Pattern.app sigma args).symbolSupport
+@MatchingLogic.Pattern.argument_symbolSupport_subset : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq S.Sym] (sigma : S.Sym) (args : Fin (S.arity sigma) → MatchingLogic.Pattern S Var)
+  (i : Fin (S.arity sigma)), (args i).symbolSupport ⊆ (MatchingLogic.Pattern.app sigma args).symbolSupport
+@MatchingLogic.Pattern.symbolSupport_conj : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq S.Sym]
+  (l : List (MatchingLogic.Pattern S Var)),
+  (MatchingLogic.conj l).symbolSupport = List.foldr (fun p support => p.symbolSupport ∪ support) ∅ l

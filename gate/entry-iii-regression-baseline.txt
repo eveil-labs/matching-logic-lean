@@ -1,0 +1,125 @@
+MatchingLogic.EntryIIIRegression.AuditSym : Type
+MatchingLogic.EntryIIIRegression.AuditSig : MatchingLogic.Signature
+MatchingLogic.EntryIIIRegression.auditModel : MatchingLogic.Model MatchingLogic.EntryIIIRegression.AuditSig
+MatchingLogic.EntryIIIRegression.auditRho : ℕ → MatchingLogic.EntryIIIRegression.auditModel.carrier
+MatchingLogic.EntryIIIRegression.nullaryPattern : MatchingLogic.Pattern MatchingLogic.EntryIIIRegression.AuditSig ℕ
+MatchingLogic.EntryIIIRegression.unaryPattern : MatchingLogic.Pattern MatchingLogic.EntryIIIRegression.AuditSig ℕ
+MatchingLogic.EntryIIIRegression.bot_not_global_consequence : ¬MatchingLogic.GlobalCons ∅ MatchingLogic.Pattern.bot
+MatchingLogic.EntryIIIRegression.open_var_not_global_consequence : ¬MatchingLogic.GlobalCons ∅
+    (MatchingLogic.Pattern.var 0)
+MatchingLogic.EntryIIIRegression.bot_not_empty_theorem : ¬MatchingLogic.Provable ∅ MatchingLogic.Pattern.bot
+MatchingLogic.EntryIIIRegression.open_var_not_empty_theorem : ¬MatchingLogic.Provable ∅ (MatchingLogic.Pattern.var 0)
+MatchingLogic.EntryIIIRegression.global_completeness_bottom_both_false : ¬MatchingLogic.GlobalCons ∅
+      MatchingLogic.Pattern.bot ∧
+  ¬MatchingLogic.Provable ∅ MatchingLogic.Pattern.bot ∧
+    (MatchingLogic.GlobalCons ∅ MatchingLogic.Pattern.bot ↔ MatchingLogic.Provable ∅ MatchingLogic.Pattern.bot)
+MatchingLogic.EntryIIIRegression.nullary_closed : MatchingLogic.Closed MatchingLogic.EntryIIIRegression.nullaryPattern
+MatchingLogic.EntryIIIRegression.nullary_not_empty_theorem : ¬MatchingLogic.Provable ∅
+    MatchingLogic.EntryIIIRegression.nullaryPattern
+MatchingLogic.EntryIIIRegression.unary_open : ¬MatchingLogic.Closed MatchingLogic.EntryIIIRegression.unaryPattern
+MatchingLogic.EntryIIIRegression.unary_not_empty_theorem : ¬MatchingLogic.Provable ∅
+    MatchingLogic.EntryIIIRegression.unaryPattern
+@MatchingLogic.EntryIIIRegression.locConsistent_of_semantic_point : ∀
+  {Gamma : Set (MatchingLogic.Pattern MatchingLogic.EntryIIIRegression.AuditSig ℕ)}
+  (M : MatchingLogic.Model MatchingLogic.EntryIIIRegression.AuditSig) (rho : ℕ → M.carrier),
+  ∀ u ∈ M.denoteSet rho Gamma, MatchingLogic.LocConsistent Gamma
+MatchingLogic.EntryIIIRegression.nullary_has_semantic_point : false ∈
+  MatchingLogic.EntryIIIRegression.auditModel.denoteSet MatchingLogic.EntryIIIRegression.auditRho
+    {MatchingLogic.EntryIIIRegression.nullaryPattern}
+MatchingLogic.EntryIIIRegression.unary_has_semantic_point : false ∈
+  MatchingLogic.EntryIIIRegression.auditModel.denoteSet MatchingLogic.EntryIIIRegression.auditRho
+    {MatchingLogic.EntryIIIRegression.unaryPattern}
+MatchingLogic.EntryIIIRegression.nullary_singleton_locConsistent : MatchingLogic.LocConsistent
+  {MatchingLogic.EntryIIIRegression.nullaryPattern}
+MatchingLogic.EntryIIIRegression.unary_singleton_locConsistent : MatchingLogic.LocConsistent
+  {MatchingLogic.EntryIIIRegression.unaryPattern}
+MatchingLogic.EntryIIIRegression.reflexive_local_antecedent : MatchingLogic.LocalCons {MatchingLogic.Pattern.var 0}
+  (MatchingLogic.Pattern.var 0)
+MatchingLogic.EntryIIIRegression.strong_completeness_has_nonempty_witness : ∃ l,
+  l ≠ [] ∧
+    (∀ delta ∈ l, delta ∈ {MatchingLogic.Pattern.var 0}) ∧
+      MatchingLogic.Provable ∅ ((MatchingLogic.conj l).imp (MatchingLogic.Pattern.var 0))
+MatchingLogic.EntryIIIRegression.empty_list_locConsistent : MatchingLogic.LocConsistent {delta | delta ∈ []}
+MatchingLogic.EntryIIIRegression.top_list_locConsistent : MatchingLogic.LocConsistent
+  {delta | delta ∈ [MatchingLogic.Pattern.tp]}
+MatchingLogic.EntryIIIRegression.finite_model_existence_returns_actual_point : ∃ M rho u,
+  u ∈ M.denoteSet rho {delta | delta ∈ [MatchingLogic.Pattern.tp]}
+MatchingLogic.EntryIIIRegression.canonical_existence_nullary_branch : ∀
+  (Gamma : MatchingLogic.CanonicalCarrier MatchingLogic.EntryIIIRegression.AuditSig),
+  MatchingLogic.EntryIIIRegression.nullaryPattern ∈ ↑Gamma →
+    ∃ components,
+      (∀ (i : Fin (MatchingLogic.EntryIIIRegression.AuditSig.arity MatchingLogic.EntryIIIRegression.AuditSym.nullary)),
+          (fun j => j.elim0) i ∈ ↑(components i)) ∧
+        Gamma ∈ MatchingLogic.canonicalInterp MatchingLogic.EntryIIIRegression.AuditSym.nullary components
+MatchingLogic.EntryIIIRegression.canonical_existence_unary_branch : ∀
+  (Gamma : MatchingLogic.CanonicalCarrier MatchingLogic.EntryIIIRegression.AuditSig),
+  MatchingLogic.EntryIIIRegression.unaryPattern ∈ ↑Gamma →
+    ∃ components,
+      (∀ (i : Fin (MatchingLogic.EntryIIIRegression.AuditSig.arity MatchingLogic.EntryIIIRegression.AuditSym.unary)),
+          MatchingLogic.Pattern.var 0 ∈ ↑(components i)) ∧
+        Gamma ∈ MatchingLogic.canonicalInterp MatchingLogic.EntryIIIRegression.AuditSym.unary components
+MatchingLogic.EntryIIIRegression.actual_canonical_nullary_branch : ∃ root components,
+  root ∈ MatchingLogic.canonicalInterp MatchingLogic.EntryIIIRegression.AuditSym.nullary components
+MatchingLogic.EntryIIIRegression.actual_canonical_unary_branch : ∃ root components,
+  MatchingLogic.Pattern.var 0 ∈ ↑(components ⟨0, ⋯⟩) ∧
+    root ∈ MatchingLogic.canonicalInterp MatchingLogic.EntryIIIRegression.AuditSym.unary components
+MatchingLogic.EntryIIIRegression.canonical_constructions_are_inhabited : ∃ root,
+  Nonempty (MatchingLogic.canonicalModel root).carrier ∧
+    Nonempty (MatchingLogic.generatedModel root).carrier ∧
+      Nonempty (MatchingLogic.completedModel root).carrier ∧
+        MatchingLogic.completedEmbed root (MatchingLogic.generatedRoot root) ∈ Set.univ
+MatchingLogic.EntryIIIRegression.HugeSig : MatchingLogic.Signature
+MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised : MatchingLogic.FiniteLocalModelExistence
+    MatchingLogic.EntryIIIRegression.HugeSig ℕ ∧
+  MatchingLogic.StrongLocalCompleteness MatchingLogic.EntryIIIRegression.HugeSig ℕ
+'MatchingLogic.EntryIIIRegression.bot_not_global_consequence' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.open_var_not_global_consequence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.bot_not_empty_theorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.open_var_not_empty_theorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.global_completeness_bottom_both_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.nullary_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.nullary_not_empty_theorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.unary_open' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.unary_not_empty_theorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.locConsistent_of_semantic_point' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.nullary_has_semantic_point' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.unary_has_semantic_point' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.nullary_singleton_locConsistent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.unary_singleton_locConsistent' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.reflexive_local_antecedent' depends on axioms: [propext, Quot.sound]
+'MatchingLogic.EntryIIIRegression.strong_completeness_has_nonempty_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.empty_list_locConsistent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.top_list_locConsistent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.EntryIIIRegression.finite_model_existence_returns_actual_point' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.canonical_existence_nullary_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.canonical_existence_unary_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.actual_canonical_nullary_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.actual_canonical_unary_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.canonical_constructions_are_inhabited' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.EntryIIIRegression.arbitrary_ambient_signature_reduction_is_exercised' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

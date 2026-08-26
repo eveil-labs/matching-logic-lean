@@ -1,0 +1,50 @@
+@MatchingLogic.Pattern.symbolSupportList : {S : MatchingLogic.Signature} →
+  {Var : Type} → [DecidableEq S.Sym] → List (MatchingLogic.Pattern S Var) → Finset S.Sym
+@MatchingLogic.Pattern.symbolSupport_subset_symbolSupportList : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq S.Sym] (l : List (MatchingLogic.Pattern S Var)) {p : MatchingLogic.Pattern S Var},
+  p ∈ l → p.symbolSupport ⊆ MatchingLogic.Pattern.symbolSupportList l
+@MatchingLogic.Pattern.restrictList : {S : MatchingLogic.Signature} →
+  {Var : Type} →
+    [inst : DecidableEq S.Sym] →
+      (F : Finset S.Sym) →
+        (l : List (MatchingLogic.Pattern S Var)) →
+          (∀ p ∈ l, p.symbolSupport ⊆ F) → List (MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var)
+@MatchingLogic.Pattern.liftSignature_restrictList : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq S.Sym] (F : Finset S.Sym) (l : List (MatchingLogic.Pattern S Var))
+  (h : ∀ p ∈ l, p.symbolSupport ⊆ F),
+  List.map (MatchingLogic.Pattern.liftSignature F) (MatchingLogic.Pattern.restrictList F l h) = l
+@MatchingLogic.Pattern.liftSignature_conj : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq S.Sym]
+  (F : Finset S.Sym) (l : List (MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var)),
+  MatchingLogic.Pattern.liftSignature F (MatchingLogic.conj l) =
+    MatchingLogic.conj (List.map (MatchingLogic.Pattern.liftSignature F) l)
+@MatchingLogic.Model.extendSignature : {S : MatchingLogic.Signature} →
+  [inst : DecidableEq S.Sym] →
+    (F : Finset S.Sym) → MatchingLogic.Model (MatchingLogic.Signature.restrict F) → MatchingLogic.Model S
+@MatchingLogic.Model.app_extendSignature : ∀ {S : MatchingLogic.Signature} [inst : DecidableEq S.Sym] (F : Finset S.Sym)
+  (M : MatchingLogic.Model (MatchingLogic.Signature.restrict F)) (sigma : (MatchingLogic.Signature.restrict F).Sym)
+  (A : Fin (S.arity ↑sigma) → Set M.carrier), (MatchingLogic.Model.extendSignature F M).app (↑sigma) A = M.app sigma A
+@MatchingLogic.Model.denote_extendSignature_liftSignature : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] [inst_1 : DecidableEq S.Sym] (F : Finset S.Sym)
+  (M : MatchingLogic.Model (MatchingLogic.Signature.restrict F)) (rho : Var → M.carrier)
+  (p : MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var),
+  (MatchingLogic.Model.extendSignature F M).denote rho (MatchingLogic.Pattern.liftSignature F p) = M.denote rho p
+@MatchingLogic.Model.denote_extendSignature_restrictSignature : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] [inst_1 : DecidableEq S.Sym] (F : Finset S.Sym)
+  (M : MatchingLogic.Model (MatchingLogic.Signature.restrict F)) (rho : Var → M.carrier)
+  (p : MatchingLogic.Pattern S Var) (h : p.symbolSupport ⊆ F),
+  (MatchingLogic.Model.extendSignature F M).denote rho p = M.denote rho (MatchingLogic.Pattern.restrictSignature F p h)
+@MatchingLogic.Model.denoteSet_extendSignature_liftSignature_list : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] [inst_1 : DecidableEq S.Sym] (F : Finset S.Sym)
+  (M : MatchingLogic.Model (MatchingLogic.Signature.restrict F)) (rho : Var → M.carrier)
+  (l : List (MatchingLogic.Pattern (MatchingLogic.Signature.restrict F) Var)),
+  (MatchingLogic.Model.extendSignature F M).denoteSet rho
+      {delta | delta ∈ List.map (MatchingLogic.Pattern.liftSignature F) l} =
+    M.denoteSet rho {delta | delta ∈ l}
+@MatchingLogic.restrictList_locConsistent : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  [inst_1 : DecidableEq S.Sym] (F : Finset S.Sym) (l : List (MatchingLogic.Pattern S Var))
+  (hsupport : ∀ p ∈ l, p.symbolSupport ⊆ F),
+  MatchingLogic.LocConsistent {delta | delta ∈ l} →
+    MatchingLogic.LocConsistent {delta | delta ∈ MatchingLogic.Pattern.restrictList F l hsupport}
+@MatchingLogic.finiteLocalModelExistence_of_restricted : ∀ {S : MatchingLogic.Signature} [inst : DecidableEq S.Sym],
+  (∀ (F : Finset S.Sym), MatchingLogic.FiniteLocalModelExistence (MatchingLogic.Signature.restrict F) ℕ) →
+    MatchingLogic.FiniteLocalModelExistence S ℕ

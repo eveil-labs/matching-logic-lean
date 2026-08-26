@@ -1,0 +1,102 @@
+@MatchingLogic.Pattern.substVar_self : ∀ {S : MatchingLogic.Signature} (x : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  MatchingLogic.substVar x x p = p
+@MatchingLogic.Pattern.captureFree_self : ∀ {S : MatchingLogic.Signature} (x : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  MatchingLogic.CaptureFree x x p
+@MatchingLogic.Provable.ex_mono : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)} {x : ℕ}
+  {p q : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.Provable Gamma (p.imp q) →
+    MatchingLogic.Provable Gamma ((MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.ex x q))
+@MatchingLogic.Provable.imp_mono : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {p p' q q' : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.Provable Gamma (p'.imp p) →
+    MatchingLogic.Provable Gamma (q.imp q') → MatchingLogic.Provable Gamma ((p.imp q).imp (p'.imp q'))
+@MatchingLogic.Provable.app_mono : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {sigma : S.Sym} {args args' : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ},
+  (∀ (i : Fin (S.arity sigma)), MatchingLogic.Provable Gamma ((args i).imp (args' i))) →
+    MatchingLogic.Provable Gamma ((MatchingLogic.Pattern.app sigma args).imp (MatchingLogic.Pattern.app sigma args'))
+def MatchingLogic.Pattern.complexity : {S : MatchingLogic.Signature} → MatchingLogic.Pattern S ℕ → ℕ :=
+fun {S} x => MatchingLogic.Pattern.brecOn x MatchingLogic.Pattern.complexity._f
+@MatchingLogic.Pattern.complexity_substVar : ∀ {S : MatchingLogic.Signature} (x y : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  (MatchingLogic.substVar x y p).complexity = p.complexity
+structure MatchingLogic.Pattern.AlphaEq {S : MatchingLogic.Signature} (p q : MatchingLogic.Pattern S ℕ) : Prop
+number of parameters: 3
+fields:
+  MatchingLogic.Pattern.AlphaEq.forward : ∀ (Gamma : Set (MatchingLogic.Pattern S ℕ)),
+      MatchingLogic.Provable Gamma (p.imp q)
+  MatchingLogic.Pattern.AlphaEq.backward : ∀ (Gamma : Set (MatchingLogic.Pattern S ℕ)),
+      MatchingLogic.Provable Gamma (q.imp p)
+  MatchingLogic.Pattern.AlphaEq.complexity_eq : p.complexity = q.complexity
+constructor:
+  MatchingLogic.Pattern.AlphaEq.mk {S : MatchingLogic.Signature} {p q : MatchingLogic.Pattern S ℕ}
+    (forward : ∀ (Gamma : Set (MatchingLogic.Pattern S ℕ)), MatchingLogic.Provable Gamma (p.imp q))
+    (backward : ∀ (Gamma : Set (MatchingLogic.Pattern S ℕ)), MatchingLogic.Provable Gamma (q.imp p))
+    (complexity_eq : p.complexity = q.complexity) : p.AlphaEq q
+@MatchingLogic.Pattern.AlphaEq.refl : ∀ {S : MatchingLogic.Signature} (p : MatchingLogic.Pattern S ℕ), p.AlphaEq p
+@MatchingLogic.Pattern.AlphaEq.symm : ∀ {S : MatchingLogic.Signature} {p q : MatchingLogic.Pattern S ℕ},
+  p.AlphaEq q → q.AlphaEq p
+@MatchingLogic.Pattern.AlphaEq.trans : ∀ {S : MatchingLogic.Signature} {p q r : MatchingLogic.Pattern S ℕ},
+  p.AlphaEq q → q.AlphaEq r → p.AlphaEq r
+@MatchingLogic.Pattern.AlphaEq.imp : ∀ {S : MatchingLogic.Signature} {p p' q q' : MatchingLogic.Pattern S ℕ},
+  p.AlphaEq p' → q.AlphaEq q' → (p.imp q).AlphaEq (p'.imp q')
+@MatchingLogic.Pattern.AlphaEq.app : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {args args' : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ},
+  (∀ (i : Fin (S.arity sigma)), (args i).AlphaEq (args' i)) →
+    (MatchingLogic.Pattern.app sigma args).AlphaEq (MatchingLogic.Pattern.app sigma args')
+@MatchingLogic.Pattern.AlphaEq.ex : ∀ {S : MatchingLogic.Signature} (x : ℕ) {p q : MatchingLogic.Pattern S ℕ},
+  p.AlphaEq q → (MatchingLogic.Pattern.ex x p).AlphaEq (MatchingLogic.Pattern.ex x q)
+@MatchingLogic.Pattern.AlphaEq.alphaEx : ∀ {S : MatchingLogic.Signature} {x y : ℕ} {p : MatchingLogic.Pattern S ℕ},
+  y ∉ p.allVars → (MatchingLogic.Pattern.ex x p).AlphaEq (MatchingLogic.Pattern.ex y (MatchingLogic.substVar x y p))
+@MatchingLogic.Pattern.AlphaEq.denote_eq : ∀ {S : MatchingLogic.Signature} {p q : MatchingLogic.Pattern S ℕ},
+  p.AlphaEq q → ∀ (M : MatchingLogic.Model S) (rho : ℕ → M.carrier), M.denote rho p = M.denote rho q
+def MatchingLogic.Pattern.AvoidsBinder : {S : MatchingLogic.Signature} → ℕ → MatchingLogic.Pattern S ℕ → Prop :=
+fun {S} y x => MatchingLogic.Pattern.brecOn x (MatchingLogic.Pattern.AvoidsBinder._f y)
+def MatchingLogic.Pattern.avoidBinder : {S : MatchingLogic.Signature} →
+  ℕ → MatchingLogic.Pattern S ℕ → MatchingLogic.Pattern S ℕ :=
+fun {S} y x => MatchingLogic.Pattern.brecOn x (MatchingLogic.Pattern.avoidBinder._f y)
+@MatchingLogic.Pattern.AvoidsBinder.substVar : ∀ {S : MatchingLogic.Signature} {y x z : ℕ}
+  {p : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.Pattern.AvoidsBinder y p → MatchingLogic.Pattern.AvoidsBinder y (MatchingLogic.substVar x z p)
+@MatchingLogic.Pattern.avoidBinder_avoids : ∀ {S : MatchingLogic.Signature} (y : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  MatchingLogic.Pattern.AvoidsBinder y (MatchingLogic.Pattern.avoidBinder y p)
+@MatchingLogic.Pattern.AvoidsBinder.captureFree : ∀ {S : MatchingLogic.Signature} {y x : ℕ}
+  {p : MatchingLogic.Pattern S ℕ}, MatchingLogic.Pattern.AvoidsBinder y p → MatchingLogic.CaptureFree x y p
+@MatchingLogic.Pattern.avoidBinder_alphaEq : ∀ {S : MatchingLogic.Signature} (y : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  p.AlphaEq (MatchingLogic.Pattern.avoidBinder y p)
+@MatchingLogic.Pattern.avoidBinder_eq_self_of_not_mem_allVars : ∀ {S : MatchingLogic.Signature} {y : ℕ}
+  {p : MatchingLogic.Pattern S ℕ}, y ∉ p.allVars → MatchingLogic.Pattern.avoidBinder y p = p
+def MatchingLogic.Pattern.captureAvoidingSubst : {S : MatchingLogic.Signature} →
+  ℕ → ℕ → MatchingLogic.Pattern S ℕ → MatchingLogic.Pattern S ℕ :=
+fun {S} x y p => MatchingLogic.substVar x y (MatchingLogic.Pattern.avoidBinder y p)
+def MatchingLogic.Pattern.IsCaptureAvoidingSubst : {S : MatchingLogic.Signature} →
+  ℕ → ℕ → MatchingLogic.Pattern S ℕ → MatchingLogic.Pattern S ℕ → Prop :=
+fun {S} x y p q => ∃ p', p.AlphaEq p' ∧ MatchingLogic.CaptureFree x y p' ∧ q = MatchingLogic.substVar x y p'
+@MatchingLogic.Pattern.captureAvoidingSubst_spec : ∀ {S : MatchingLogic.Signature} (x y : ℕ)
+  (p : MatchingLogic.Pattern S ℕ),
+  MatchingLogic.Pattern.IsCaptureAvoidingSubst x y p (MatchingLogic.Pattern.captureAvoidingSubst x y p)
+@MatchingLogic.Pattern.exists_isCaptureAvoidingSubst : ∀ {S : MatchingLogic.Signature} (x y : ℕ)
+  (p : MatchingLogic.Pattern S ℕ), ∃ q, MatchingLogic.Pattern.IsCaptureAvoidingSubst x y p q
+@MatchingLogic.Pattern.captureAvoidingSubst_eq_substVar_of_fresh : ∀ {S : MatchingLogic.Signature} {x y : ℕ}
+  {p : MatchingLogic.Pattern S ℕ},
+  y ∉ p.allVars → MatchingLogic.Pattern.captureAvoidingSubst x y p = MatchingLogic.substVar x y p
+@MatchingLogic.Pattern.complexity_captureAvoidingSubst : ∀ {S : MatchingLogic.Signature} (x y : ℕ)
+  (p : MatchingLogic.Pattern S ℕ), (MatchingLogic.Pattern.captureAvoidingSubst x y p).complexity = p.complexity
+@MatchingLogic.Pattern.IsCaptureAvoidingSubst.complexity_eq : ∀ {S : MatchingLogic.Signature} {x y : ℕ}
+  {p q : MatchingLogic.Pattern S ℕ}, MatchingLogic.Pattern.IsCaptureAvoidingSubst x y p q → q.complexity = p.complexity
+@MatchingLogic.Model.denote_substVar_of_captureFree : ∀ {S : MatchingLogic.Signature} (M : MatchingLogic.Model S)
+  (rho : ℕ → M.carrier) {x y : ℕ} {p : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.CaptureFree x y p →
+    M.denote rho (MatchingLogic.substVar x y p) = M.denote (Function.update rho x (rho y)) p
+@MatchingLogic.Model.denote_captureAvoidingSubst : ∀ {S : MatchingLogic.Signature} (M : MatchingLogic.Model S)
+  (rho : ℕ → M.carrier) (x y : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  M.denote rho (MatchingLogic.Pattern.captureAvoidingSubst x y p) = M.denote (Function.update rho x (rho y)) p
+@MatchingLogic.Pattern.IsCaptureAvoidingSubst.denote : ∀ {S : MatchingLogic.Signature} {x y : ℕ}
+  {p q : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.Pattern.IsCaptureAvoidingSubst x y p q →
+    ∀ (M : MatchingLogic.Model S) (rho : ℕ → M.carrier), M.denote rho q = M.denote (Function.update rho x (rho y)) p
+@MatchingLogic.Provable.captureAvoidingExQuant : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)} (x y : ℕ) (p : MatchingLogic.Pattern S ℕ),
+  MatchingLogic.Provable Gamma ((MatchingLogic.Pattern.captureAvoidingSubst x y p).imp (MatchingLogic.Pattern.ex x p))
+@MatchingLogic.Pattern.IsCaptureAvoidingSubst.exQuant : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)} {x y : ℕ} {p q : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.Pattern.IsCaptureAvoidingSubst x y p q →
+    MatchingLogic.Provable Gamma (q.imp (MatchingLogic.Pattern.ex x p))

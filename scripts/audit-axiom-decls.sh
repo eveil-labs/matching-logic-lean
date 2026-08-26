@@ -41,6 +41,8 @@ open Lean in
 run_cmd do
   let env ← getEnv
   let mut bad := #[]
+  let mut leaked := #[]
+  let mut npriv := 0
   let mut seen := 0
   for (n, ci) in env.constants.toList do
     -- OURS = declared in the file being compiled, or in a module of ours.
@@ -51,10 +53,8 @@ run_cmd do
       | some idx => pure ((env.header.moduleNames[idx.toNat]!).toString.startsWith "MatchingLogic")
     unless ours do continue
     -- A private name is `_private.<Module>.0.<realName>`, which `isInternal`
-    -- reports TRUE for -- so filtering on `isInternal` skips every private
-    -- declaration before its kind is ever looked at. That is how the first
-    -- repair of this gate still let a `private axiom` through. Strip the
-    -- private wrapper first and judge the name underneath.
+    -- reports TRUE for -- so filtering on `isInternal` would skip every private
+    -- declaration before its kind is looked at. Strip the wrapper first.
     let user := (privateToUserName? n).getD n
     if user.isInternal then continue
     seen := seen + 1
@@ -62,15 +62,27 @@ run_cmd do
     match ci with
     | .axiomInfo _  => bad := bad.push s!"axiom {s}"
     | .opaqueInfo _ => bad := bad.push s!"opaque {s}"
-    -- A private DEFINITION cannot be reached by `#print`, so no pin list built
-    -- from the environment can cover it, while it can still appear inside a
-    -- public statement type. Private THEOREMS are fine: a theorem type is not
-    -- part of anything public, only its proof, and the kernel checks that.
-    | .defnInfo _   => if isPrivateName n then bad := bad.push s!"private def {s}"
-    | .inductInfo _ => if isPrivateName n then bad := bad.push s!"private type {s}"
+    | .defnInfo _   => if isPrivateName n then npriv := npriv + 1
+    | .inductInfo _ => if isPrivateName n then npriv := npriv + 1
     | _ => pure ()
-  IO.println s!"AXIOMSCAN seen={seen} raw={bad.size}"
+    -- A private name cannot be reached by `#print`, so no pin list built from
+    -- the environment covers it. That only MATTERS when such a name appears in
+    -- the TYPE of something PUBLIC: then a public statement says something the
+    -- pin list cannot see. Round nine banned private definitions outright;
+    -- meeting the entry-(iii) development showed that rule was too strong --
+    -- 17 construction internals are private and not one surfaces in a public
+    -- type. So check the thing that actually matters.
+    unless isPrivateName n do
+      for c in ci.type.getUsedConstants do
+        if isPrivateName c then
+          let cOurs ←
+            match env.getModuleIdxFor? c with
+            | none     => pure true
+            | some i   => pure ((env.header.moduleNames[i.toNat]!).toString.startsWith "MatchingLogic")
+          if cOurs then leaked := leaked.push s!"private-in-public-type {s} uses {c}"
+  IO.println s!"AXIOMSCAN seen={seen} raw={bad.size + leaked.size} priv={npriv}"
   for x in bad.qsort (· < ·) do IO.println s!"BAD {x}"
+  for x in leaked.qsort (· < ·) do IO.println s!"BAD {x}"
 '
 
 # Compiler-generated private auxiliaries -- the `match_N.splitter` definitions
@@ -82,7 +94,7 @@ run_cmd do
 # `in` on a `set_option` line so the source scan below also misses it, would
 # pass. Nothing in this repository does that, and the source scan is un-filtered
 # precisely so that the ordinary spelling is caught by something.
-AUX='\.(match_[0-9]+|eq_[0-9]+|proof_[0-9]+)(\.|$)|\.splitter$'
+AUX='\.(match_[0-9]+|eq_[0-9]+|proof_[0-9]+)(\.|$)|\.(splitter|recOn|casesOn|noConfusion|noConfusionType|ctorIdx|below|brecOn|ndrec|binductionOn|injEq|sizeOf_spec)$|\.mk\.noConfusion$'
 
 kernel_scan () {           # $1 = label, $2 = lean file to append the scan to, $3 = floor
   local label=$1 src=$2 floor=$3 tmp out seen bad
@@ -102,11 +114,12 @@ kernel_scan () {           # $1 = label, $2 = lean file to append the scan to, $
   line=$(printf '%s\n' "$out" | grep '^AXIOMSCAN ' | tail -1)
   # `[ "$x" -ne 0 ]` on a non-number returns 2, which an `if` reads as false --
   # a fail-open path. Parse only a line that is exactly the expected shape.
-  if ! printf '%s' "$line" | grep -qE '^AXIOMSCAN seen=[0-9]+ raw=[0-9]+$'; then
+  if ! printf '%s' "$line" | grep -qE '^AXIOMSCAN seen=[0-9]+ raw=[0-9]+ priv=[0-9]+$'; then
     echo "FAIL  $label -- no well-formed scan line; a scan that produces nothing is not a scan"
     fail=1; return
   fi
   seen=${line#*seen=}; seen=${seen%% *}
+  npriv=${line#*priv=}; npriv=${npriv%% *}
   bad=$(printf '%s\n' "$out" | grep '^BAD ' | grep -vE "$AUX" | grep -c . || true)
   # An empty environment would report "0 axioms" and look clean.
   if [ "$seen" -lt "$floor" ]; then
@@ -114,10 +127,10 @@ kernel_scan () {           # $1 = label, $2 = lean file to append the scan to, $
     fail=1; return
   fi
   if [ "$bad" -ne 0 ]; then
-    echo "FAIL  $label -- $bad forbidden declaration(s):"
+    echo "FAIL  $label -- $bad forbidden declaration(s) or private leak(s):"
     printf '%s\n' "$out" | grep '^BAD ' | grep -vE "$AUX" | sed 's/^BAD /      /'; fail=1; return
   fi
-  echo "ok    $label -- $seen declarations, no axiom, no opaque, no private definition"
+  echo "ok    $label -- $seen declarations, no axiom, no opaque, no private name in a public type ($npriv private definitions, none leaked)"
 }
 
 echo "== kernel scan =="
@@ -137,8 +150,8 @@ echo "== source scan =="
 # for text, and for the two files with nothing to compile.
 # `find`, not a flat glob: on the entry-point-(iii) branch a flat glob reported
 # "30 Lean files" while 29 more sat one directory down, unscanned.
-FILES=$( { echo MatchingLogic.lean; echo gate/pinned.lean; \
-           find MatchingLogic variants alternates -name '*.lean'; } 2>/dev/null | sort)
+FILES=$( { echo MatchingLogic.lean; \
+           find gate MatchingLogic variants alternates -name '*.lean'; } 2>/dev/null | sort)
 nf=$(printf '%s\n' "$FILES" | grep -c . || true)
 if [ "${nf:-0}" -lt 25 ]; then
   echo "FAIL  source scan found only ${nf:-0} Lean files; the file list is broken"; fail=1

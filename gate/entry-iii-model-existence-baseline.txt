@@ -1,0 +1,16 @@
+@MatchingLogic.finiteLocalModelExistence_of_canonicalExistence : ∀ {S : MatchingLogic.Signature}
+  [Countable (MatchingLogic.Pattern S ℕ)],
+  MatchingLogic.CanonicalExistenceProperty S → MatchingLogic.FiniteLocalModelExistence S ℕ
+@MatchingLogic.finiteLocalCompleteness_of_canonicalExistence : ∀ {S : MatchingLogic.Signature}
+  [Countable (MatchingLogic.Pattern S ℕ)],
+  MatchingLogic.CanonicalExistenceProperty S → MatchingLogic.FiniteLocalCompleteness S ℕ
+@MatchingLogic.strongLocalCompleteness_nat_of_canonicalExistence : ∀ {S : MatchingLogic.Signature}
+  [Countable (MatchingLogic.Pattern S ℕ)],
+  MatchingLogic.CanonicalExistenceProperty S → MatchingLogic.StrongLocalCompleteness S ℕ
+'MatchingLogic.finiteLocalModelExistence_of_canonicalExistence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MatchingLogic.finiteLocalCompleteness_of_canonicalExistence' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.strongLocalCompleteness_nat_of_canonicalExistence' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -49,3 +49,9 @@ MatchingLogic.soundness	(S) Soundness -- DISCHARGED, not assumed	2
 MatchingLogic.subset_localize	Definition 6 (Gamma subset of Delta_Gamma)	3
 MatchingLogic.two_copies	Lemma 11 (two copies), membership form	4
 MatchingLogic.two_copies_set	Lemma 11 (two copies), displayed form	4
+MatchingLogic.canonicalExistence	n-ary Existence Lemma (Section 3.7 of [4]); the engine of (L)	10
+MatchingLogic.finiteLocalModelExistence	finite local model existence, arbitrary ambient signature	10
+MatchingLogic.finiteLocalCompleteness	finite-list local completeness over the source variable type	10
+MatchingLogic.strongLocalCompleteness_nat	(L) strong local completeness, at Var = Nat	10
+MatchingLogic.strongLocalCompleteness	ENTRY POINT (iii): (L), at any countably infinite Var	10
+MatchingLogic.global_completeness_entryIII	Corollary 15 with (L) and (S) both discharged	10

@@ -1,0 +1,13 @@
+def MatchingLogic.FiniteLocalCompleteness : MatchingLogic.Signature → (Var : Type) → [DecidableEq Var] → Prop :=
+fun S Var [DecidableEq Var] =>
+  ∀ (l : List (MatchingLogic.Pattern S Var)) (phi : MatchingLogic.Pattern S Var),
+    MatchingLogic.LocalCons {delta | delta ∈ l} phi → MatchingLogic.Provable ∅ ((MatchingLogic.conj l).imp phi)
+@MatchingLogic.Model.denote_conj_eq_denoteSet_list : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var] (M : MatchingLogic.Model S) (rho : Var → M.carrier) (l : List (MatchingLogic.Pattern S Var)),
+  M.denote rho (MatchingLogic.conj l) = M.denoteSet rho {delta | delta ∈ l}
+@MatchingLogic.localCons_list_iff : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (l : List (MatchingLogic.Pattern S Var)) (phi : MatchingLogic.Pattern S Var),
+  MatchingLogic.LocalCons {delta | delta ∈ l} phi ↔
+    ∀ (M : MatchingLogic.Model S) (rho : Var → M.carrier), M.denote rho (MatchingLogic.conj l) ⊆ M.denote rho phi
+@MatchingLogic.strongLocalCompleteness_of_finiteLocalCompleteness : ∀ {S : MatchingLogic.Signature} {Var : Type}
+  [inst : DecidableEq Var], MatchingLogic.FiniteLocalCompleteness S Var → MatchingLogic.StrongLocalCompleteness S Var

@@ -1,0 +1,85 @@
+@MatchingLogic.Provable.weaken : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma Delta : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  Gamma ⊆ Delta → MatchingLogic.Provable Gamma phi → MatchingLogic.Provable Delta phi
+@MatchingLogic.Provable.weaken_empty : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.Provable ∅ phi → MatchingLogic.Provable Gamma phi
+@MatchingLogic.Provable.imp_trans : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi chi : MatchingLogic.Pattern S Var},
+  MatchingLogic.Provable Gamma (phi.imp psi) →
+    MatchingLogic.Provable Gamma (psi.imp chi) → MatchingLogic.Provable Gamma (phi.imp chi)
+@MatchingLogic.Provable.imp_refl : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) (phi : MatchingLogic.Pattern S Var),
+  MatchingLogic.Provable Gamma (phi.imp phi)
+@MatchingLogic.Provable.imp_of : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.Provable Gamma phi → MatchingLogic.Provable Gamma (psi.imp phi)
+@MatchingLogic.provable_top : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)), MatchingLogic.Provable Gamma MatchingLogic.Pattern.tp
+@MatchingLogic.Provable.and_intro : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.Provable Gamma phi → MatchingLogic.Provable Gamma psi → MatchingLogic.Provable Gamma (phi.and psi)
+@MatchingLogic.Provable.imp_and : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {alpha beta gamma : MatchingLogic.Pattern S Var},
+  MatchingLogic.Provable Gamma (alpha.imp beta) →
+    MatchingLogic.Provable Gamma (alpha.imp gamma) → MatchingLogic.Provable Gamma (alpha.imp (beta.and gamma))
+@MatchingLogic.Provable.and_elim_left : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) (phi psi : MatchingLogic.Pattern S Var),
+  MatchingLogic.Provable Gamma ((phi.and psi).imp phi)
+@MatchingLogic.Provable.and_elim_right : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) (phi psi : MatchingLogic.Pattern S Var),
+  MatchingLogic.Provable Gamma ((phi.and psi).imp psi)
+@MatchingLogic.Provable.or_intro_left : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) (phi psi : MatchingLogic.Pattern S Var),
+  MatchingLogic.Provable Gamma (phi.imp (phi.or psi))
+@MatchingLogic.Provable.or_intro_right : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) (phi psi : MatchingLogic.Pattern S Var),
+  MatchingLogic.Provable Gamma (psi.imp (phi.or psi))
+@MatchingLogic.provable_conj : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} (l : List (MatchingLogic.Pattern S Var)),
+  (∀ delta ∈ l, MatchingLogic.Provable Gamma delta) → MatchingLogic.Provable Gamma (MatchingLogic.conj l)
+MatchingLogic.LocProvable {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) (phi : MatchingLogic.Pattern S Var) : Prop
+MatchingLogic.LocConsistent {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) : Prop
+MatchingLogic.IsMCS {S : MatchingLogic.Signature} {Var : Type} [DecidableEq Var]
+  (Gamma : Set (MatchingLogic.Pattern S Var)) : Prop
+@MatchingLogic.LocProvable.mono : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma Delta : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  Gamma ⊆ Delta → MatchingLogic.LocProvable Gamma phi → MatchingLogic.LocProvable Delta phi
+@MatchingLogic.LocProvable.of_mem : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  phi ∈ Gamma → MatchingLogic.LocProvable Gamma phi
+@MatchingLogic.LocProvable.of_provable : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.Provable ∅ phi → MatchingLogic.LocProvable Gamma phi
+@MatchingLogic.LocProvable.mp : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocProvable Gamma phi →
+    MatchingLogic.LocProvable Gamma (phi.imp psi) → MatchingLogic.LocProvable Gamma psi
+@MatchingLogic.LocProvable.and_intro : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocProvable Gamma phi →
+    MatchingLogic.LocProvable Gamma psi → MatchingLogic.LocProvable Gamma (phi.and psi)
+@MatchingLogic.LocProvable.deduction_insert : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.LocProvable (insert phi Gamma) psi → MatchingLogic.LocProvable Gamma (phi.imp psi)
+@MatchingLogic.IsMCS.mem_iff_locProvable : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.IsMCS Gamma → (phi ∈ Gamma ↔ MatchingLogic.LocProvable Gamma phi)
+@MatchingLogic.IsMCS.neg_mem_iff_not_mem : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi : MatchingLogic.Pattern S Var},
+  MatchingLogic.IsMCS Gamma → (phi.nt ∈ Gamma ↔ phi ∉ Gamma)
+@MatchingLogic.IsMCS.and_mem_iff : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.IsMCS Gamma → (phi.and psi ∈ Gamma ↔ phi ∈ Gamma ∧ psi ∈ Gamma)
+@MatchingLogic.IsMCS.conj_mem_iff : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)},
+  MatchingLogic.IsMCS Gamma →
+    ∀ (l : List (MatchingLogic.Pattern S Var)), MatchingLogic.conj l ∈ Gamma ↔ ∀ phi ∈ l, phi ∈ Gamma
+@MatchingLogic.IsMCS.or_mem_iff : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.IsMCS Gamma → (phi.or psi ∈ Gamma ↔ phi ∈ Gamma ∨ psi ∈ Gamma)
+@MatchingLogic.IsMCS.mp_mem : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
+  {Gamma : Set (MatchingLogic.Pattern S Var)} {phi psi : MatchingLogic.Pattern S Var},
+  MatchingLogic.IsMCS Gamma → phi ∈ Gamma → phi.imp psi ∈ Gamma → psi ∈ Gamma

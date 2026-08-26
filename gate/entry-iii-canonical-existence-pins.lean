@@ -1,0 +1,29 @@
+-- Entry-point (iii): source-faithful simultaneous-stage Existence Lemma API.
+import MatchingLogic.EntryIII.CanonicalExistence
+
+#print MatchingLogic.CanonicalExistenceProperty
+#check @MatchingLogic.Pattern.tupleAllVars
+#check @MatchingLogic.Pattern.freshTuple
+#check @MatchingLogic.Pattern.freshTuple_injective
+#check @MatchingLogic.Pattern.freshTuple_not_mem_body_allVars
+#check @MatchingLogic.Pattern.freshTuple_not_mem_component_allVars
+#check @MatchingLogic.Pattern.freshTuple_not_mem_body_FV
+#check @MatchingLogic.Pattern.freshTuple_not_mem_component_FV
+#check @MatchingLogic.NaryStageSystem
+#check @MatchingLogic.NaryStageSystem.stages
+#check @MatchingLogic.NaryStageSystem.base
+#check @MatchingLogic.NaryStageSystem.mono
+#check @MatchingLogic.NaryStageSystem.app_mem
+#check @MatchingLogic.NaryStageSystem.decide
+#check @MatchingLogic.NaryStageSystem.witness
+#check @MatchingLogic.NaryStageSystem.limit
+#check @MatchingLogic.NaryStageSystem.stage_mono
+#check @MatchingLogic.NaryStageSystem.stage_locConsistent
+#check @MatchingLogic.NaryStageSystem.limit_locConsistent
+#check @MatchingLogic.NaryStageSystem.limit_freshWitnessed
+#check @MatchingLogic.NaryStageSystem.limit_witnessed
+#check @MatchingLogic.NaryStageSystem.limit_isMCS
+#check @MatchingLogic.NaryStageSystem.limit_contains_base
+#check @MatchingLogic.NaryStageSystem.root_mem_canonicalInterp
+#check @MatchingLogic.NaryStageSystem.canonicalExistence_of_stageSystem
+#check @MatchingLogic.canonicalExistence_zero

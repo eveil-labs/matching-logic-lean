@@ -1,0 +1,19 @@
+def MatchingLogic.CanonicalExistenceProperty : MatchingLogic.Signature → Prop :=
+fun S =>
+  ∀ (Gamma : MatchingLogic.CanonicalCarrier S) (sigma : S.Sym) (args : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ),
+    MatchingLogic.Pattern.app sigma args ∈ ↑Gamma →
+      ∃ components,
+        (∀ (i : Fin (S.arity sigma)), args i ∈ ↑(components i)) ∧ Gamma ∈ MatchingLogic.canonicalInterp sigma components
+@MatchingLogic.IsMCS.bot_not_mem : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma → MatchingLogic.Pattern.bot ∉ Gamma
+@MatchingLogic.IsMCS.imp_mem_iff : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma → ∀ (p q : MatchingLogic.Pattern S ℕ), p.imp q ∈ Gamma ↔ p ∉ Gamma ∨ q ∈ Gamma
+@MatchingLogic.completed_truth : ∀ {S : MatchingLogic.Signature},
+  MatchingLogic.CanonicalExistenceProperty S →
+    ∀ (root : MatchingLogic.CanonicalCarrier S) (world : MatchingLogic.GeneratedCarrier root)
+      (p : MatchingLogic.Pattern S ℕ),
+      p ∈ ↑↑world ↔
+        MatchingLogic.completedEmbed root world ∈
+          (MatchingLogic.completedModel root).denote (MatchingLogic.completedValuation root) p
+'MatchingLogic.IsMCS.imp_mem_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.completed_truth' depends on axioms: [propext, Classical.choice, Quot.sound]

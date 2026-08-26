@@ -1,0 +1,15 @@
+-- Entry-point (iii): source-faithful witnessed Lindenbaum extension.
+import MatchingLogic.EntryIII.Witnessed
+
+#print MatchingLogic.Witnessed
+#print MatchingLogic.FreshWitnessed
+#check @MatchingLogic.FreshWitnessed.toWitnessed
+#check @MatchingLogic.Provable.swap_not
+#check @MatchingLogic.LocProvable.not_ex_of_not_fresh
+#check @MatchingLogic.locConsistent_insert_captureAvoidingWitness
+#check @MatchingLogic.finite_locConsistent_extend_witnessed_isMCS_of_surjective
+#check @MatchingLogic.finite_locConsistent_extend_witnessed_isMCS
+#check @MatchingLogic.finite_locConsistent_extend_freshWitnessed_isMCS_of_surjective
+#check @MatchingLogic.finite_locConsistent_extend_freshWitnessed_isMCS
+#print axioms MatchingLogic.finite_locConsistent_extend_witnessed_isMCS
+#print axioms MatchingLogic.finite_locConsistent_extend_freshWitnessed_isMCS

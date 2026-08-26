@@ -1,0 +1,49 @@
+def MatchingLogic.CanonicalCarrier : MatchingLogic.Signature → Type :=
+fun S => { Gamma // MatchingLogic.IsMCS Gamma ∧ MatchingLogic.FreshWitnessed Gamma }
+@MatchingLogic.CanonicalCarrier.coeSet : {S : MatchingLogic.Signature} →
+  Coe (MatchingLogic.CanonicalCarrier S) (Set (MatchingLogic.Pattern S ℕ))
+@MatchingLogic.CanonicalCarrier.coe_mk : ∀ {S : MatchingLogic.Signature} (Gamma : Set (MatchingLogic.Pattern S ℕ))
+  (h : MatchingLogic.IsMCS Gamma ∧ MatchingLogic.FreshWitnessed Gamma), ↑⟨Gamma, h⟩ = Gamma
+@MatchingLogic.CanonicalCarrier.isMCS : ∀ {S : MatchingLogic.Signature} (Gamma : MatchingLogic.CanonicalCarrier S),
+  MatchingLogic.IsMCS ↑Gamma
+@MatchingLogic.CanonicalCarrier.freshWitnessed : ∀ {S : MatchingLogic.Signature}
+  (Gamma : MatchingLogic.CanonicalCarrier S), MatchingLogic.FreshWitnessed ↑Gamma
+@MatchingLogic.CanonicalCarrier.witnessed : ∀ {S : MatchingLogic.Signature} (Gamma : MatchingLogic.CanonicalCarrier S),
+  MatchingLogic.Witnessed ↑Gamma
+@MatchingLogic.IsMCS.exists_var_mem_of_witnessed : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → ∃ y, MatchingLogic.Pattern.var y ∈ Gamma
+@MatchingLogic.CanonicalCarrier.exists_var_mem : ∀ {S : MatchingLogic.Signature}
+  (Gamma : MatchingLogic.CanonicalCarrier S), ∃ y, MatchingLogic.Pattern.var y ∈ ↑Gamma
+def MatchingLogic.canonicalInterp : {S : MatchingLogic.Signature} →
+  (sigma : S.Sym) → (Fin (S.arity sigma) → MatchingLogic.CanonicalCarrier S) → Set (MatchingLogic.CanonicalCarrier S) :=
+fun {S} sigma components =>
+  {Gamma |
+    ∀ (args : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ),
+      (∀ (i : Fin (S.arity sigma)), args i ∈ ↑(components i)) → MatchingLogic.Pattern.app sigma args ∈ ↑Gamma}
+@[reducible] def MatchingLogic.canonicalModel : {S : MatchingLogic.Signature} →
+  MatchingLogic.CanonicalCarrier S → MatchingLogic.Model S :=
+fun {S} root => { carrier := MatchingLogic.CanonicalCarrier S, nonempty := ⋯, interp := MatchingLogic.canonicalInterp }
+@MatchingLogic.mem_canonicalInterp : ∀ {S : MatchingLogic.Signature} {sigma : S.Sym}
+  {components : Fin (S.arity sigma) → MatchingLogic.CanonicalCarrier S} {Gamma : MatchingLogic.CanonicalCarrier S},
+  Gamma ∈ MatchingLogic.canonicalInterp sigma components ↔
+    ∀ (args : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ),
+      (∀ (i : Fin (S.arity sigma)), args i ∈ ↑(components i)) → MatchingLogic.Pattern.app sigma args ∈ ↑Gamma
+@MatchingLogic.canonicalModel_interp : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
+  (sigma : S.Sym) (components : Fin (S.arity sigma) → MatchingLogic.CanonicalCarrier S),
+  (MatchingLogic.canonicalModel root).interp sigma components = MatchingLogic.canonicalInterp sigma components
+@MatchingLogic.mem_canonicalModel_interp : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
+  {sigma : S.Sym} {components : Fin (S.arity sigma) → MatchingLogic.CanonicalCarrier S}
+  {Gamma : MatchingLogic.CanonicalCarrier S},
+  Gamma ∈ (MatchingLogic.canonicalModel root).interp sigma components ↔
+    ∀ (args : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ),
+      (∀ (i : Fin (S.arity sigma)), args i ∈ ↑(components i)) → MatchingLogic.Pattern.app sigma args ∈ ↑Gamma
+@MatchingLogic.LocProvable.provable_empty : ∀ {S : MatchingLogic.Signature} {p : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.LocProvable ∅ p → MatchingLogic.Provable ∅ p
+@MatchingLogic.IsMCS.singleton_argument_locConsistent : ∀ {S : MatchingLogic.Signature}
+  {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma →
+    ∀ {sigma : S.Sym} {args : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ},
+      MatchingLogic.Pattern.app sigma args ∈ Gamma → ∀ (i : Fin (S.arity sigma)), MatchingLogic.LocConsistent {args i}
+'MatchingLogic.IsMCS.exists_var_mem_of_witnessed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MatchingLogic.IsMCS.singleton_argument_locConsistent' depends on axioms: [propext, Classical.choice, Quot.sound]

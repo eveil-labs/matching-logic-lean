@@ -50,3 +50,9 @@
 | Definition 6 (Gamma subset of Delta_Gamma) | `MatchingLogic.subset_localize` | none |
 | Lemma 11 (two copies), membership form | `MatchingLogic.two_copies` | propext, Classical.choice, Quot.sound |
 | Lemma 11 (two copies), displayed form | `MatchingLogic.two_copies_set` | propext, Classical.choice, Quot.sound |
+| n-ary Existence Lemma (Section 3.7 of [4]); the engine of (L) | `MatchingLogic.canonicalExistence` | propext, Classical.choice, Quot.sound |
+| finite local model existence, arbitrary ambient signature | `MatchingLogic.finiteLocalModelExistence` | propext, Classical.choice, Quot.sound |
+| finite-list local completeness over the source variable type | `MatchingLogic.finiteLocalCompleteness` | propext, Classical.choice, Quot.sound |
+| (L) strong local completeness, at Var = Nat | `MatchingLogic.strongLocalCompleteness_nat` | propext, Classical.choice, Quot.sound |
+| ENTRY POINT (iii): (L), at any countably infinite Var | `MatchingLogic.strongLocalCompleteness` | propext, Classical.choice, Quot.sound |
+| Corollary 15 with (L) and (S) both discharged | `MatchingLogic.global_completeness_entryIII` | propext, Classical.choice, Quot.sound |

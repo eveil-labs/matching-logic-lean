@@ -1,0 +1,36 @@
+@MatchingLogic.IsMCS.mem_of_provable_empty : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {p : MatchingLogic.Pattern S ℕ}, MatchingLogic.IsMCS Gamma → MatchingLogic.Provable ∅ p → p ∈ Gamma
+@MatchingLogic.IsMCS.mem_of_provable_imp : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {p q : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.IsMCS Gamma → p ∈ Gamma → MatchingLogic.Provable ∅ (p.imp q) → q ∈ Gamma
+@MatchingLogic.IsMCS.imp_mem_of_mono : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {p p' q q' : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.Provable ∅ (p'.imp p) → MatchingLogic.Provable ∅ (q.imp q') → p.imp q ∈ Gamma → p'.imp q' ∈ Gamma
+@MatchingLogic.IsMCS.ex_mem_of_mono : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)} {x : ℕ}
+  {p q : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.IsMCS Gamma →
+    MatchingLogic.Provable ∅ (p.imp q) → MatchingLogic.Pattern.ex x p ∈ Gamma → MatchingLogic.Pattern.ex x q ∈ Gamma
+@MatchingLogic.IsMCS.app_mem_of_mono : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {sigma : S.Sym} {args args' : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ},
+  MatchingLogic.IsMCS Gamma →
+    (∀ (i : Fin (S.arity sigma)), MatchingLogic.Provable ∅ ((args i).imp (args' i))) →
+      MatchingLogic.Pattern.app sigma args ∈ Gamma → MatchingLogic.Pattern.app sigma args' ∈ Gamma
+@MatchingLogic.IsMCS.alphaEq_mem_iff : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {p q : MatchingLogic.Pattern S ℕ}, MatchingLogic.IsMCS Gamma → p.AlphaEq q → (p ∈ Gamma ↔ q ∈ Gamma)
+@MatchingLogic.IsMCS.imp_alphaEq_mem_iff : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {p p' q q' : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.IsMCS Gamma → p.AlphaEq p' → q.AlphaEq q' → (p.imp q ∈ Gamma ↔ p'.imp q' ∈ Gamma)
+@MatchingLogic.IsMCS.ex_alphaEq_mem_iff : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {x : ℕ} {p q : MatchingLogic.Pattern S ℕ},
+  MatchingLogic.IsMCS Gamma →
+    p.AlphaEq q → (MatchingLogic.Pattern.ex x p ∈ Gamma ↔ MatchingLogic.Pattern.ex x q ∈ Gamma)
+@MatchingLogic.IsMCS.app_alphaEq_mem_iff : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)}
+  {sigma : S.Sym} {args args' : Fin (S.arity sigma) → MatchingLogic.Pattern S ℕ},
+  MatchingLogic.IsMCS Gamma →
+    (∀ (i : Fin (S.arity sigma)), (args i).AlphaEq (args' i)) →
+      (MatchingLogic.Pattern.app sigma args ∈ Gamma ↔ MatchingLogic.Pattern.app sigma args' ∈ Gamma)
+@MatchingLogic.IsMCS.bot_not_mem : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma → MatchingLogic.Pattern.bot ∉ Gamma
+@MatchingLogic.IsMCS.imp_mem_iff : ∀ {S : MatchingLogic.Signature} {Gamma : Set (MatchingLogic.Pattern S ℕ)},
+  MatchingLogic.IsMCS Gamma → ∀ (p q : MatchingLogic.Pattern S ℕ), p.imp q ∈ Gamma ↔ p ∉ Gamma ∨ q ∈ Gamma
