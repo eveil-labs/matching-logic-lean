@@ -8,6 +8,7 @@ import MatchingLogic.Definedness
 import MatchingLogic.DoubleCover
 import MatchingLogic.EntryIII.All
 import MatchingLogic.EntryIII.Alpha
+import MatchingLogic.EntryIII.AlphaFreshWitnessed
 import MatchingLogic.EntryIII.CanonicalChoice
 import MatchingLogic.EntryIII.CanonicalConstruction
 import MatchingLogic.EntryIII.CanonicalCore

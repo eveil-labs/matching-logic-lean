@@ -60,3 +60,4 @@ MatchingLogic.alpha_variant_has_a_fresh_witness	BEYOND: that failure is not stab
 MatchingLogic.freshWitnessed_of_witnessed_of_supply	BEYOND: an infinite witness supply upgrades Witnessed to FreshWitnessed	3
 MatchingLogic.locConsistent_extend_freshWitnessed_isMCS	Lemma 3.22 of [4], with the raw-syntax stand-in for the V -> V+ extension	3
 MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted	BEYOND: that variable-supply hypothesis cannot be dropped	3
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted	BEYOND: the Witnessed/FreshWitnessed separation survives alpha-equivalence	3

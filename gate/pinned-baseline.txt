@@ -1,6 +1,16 @@
 def MatchingLogic.AgreeOn : {S : MatchingLogic.Signature} →
  {Var : Type} → {M : MatchingLogic.Model S} → Set M.carrier → (Var → M.carrier) → (Var → M.carrier) → Prop :=
 fun {S} {Var} {M} C ρ ρ' => ∀ (x : Var), ρ x = ρ' x ∧ ρ x ∈ C ∨ ρ x ∉ C ∧ ρ' x ∉ C
+def MatchingLogic.AlphaFreshWitnessed : {S : MatchingLogic.Signature} → Set (MatchingLogic.Pattern S ℕ) → Prop :=
+fun {S} Gamma =>
+ ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
+ MatchingLogic.Pattern.ex x p ∈ Gamma →
+ ∃ x' p' y,
+ (MatchingLogic.Pattern.ex x p).AlphaEq (MatchingLogic.Pattern.ex x' p') ∧
+ y ∉ p'.allVars ∧
+ (MatchingLogic.Pattern.ex x' p').imp (MatchingLogic.Pattern.captureAvoidingSubst x' y p') ∈ Gamma
+@[reducible] def MatchingLogic.AlphaWitnessSig : MatchingLogic.Signature :=
+{ Sym := MatchingLogic.AlphaWitnessSym, arity := fun x => 2 }
 def MatchingLogic.AppCtx.comp : {S : MatchingLogic.Signature} →
  {Var : Type} → MatchingLogic.AppCtx S Var → MatchingLogic.AppCtx S Var → MatchingLogic.AppCtx S Var :=
 fun {S} {Var} outer inner => MatchingLogic.AppCtx.brecOn outer (MatchingLogic.AppCtx.comp._f inner)
@@ -621,6 +631,26 @@ fun {S} Gamma =>
  ∀ {x : ℕ} {p : MatchingLogic.Pattern S ℕ},
  MatchingLogic.Pattern.ex x p ∈ Gamma →
  ∃ y, (MatchingLogic.Pattern.ex x p).imp (MatchingLogic.Pattern.captureAvoidingSubst x y p) ∈ Gamma
+def MatchingLogic.alphaBlocked : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ :=
+MatchingLogic.Pattern.ex 1
+ (MatchingLogic.Pattern.app MatchingLogic.AlphaWitnessSym.pair
+ (MatchingLogic.pairArgs (MatchingLogic.Pattern.var 1) (MatchingLogic.Pattern.var 0)))
+@[reducible] def MatchingLogic.alphaCornerSelectorModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun x a => if a 0 = false ∧ a 1 = true then {true} else ∅ }
+@[reducible] def MatchingLogic.alphaFirstSelectorModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun x a => if a 0 = true ∧ a 1 = false then {true} else ∅ }
+@[reducible] def MatchingLogic.alphaUnitEmptyModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Unit, nonempty := ⋯, interp := fun x x_1 => ∅ }
+@[reducible] def MatchingLogic.alphaUnitFullModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Unit, nonempty := ⋯, interp := fun x x_1 => {()} }
+def MatchingLogic.alphaUnitRho : ℕ → MatchingLogic.alphaUnitEmptyModel.carrier :=
+fun x => ()
+@[reducible] def MatchingLogic.alphaWitnessModel : MatchingLogic.Model MatchingLogic.AlphaWitnessSig :=
+{ carrier := Bool, nonempty := ⋯, interp := fun x a => if a 0 = true ∧ a 1 = true then {true} else ∅ }
+def MatchingLogic.alphaWitnessRho : ℕ → MatchingLogic.alphaWitnessModel.carrier :=
+fun n => decide (n = 0)
+def MatchingLogic.alphaWitnessTheory : Set (MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ) :=
+{p | true ∈ MatchingLogic.alphaWitnessModel.denote MatchingLogic.alphaWitnessRho p}
 def MatchingLogic.box : {S : MatchingLogic.Signature} →
  {Var : Type} → MatchingLogic.Coord S → MatchingLogic.Pattern S Var → MatchingLogic.Pattern S Var :=
 fun {S} {Var} e ψ => (MatchingLogic.dia e (ψ.imp MatchingLogic.Pattern.bot)).imp MatchingLogic.Pattern.bot
@@ -733,6 +763,8 @@ def MatchingLogic.implicationTransitivity : MatchingLogic.PForm :=
 ((MatchingLogic.PForm.atom 0).imp (MatchingLogic.PForm.atom 1)).imp
  (((MatchingLogic.PForm.atom 1).imp (MatchingLogic.PForm.atom 2)).imp
  ((MatchingLogic.PForm.atom 0).imp (MatchingLogic.PForm.atom 2)))
+@[instance_reducible] def MatchingLogic.instDecidableEqAlphaWitnessSym : DecidableEq MatchingLogic.AlphaWitnessSym :=
+fun x y => if h : x.ctorIdx = y.ctorIdx then isTrue ⋯ else isFalse ⋯
 @[instance_reducible] def MatchingLogic.instDecidableEqPForm : DecidableEq MatchingLogic.PForm :=
 MatchingLogic.instDecidableEqPForm.decEq
 def MatchingLogic.instDecidableEqPForm.decEq : (x x_1 : MatchingLogic.PForm) → Decidable (x = x_1) :=
@@ -760,9 +792,18 @@ fun {S} => Classical.decEq (MatchingLogic.Pattern S ℕ)
 @[instance_reducible] def MatchingLogic.instDecidableEqPatternNat_5 : {S : MatchingLogic.Signature} →
  DecidableEq (MatchingLogic.Pattern S ℕ) :=
 fun {S} => Classical.decEq (MatchingLogic.Pattern S ℕ)
+@[instance_reducible] def MatchingLogic.instFintypeAlphaWitnessSym : Fintype MatchingLogic.AlphaWitnessSym :=
+{ elems := {MatchingLogic.AlphaWitnessSym.pair}, complete := MatchingLogic.instFintypeAlphaWitnessSym._proof_1 }
 def MatchingLogic.localize : {S : MatchingLogic.Signature} →
  {Var : Type} → Set (MatchingLogic.Pattern S Var) → Set (MatchingLogic.Pattern S Var) :=
 fun {S} {Var} Γ => {ψ | ∃ γ ∈ Γ, ∃ p, ψ = MatchingLogic.boxes p γ}
+def MatchingLogic.pairArgs : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ →
+ MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ →
+ Fin 2 → MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ :=
+fun p q x =>
+ match x with
+ | ⟨0, isLt⟩ => p
+ | ⟨1, isLt⟩ => q
 def MatchingLogic.proj : {S : MatchingLogic.Signature} →
  (M : MatchingLogic.Model S) → (C : Set M.carrier) → M.carrier → Bool → ↑C × Bool → M.carrier :=
 fun {S} M C star i p => if p.2 = i then ↑p.1 else star
@@ -778,6 +819,8 @@ def MatchingLogic.witnessCollapseTheory : Set (MatchingLogic.Pattern MatchingLog
 @[instance_reducible] def MatchingLogic.witnessSupplyDecidableEqPattern : {S : MatchingLogic.Signature} →
  DecidableEq (MatchingLogic.Pattern S ℕ) :=
 fun {S} => Classical.decEq (MatchingLogic.Pattern S ℕ)
+@MatchingLogic.AlphaWitnessSym.rec : {motive : MatchingLogic.AlphaWitnessSym → Sort u_1} →
+ motive MatchingLogic.AlphaWitnessSym.pair → (t : MatchingLogic.AlphaWitnessSym) → motive t
 @MatchingLogic.AppCtx.rec : {S : MatchingLogic.Signature} →
  {Var : Type} →
  {motive : MatchingLogic.AppCtx S Var → Sort u_1} →
@@ -1037,6 +1080,9 @@ fun {S} => Classical.decEq (MatchingLogic.Pattern S ℕ)
  {M : MatchingLogic.Model S} {C : Set M.carrier} {ρ ρ' : Var → M.carrier},
  MatchingLogic.AgreeOn C ρ ρ' →
  ∀ (x : Var) (a : M.carrier), MatchingLogic.AgreeOn C (Function.update ρ x a) (Function.update ρ' x a)
+MatchingLogic.AlphaWitnessSym.ofNat_ctorIdx : ∀ (x : MatchingLogic.AlphaWitnessSym),
+ MatchingLogic.AlphaWitnessSym.ofNat x.ctorIdx = x
+MatchingLogic.AlphaWitnessSym.pair.sizeOf_spec : sizeOf MatchingLogic.AlphaWitnessSym.pair = 1
 @MatchingLogic.AppCtx.brecOn.eq : ∀ {S : MatchingLogic.Signature} {Var : Type}
  {motive : MatchingLogic.AppCtx S Var → Sort u_1} (t : MatchingLogic.AppCtx S Var)
  (F_1 : (t : MatchingLogic.AppCtx S Var) → MatchingLogic.AppCtx.below t → motive t),
@@ -2155,6 +2201,11 @@ MatchingLogic.Sorted.feedsStar_a_only_a : ∀ (t : MatchingLogic.Sorted.Srt3),
  ∀ (x y : Var), x ≠ y → ¬MatchingLogic.Sorted.MProvable (MatchingLogic.Sorted.Γ3 x y) (MatchingLogic.Sorted.φ3 x y)
 @MatchingLogic.Sorted.Γ3_satisfiable : ∀ {Var : Type} [DecidableEq Var] (x y : Var) [inst : DecidableEq Var],
  ∃ M, M.SatSet (MatchingLogic.Sorted.Γ3 x y)
+MatchingLogic.alphaBlocked_mem : MatchingLogic.alphaBlocked ∈ MatchingLogic.alphaWitnessTheory
+MatchingLogic.alphaWitnessTheory_isMCS : MatchingLogic.IsMCS MatchingLogic.alphaWitnessTheory
+MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed : ¬MatchingLogic.AlphaFreshWitnessed
+ MatchingLogic.alphaWitnessTheory
+@MatchingLogic.alphaWitnessTheory_witnessed : MatchingLogic.Witnessed MatchingLogic.alphaWitnessTheory
 MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Pattern.var 1).allVars,
  (MatchingLogic.Pattern.ex 1 (MatchingLogic.Pattern.var 1)).imp
  (MatchingLogic.Pattern.captureAvoidingSubst 1 y (MatchingLogic.Pattern.var 1)) ∈
@@ -2362,6 +2413,12 @@ MatchingLogic.alpha_variant_has_a_fresh_witness : ∃ y ∉ (MatchingLogic.Patte
  {Gamma : Set (MatchingLogic.Pattern S ℕ)},
  MatchingLogic.IsMCS Gamma →
  MatchingLogic.Witnessed Gamma → MatchingLogic.InfiniteWitnessSupply Gamma → MatchingLogic.FreshWitnessed Gamma
+MatchingLogic.fvBlocked_has_alpha_fresh_witness : ∃ x' p' y,
+ (MatchingLogic.Pattern.ex 1 ((MatchingLogic.Pattern.var 1).and (MatchingLogic.Pattern.var 0))).AlphaEq
+ (MatchingLogic.Pattern.ex x' p') ∧
+ y ∉ p'.allVars ∧
+ (MatchingLogic.Pattern.ex x' p').imp (MatchingLogic.Pattern.captureAvoidingSubst x' y p') ∈
+ MatchingLogic.witnessCollapseTheory
 @MatchingLogic.generatedModel_interp : ∀ {S : MatchingLogic.Signature} (root : MatchingLogic.CanonicalCarrier S)
  (sigma : S.Sym) (components : Fin (S.arity sigma) → MatchingLogic.GeneratedCarrier root),
  (MatchingLogic.generatedModel root).interp sigma components = MatchingLogic.generatedInterp root sigma components
@@ -2491,6 +2548,10 @@ MatchingLogic.localize_not_redundant : ¬∀ (S : MatchingLogic.Signature) (Var 
 @MatchingLogic.necessitation : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var]
  {Γ : Set (MatchingLogic.Pattern S Var)} {ψ : MatchingLogic.Pattern S Var},
  MatchingLogic.Provable Γ ψ → ∀ (p : List (MatchingLogic.Coord S)), MatchingLogic.Provable Γ (MatchingLogic.boxes p ψ)
+MatchingLogic.pairArgs_one : ∀ (p q : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ),
+ MatchingLogic.pairArgs p q 1 = q
+MatchingLogic.pairArgs_zero : ∀ (p q : MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ),
+ MatchingLogic.pairArgs p q 0 = p
 @MatchingLogic.proof_theoretic_localization : ∀ {S : MatchingLogic.Signature} {Var : Type} [inst : DecidableEq Var],
  MatchingLogic.StrongLocalCompleteness S Var →
  MatchingLogic.Soundness S Var →
@@ -2567,6 +2628,11 @@ MatchingLogic.witnessCollapseTheory_isMCS : MatchingLogic.IsMCS MatchingLogic.wi
 MatchingLogic.witnessCollapseTheory_not_freshWitnessed : ¬MatchingLogic.FreshWitnessed
  MatchingLogic.witnessCollapseTheory
 @MatchingLogic.witnessCollapseTheory_witnessed : MatchingLogic.Witnessed MatchingLogic.witnessCollapseTheory
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample : ∃ Gamma,
+ MatchingLogic.IsMCS Gamma ∧ MatchingLogic.Witnessed Gamma ∧ ¬MatchingLogic.AlphaFreshWitnessed Gamma
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted : ¬∀
+ {Gamma : Set (MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ)},
+ MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → MatchingLogic.AlphaFreshWitnessed Gamma
 MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample : ∃ Gamma,
  MatchingLogic.IsMCS Gamma ∧ MatchingLogic.Witnessed Gamma ∧ ¬MatchingLogic.FreshWitnessed Gamma
 MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted : ¬∀
@@ -3889,3 +3955,18 @@ MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted : �
  {Gamma : Set (MatchingLogic.Pattern MatchingLogic.WitnessCollapseSig ℕ)},
  MatchingLogic.LocConsistent Gamma →
  ∃ Delta, Gamma ⊆ Delta ∧ MatchingLogic.IsMCS Delta ∧ MatchingLogic.FreshWitnessed Delta
+MatchingLogic.fvBlocked_has_alpha_fresh_witness : ∃ x' p' y,
+ (MatchingLogic.Pattern.ex 1 ((MatchingLogic.Pattern.var 1).and (MatchingLogic.Pattern.var 0))).AlphaEq
+ (MatchingLogic.Pattern.ex x' p') ∧
+ y ∉ p'.allVars ∧
+ (MatchingLogic.Pattern.ex x' p').imp (MatchingLogic.Pattern.captureAvoidingSubst x' y p') ∈
+ MatchingLogic.witnessCollapseTheory
+MatchingLogic.alphaWitnessTheory_isMCS : MatchingLogic.IsMCS MatchingLogic.alphaWitnessTheory
+@MatchingLogic.alphaWitnessTheory_witnessed : MatchingLogic.Witnessed MatchingLogic.alphaWitnessTheory
+MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed : ¬MatchingLogic.AlphaFreshWitnessed
+ MatchingLogic.alphaWitnessTheory
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample : ∃ Gamma,
+ MatchingLogic.IsMCS Gamma ∧ MatchingLogic.Witnessed Gamma ∧ ¬MatchingLogic.AlphaFreshWitnessed Gamma
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted : ¬∀
+ {Gamma : Set (MatchingLogic.Pattern MatchingLogic.AlphaWitnessSig ℕ)},
+ MatchingLogic.IsMCS Gamma → MatchingLogic.Witnessed Gamma → MatchingLogic.AlphaFreshWitnessed Gamma

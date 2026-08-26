@@ -7,6 +7,8 @@ import MatchingLogic
 -- Definition BODIES. A weakened definition changes no type, and a theorem
 -- above it keeps both its statement and its proof.
 #print MatchingLogic.AgreeOn
+#print MatchingLogic.AlphaFreshWitnessed
+#print MatchingLogic.AlphaWitnessSig
 #print MatchingLogic.AppCtx.comp
 #print MatchingLogic.AppCtx.liftSignature
 #print MatchingLogic.AppCtx.plug
@@ -164,6 +166,15 @@ import MatchingLogic
 #print MatchingLogic.StrongLocalCompleteness
 #print MatchingLogic.WitnessCollapseSig
 #print MatchingLogic.Witnessed
+#print MatchingLogic.alphaBlocked
+#print MatchingLogic.alphaCornerSelectorModel
+#print MatchingLogic.alphaFirstSelectorModel
+#print MatchingLogic.alphaUnitEmptyModel
+#print MatchingLogic.alphaUnitFullModel
+#print MatchingLogic.alphaUnitRho
+#print MatchingLogic.alphaWitnessModel
+#print MatchingLogic.alphaWitnessRho
+#print MatchingLogic.alphaWitnessTheory
 #print MatchingLogic.box
 #print MatchingLogic.boxes
 #print MatchingLogic.canonicalInterp
@@ -190,6 +201,7 @@ import MatchingLogic
 #print MatchingLogic.generatingContext
 #print MatchingLogic.generatingStepContext
 #print MatchingLogic.implicationTransitivity
+#print MatchingLogic.instDecidableEqAlphaWitnessSym
 #print MatchingLogic.instDecidableEqPForm
 #print MatchingLogic.instDecidableEqPForm.decEq
 #print MatchingLogic.instDecidableEqPattern
@@ -199,7 +211,9 @@ import MatchingLogic
 #print MatchingLogic.instDecidableEqPatternNat_3
 #print MatchingLogic.instDecidableEqPatternNat_4
 #print MatchingLogic.instDecidableEqPatternNat_5
+#print MatchingLogic.instFintypeAlphaWitnessSym
 #print MatchingLogic.localize
+#print MatchingLogic.pairArgs
 #print MatchingLogic.proj
 #print MatchingLogic.substVar
 #print MatchingLogic.witnessCollapseModel
@@ -209,6 +223,7 @@ import MatchingLogic
 
 -- CONSTRUCTOR SETS. A rule or syntactic form cannot be added, dropped or
 -- reshaped without the recursor's type changing.
+#check @MatchingLogic.AlphaWitnessSym.rec
 #check @MatchingLogic.AppCtx.rec
 #check @MatchingLogic.EntryIIIRegression.AuditSym.rec
 #check @MatchingLogic.GeneratingPath.rec
@@ -234,6 +249,8 @@ import MatchingLogic
 -- axioms are enumerated below and rejected by audit-axiom-decls.sh.
 #check @FirstOrder.Language.Formula.iInf.congr_simp
 #check @MatchingLogic.AgreeOn.update
+#check @MatchingLogic.AlphaWitnessSym.ofNat_ctorIdx
+#check @MatchingLogic.AlphaWitnessSym.pair.sizeOf_spec
 #check @MatchingLogic.AppCtx.brecOn.eq
 #check @MatchingLogic.AppCtx.hole.sizeOf_spec
 #check @MatchingLogic.AppCtx.node.sizeOf_spec
@@ -550,6 +567,10 @@ import MatchingLogic
 #check @MatchingLogic.Sorted.Γ3_entails_φ3
 #check @MatchingLogic.Sorted.Γ3_not_derives_φ3
 #check @MatchingLogic.Sorted.Γ3_satisfiable
+#check @MatchingLogic.alphaBlocked_mem
+#check @MatchingLogic.alphaWitnessTheory_isMCS
+#check @MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed
+#check @MatchingLogic.alphaWitnessTheory_witnessed
 #check @MatchingLogic.alpha_variant_has_a_fresh_witness
 #check @MatchingLogic.backwardClosed_denoteSet_localize
 #check @MatchingLogic.boxes_append
@@ -607,6 +628,7 @@ import MatchingLogic
 #check @MatchingLogic.finite_locConsistent_extend_witnessed_isMCS
 #check @MatchingLogic.finite_locConsistent_extend_witnessed_isMCS_of_surjective
 #check @MatchingLogic.freshWitnessed_of_witnessed_of_supply
+#check @MatchingLogic.fvBlocked_has_alpha_fresh_witness
 #check @MatchingLogic.generatedModel_interp
 #check @MatchingLogic.generated_singleton_variables
 #check @MatchingLogic.generatingContext_append
@@ -635,6 +657,8 @@ import MatchingLogic
 #check @MatchingLogic.mem_generatedInterp
 #check @MatchingLogic.mem_generatedModel_interp
 #check @MatchingLogic.necessitation
+#check @MatchingLogic.pairArgs_one
+#check @MatchingLogic.pairArgs_zero
 #check @MatchingLogic.proof_theoretic_localization
 #check @MatchingLogic.provable_conj
 #check @MatchingLogic.provable_top
@@ -659,6 +683,8 @@ import MatchingLogic
 #check @MatchingLogic.witnessCollapseTheory_isMCS
 #check @MatchingLogic.witnessCollapseTheory_not_freshWitnessed
 #check @MatchingLogic.witnessCollapseTheory_witnessed
+#check @MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample
+#check @MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted
 #check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_counterexample
 #check @MatchingLogic.witnessed_freshWitnessed_of_isMCS_refuted
 
@@ -1026,3 +1052,9 @@ import MatchingLogic
 #check @MatchingLogic.freshWitnessed_of_witnessed_of_supply
 #check @MatchingLogic.locConsistent_extend_freshWitnessed_isMCS
 #check @MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted
+#check @MatchingLogic.fvBlocked_has_alpha_fresh_witness
+#check @MatchingLogic.alphaWitnessTheory_isMCS
+#check @MatchingLogic.alphaWitnessTheory_witnessed
+#check @MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed
+#check @MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample
+#check @MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted

@@ -379,3 +379,12 @@ MatchingLogic.alpha_variant_has_a_fresh_witness
 MatchingLogic.freshWitnessed_of_witnessed_of_supply
 MatchingLogic.locConsistent_extend_freshWitnessed_isMCS
 MatchingLogic.locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted
+
+# The separation survives alpha-equivalence, even the coarse proof-theoretic
+# relation used here. So it is not an artifact of refusing the quotient.
+MatchingLogic.fvBlocked_has_alpha_fresh_witness
+MatchingLogic.alphaWitnessTheory_isMCS
+MatchingLogic.alphaWitnessTheory_witnessed
+MatchingLogic.alphaWitnessTheory_not_alphaFreshWitnessed
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_counterexample
+MatchingLogic.witnessed_alphaFreshWitnessed_of_isMCS_refuted

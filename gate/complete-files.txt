@@ -60,3 +60,7 @@ MatchingLogic/EntryIII/WitnessedCollapse.lean
 
 # What the variable supply buys: the raw-syntax stand-in for V -> V+.
 MatchingLogic/EntryIII/WitnessSupply.lean
+
+# The separation is not an alpha artifact: it survives even the coarse
+# proof-theoretic equivalence this development uses for the source's quotient.
+MatchingLogic/EntryIII/AlphaFreshWitnessed.lean
