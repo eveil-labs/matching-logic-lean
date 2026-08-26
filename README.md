@@ -185,6 +185,48 @@ Theorem 3.7 of [4], not Theorem 3.8; see `FINDINGS.md`. The construction the
 rest of the paper is designed to avoid is now in `MatchingLogic/EntryIII/`, and
 came to about 6,600 lines.)
 
+
+### The anchor, and the limit it addresses
+
+Every gate above is **regenerable**. The baselines are rebuilt from the same
+tree they constrain, so a single commit that weakens a definition and reruns the
+five generator scripts passes all of them. That is not a hole to be patched; it
+is what a regenerable anchor means. The gates defend against drift, accident and
+a lane taking a shortcut. They do not, on their own, constrain the author.
+
+`scripts/anchor-verify.sh` is the one check that cannot be satisfied from inside
+the tree. It digests the **statement surface** — every file naming what is
+claimed: the certified lists, the pin files and their kernel baselines, the
+paper map, the variant baselines — and compares that digest against one
+published in an annotated git tag, `statement-anchor`. A tag object is not part
+of any tree, so no generator can produce it.
+
+Concretely, and measured rather than asserted: removing
+`MatchingLogic.strongLocalCompleteness` — the entry-(iii) headline result — from
+`gate/certified.txt` and rerunning every generator passes `audit.sh`,
+`audit-manifest.sh`, `audit-pinned.sh`, `audit-coverage.sh` and
+`audit-axiom-decls.sh`. It is caught only by the anchor.
+
+**Be clear about what this buys.** It does not make the anchors tamper-proof.
+Anyone who can push can also delete the tag and publish a new one. What it
+removes is the *quiet* path: changing what this library claims now requires
+replacing a tag that others have already fetched, which is dated, attributable
+and visible in a way that editing a file in the same commit is not. The tag is
+signed when a key is available and reports its own signature status either way.
+
+The file set is fixed in `gate/anchor-manifest.txt`, an explicit list rather
+than a glob, and the manifest is digested along with the files — so shrinking it
+moves the digest. A gate file that exists but is unlisted is a hard error,
+because otherwise the digest would cover a set that no longer describes the
+surface.
+
+Changing a claim on purpose is meant to be easy but loud:
+
+```bash
+./scripts/anchor-publish.sh          # refuses silently replacing an existing anchor
+```
+
+
 ## Beyond the paper
 
 These are not in the paper. They exist because a mechanized theorem is worth

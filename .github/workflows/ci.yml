@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Tags are the anchor. Without them scripts/anchor-verify.sh cannot
+          # read the published statement digest and fails for the wrong reason.
+          fetch-depth: 0
+
 
       - name: Build
         uses: leanprover/lean-action@v1
@@ -90,6 +95,15 @@ jobs:
       # The correspondence table is GENERATED from gate/certified.txt and the
       # kernel's own axiom output. If it has drifted from the source, the table
       # in the repository is claiming something the kernel is not confirming.
+      - name: Statement surface matches the published anchor
+        # The one check here that CANNOT be satisfied from inside the tree.
+        # Every other gate is regenerable: a commit that weakens a definition
+        # and reruns the five generators passes all of them. Demonstrated --
+        # dropping MatchingLogic.strongLocalCompleteness from gate/certified.txt
+        # and regenerating passes audit, audit-manifest, audit-pinned,
+        # audit-coverage and audit-axiom-decls, and is caught only here.
+        run: ./scripts/anchor-verify.sh
+
       - name: Correspondence table is current
         run: |
           ./scripts/correspondence.sh > /tmp/corr.md
