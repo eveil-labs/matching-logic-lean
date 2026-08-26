@@ -420,13 +420,53 @@ with the same axiom verdict.
 
 ## Attribution
 
-The Lean was written by AI agents under direction — Claude Opus 5 and Sonnet 5,
-and OpenAI `gpt-5.6-sol` — with an orchestrating session writing the definitions
-and pinned statements, commissioning the proofs, and re-running every claim
-rather than accepting an agent's report. Where a result was proved twice,
-the two proofs came from different model families working in separate workspaces
-with no sight of each other. Audits were run in a different family from the code
-under audit wherever possible. Errors are ours.
+This was built by a person and a set of models doing different jobs, and the
+division was not incidental to the result.
+
+**Aurelien Bocquet designed the system that produced it** — not the Lean, and
+not merely the task list. The method is the contribution: statements pinned
+before any proof is attempted, so independent provers cannot drift toward a
+statement each finds convenient; definitions audited before proofs are
+commissioned on them; every target proved twice where it mattered, by different
+model families in separate workspaces with no sight of each other; neighbouring
+readings of each definition stated as prove-or-refute pairs rather than argued
+about; every instrument fire-tested against a deliberately broken tree before
+being trusted; claims judged from files and receipts rather than from an agent's
+report; adversarial review in rounds, against a stopping rule agreed in advance
+(publish on zero CRITICAL, not zero findings); and defects recorded as they
+happened rather than tidied away afterwards.
+
+**The models wrote the Lean, ran the instruments, and wrote the prose** — Claude
+Opus 5 and Sonnet 5, and OpenAI `gpt-5.6-sol`. Entry point (iii), 6,616 lines,
+took a single session of a few hours.
+
+The reason to describe the split rather than blur it is that this repository is
+unusually good evidence for where each is strong. The Lean kernel settles
+whether a proof is valid, and that turned out to be the question least likely to
+go wrong: a bad proof does not compile. Of the **twenty-seven** real defects
+recorded during the work, the kernel caught **none**. They were wrong
+statements, wrong prose, wrong claims about what had been proved, and above all
+wrong *instruments* — gates that could not fail, gates that verified themselves,
+gates that reported success having compared nothing. Models produced the proofs
+at a speed no person could match, and were systematically unreliable at judging
+their own checks and their own claims. Every one of those twenty-seven was
+caught by something the method put there: a control, a second family reading the
+same file, an instrument run against real data, or a rule that a claim is not
+established until a receipt says so.
+
+Several turns in the work were decided by the human side and would not have been
+reached otherwise: to check whether the ecosystem already maintained the
+verification tools being hand-rolled here — which brought in
+`leanprover-community/axiom-audit`, put `lake exe mk_all --check` in CI, deleted
+the hand-rolled root-import check it replaced, and turned up the kernel replay
+that now ships inside the Lean toolchain; to ask why so much effort was going
+into fighting a definition, which produced the separation results in
+`NARRATIVE.md` §3; and to push and review on
+a machine other than the one the scripts were written on, which found a latent
+fail-open that nine review rounds, two independent reviewers and four proof
+lanes had all missed.
+
+`INCIDENTS.md` in the working repository is the full record. Errors are ours.
 
 ## License
 
