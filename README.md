@@ -24,7 +24,7 @@ studies has not been mechanized.
 proved with no `sorry`, and depends only on `propext`, `Classical.choice`,
 `Quot.sound` — many on strictly fewer.
 
-`gate/certified.txt` is the enforced list of what is claimed: 352 names. The
+`gate/certified.txt` is the enforced list of what is claimed: 367 names. The
 five variant refutations in `variants/` are claimed too, and enforced separately
 by `scripts/audit-variants.sh`. **Nothing outside those two is claimed.** CI
 runs every gate on every push.
@@ -32,7 +32,7 @@ runs every gate on every push.
 Two of the checks are **not ours**, which matters more than the ones that are:
 
     lake exe axiom-audit     leanprover-community/axiom-audit: asks the kernel
-                             which axioms each of the 1,942 declarations depends
+                             which axioms each of the 2,095 declarations depends
                              on, and fails outside the standard three. Catches
                              `sorry` (sorryAx), `native_decide`, and any
                              home-rolled axiom, transitively.
@@ -40,9 +40,11 @@ Two of the checks are **not ours**, which matters more than the ones that are:
                              `import MatchingLogic` really does cover the tree.
 
 `lake env leanchecker MatchingLogic` — the kernel replay built into the Lean
-toolchain — replays the whole library through a fresh kernel and is clean. It is
-not in CI only because it is a slower, defence-in-depth check rather than a
-per-push one.
+toolchain since v4.28.0 — replays the whole library through a fresh kernel and
+is clean, as is `--fresh` on the entry-(iii) conclusion. It is not in CI only
+because it is a slower, defence-in-depth check rather than a per-push one.
+(The standalone `lean4checker` repository is deprecated and archived; the
+checker now ships with the toolchain.)
 
 [`CORRESPONDENCE.md`](CORRESPONDENCE.md) is a convenience index: for results
 that have been mapped to the paper, it gives the Lean name and the axioms the
@@ -360,10 +362,10 @@ imports those. A line-oriented source grep runs as well, and is the weaker of
 the two — a declaration written after `in` on a `set_option` line is invisible
 to it, which is precisely why the kernel scan cannot be a name test.
 
-Private *theorems* are permitted, and there are 149: a theorem's type is not
+Private *theorems* are permitted, and there are 183: a theorem's type is not
 part of anything public, only its proof, and the kernel checks that. Private
-*definitions* are permitted too — there are 70, all construction internals of
-entry point (iii) — but what a private name must never do is **appear in the
+*definitions* are permitted too — there are 83, almost all construction
+internals of entry point (iii) — but what a private name must never do is **appear in the
 type of something public**, since no pin list built from the environment can
 reach it there. That is checked directly: for every public declaration, every
 constant in its type is required to be non-private. An earlier version banned
@@ -374,7 +376,7 @@ stronger than its own justification.
 reads the source text, tracking `namespace`, `section` and `end`, and requires
 each declaration it finds to appear in the pin list **by fully qualified name**.
 The two disagreeing in either direction is the signal. It currently reports
-**537 of 537** public source-written declarations pinned, against 632 names in
+**575 of 575** public source-written declarations pinned, against 674 names in
 the pin list, and fails if either scan comes back implausibly small. Since round
 eight it counts the iterations of its own comparison loop and requires that
 count to equal the number of declarations found; its predecessor read a

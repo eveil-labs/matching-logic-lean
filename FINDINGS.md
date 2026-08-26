@@ -5,7 +5,10 @@ we checked and how, so nothing has to be taken on trust. Where a claim is about
 our development rather than the paper, it says so.
 
 We are not proposing any of this as a correction to the mathematics. The one
-item that is an actual erratum is a citation, item 1.
+item that is an actual erratum is a citation, item 1. Item 7 is the one we would
+most like your view on: it does not correct anything, but it shows that a step
+in Lemma 3.22 which reads as bookkeeping is carrying a hypothesis that cannot be
+dropped, and suggests a strengthening that costs nothing.
 
 ---
 
@@ -138,12 +141,76 @@ boxing is binder-free: `FV([p]ψ) = FV ψ`. (`denote_boxes`, `FV_boxes`.)
 
 ---
 
-## 7. What is mechanized
+## 7. What your V → V⁺ step is carrying, and why it cannot be dropped
+
+This one came out of mechanizing (L) and is, we think, the most interesting
+thing we can report. It is not a correction — nothing below says anything of
+yours is wrong — but it makes a step that reads as bookkeeping into a stated
+hypothesis, and proves it is load-bearing.
+
+**The setting.** Your Definition 3.5 asks that a witnessed MCS have, for each
+`∃x.φ ∈ Γ`, *some* `y` with `(∃x.φ) → φ[y/x] ∈ Γ`. Lemma 3.22 then builds one,
+choosing `y` from `V⁺ \ V` — a set of countably many *new* variables — subject
+to it not occurring **free** in `Γₙ₋₁` and `ψ`. All of this is correct in your
+setting, where α-equivalent patterns are identified and substitution renames
+implicitly.
+
+Our formalization does not quotient: `Pattern` is raw named syntax. So we had to
+carry a stronger invariant, `FreshWitnessed`, in which the witness avoids **all**
+variables of the body, bound ones included. The natural question is whether that
+strengthening is an artifact of our representation. It is not.
+
+**1. The two conditions genuinely separate**
+(`witnessed_freshWitnessed_of_isMCS_refuted`). There is a maximal locally
+consistent set that is witnessed and not fresh-witnessed. The empty signature,
+carrier `Bool`, valuation naming `true` by variable `0` and everything else by
+`false`, and the complete theory of the point `true`. It is witnessed because
+that valuation is surjective; it is not fresh-witnessed because `∃0. var 0` is
+in it while `0` is the only name for `true` and `0` occurs in the body.
+Maximality is discharged, not assumed.
+
+**2. The separation is not an α artifact**
+(`witnessed_alphaFreshWitnessed_of_isMCS_refuted`). Allowing the witness to be
+fresh for *any* α-variant does not repair it. Over a signature with one binary
+symbol, `∃1. pair(var 1, var 0)` blocks every representative, because the
+application depends on both arguments and so has no vacuously quantified
+equivalent to escape into. Quotienting by α would therefore not remove the need
+for the stronger invariant.
+
+**3. What does repair it is the supply of witnesses**
+(`freshWitnessed_of_witnessed_of_supply`). If every existential in Γ has
+*infinitely many* usable Henkin names, fresh-witnessedness follows immediately,
+because the body has only finitely many variables. The proof is three lines. Its
+value is that it identifies the mechanism: not α-equivalence, but the supply.
+
+**4. And that is exactly what V → V⁺ provides.** We mechanized Lemma 3.22 at
+your level of generality — arbitrary locally consistent sets, not just finite
+lists — as `locConsistent_extend_freshWitnessed_isMCS`. Because our variables
+are already all of `ℕ` and cannot be extended, the hypothesis appears explicitly
+as `InfiniteFreshVariableSupply`: infinitely many names free in no member of Γ.
+That is the raw-syntax translation of your extension step.
+
+**5. The hypothesis is necessary**
+(`locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted`). Drop it and
+the statement is false. Feed the extension the witnessed-but-not-fresh MCS from
+(1): it is already maximal, so any locally consistent extension equals it, so it
+would have to be fresh-witnessed itself, which (1) refutes.
+
+**The concrete suggestion.** Lemma 3.22's side condition can be strengthened
+from *does not occur free in* `Γₙ₋₁` *and* `ψ` to *does not occur in* them at
+all, at no cost: your own justification — that only finitely many variables of
+`V⁺ \ V` are in play at each stage — already delivers it. With that
+strengthening the α-renaming step in the consistency argument becomes
+unnecessary, and the construction transfers to raw named syntax unchanged. We
+would be glad to know whether you think that is worth stating.
+
+## 8. What is mechanized
 
 Throughout: the paper's own fragment — one-sorted, definedness-free,
 fixpoint-free — except where a result is explicitly about extending it.
 
-Entry point (i) and entry point (ii) of the Section 10 challenge, plus
+**All three entry points of the Section 10 challenge** — (i), (ii), and (iii),
+the last by the canonical-model construction in `MatchingLogic/EntryIII/` — plus
 Corollary 16, the **counterexample of Remark 17**, and the **applicative
 specialization of Section 6** (Remark 18's currying discussion is not
 formalized). **One-sorted (S) is discharged rather than assumed** — every rule of
@@ -169,7 +236,7 @@ the development, at a countably infinite element-variable type.
 
 ---
 
-## 8. Questions where we had to choose, and would rather you decided
+## 9. Questions where we had to choose, and would rather you decided
 
 Mechanizing forces a reading of things prose leaves open. For the definitional
 ones below we picked a reading and checked it does not break your lemmas — and
@@ -264,8 +331,11 @@ not get to it.
 **(L) is no longer among these.** It is discharged — see
 `MatchingLogic/EntryIII/` and `ENTRY-III-COMPLETION.md` — at the source's
 variable scope, a countably infinite element-variable type. We had estimated
-three to four thousand lines from reading Theorem 3.7 of [4]; it came to about
-6,600, dominated as expected by the n-ary Existence Lemma. Nothing existing
+three to four thousand lines from reading Theorem 3.7 of [4]; the construction
+came to 6,616 lines in 30 modules, dominated as expected by the n-ary Existence
+Lemma. (`MatchingLogic/EntryIII/` also holds a further 941 lines in three
+modules that are *not* part of the construction: they are the separation results
+described below.) Nothing existing
 transferred: the closest mechanized completeness proof for a neighbouring logic
 uses nominals as its Henkin witnesses, and this fragment has none.
 
