@@ -38,14 +38,28 @@ after Theorem 3.8:
 > completeness while Theorem 3.8 is called **weak** local completeness."
 
 So (L), which the paper itself labels *strong*, is Theorem 3.7. Theorem 3.8 is
-the empty-theory case that the same paragraph goes on to describe separately
-("In [3], it yields Theorem 16, the weak completeness statement"). In the technical report [5]
-(`https://fsl.cs.illinois.edu/publications/chen-rosu-2019-tr.pdf`) the
-corresponding numbers are **Theorem 83 (strong)** and **Theorem 16 (weak)** —
-and the paper already cites Theorem 16 correctly, in the same paragraph, as the
-weak statement.
+the empty-theory case, which the same paragraph goes on to describe separately.
 
-*Checked by downloading the thesis and reading pp. 68-69 directly.*
+The strong/weak split is not our reading of your terminology — you draw it
+yourselves, in the same words, in **Chen and Roșu, *Matching µ-Logic*, 2019
+technical report** (`https://fsl.cs.illinois.edu/publications/chen-rosu-2019-tr.pdf`):
+
+> "Theorem 16 is called *weak local completeness theorem* while Theorem 83 is
+> called *strong local completeness theorem*."
+
+and, on how the two relate:
+
+> "Theorem 16 is a weak local completeness result for H, but the way we actually
+> prove it is by proving the strong local completeness theorem and then let
+> Γ = ∅ (see Theorem 83)."
+
+Theorem 83 there is `Γ ⊨loc φ implies Γ ⊩ φ` — the shape of (L). So a citation
+for (L) should land on the *strong* statement, which in the thesis is 3.7.
+
+*Checked by downloading the thesis and the 2019 technical report and reading
+both directly. We deliberately make no claim about the numbering in [3] or [5]:
+we could not retrieve either, so we do not know whether the paragraph's other
+citations are affected, and this erratum does not depend on them.*
 
 ---
 
