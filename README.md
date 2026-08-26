@@ -33,7 +33,7 @@ theorems rather than just different codebases:
 proved with no `sorry`, and depends only on `propext`, `Classical.choice`,
 `Quot.sound` — many on strictly fewer.
 
-`gate/certified.txt` is the enforced list of what is claimed: 367 names. The
+`gate/certified.txt` is the enforced list of what is claimed: 370 names. The
 five variant refutations in `variants/` are claimed too, and enforced separately
 by `scripts/audit-variants.sh`. **Nothing outside those two is claimed.** CI
 runs every gate on every push.
@@ -365,7 +365,7 @@ considered:
     subshell and three modules dropped out of the coverage scan silently. And
     `audit.sh` and `correspondence.sh` read only the first physical line of each
     `#print axioms` stanza, so a forbidden axiom after a pretty-printer wrap was
-    invisible — 33 of the 367 certified names wrap, and `CORRESPONDENCE.md` was
+    invisible — 33 of the 370 certified names wrap, and `CORRESPONDENCE.md` was
     publishing two truncated axiom lists as a result.
 
 **Nothing in these gates now identifies our own code by name.** Round nine is

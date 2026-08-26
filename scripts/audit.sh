@@ -45,14 +45,14 @@ fi
 # `#print axioms` WRAPS. The kernel breaks a long axiom list across physical
 # lines, and reading only the first line stops at "[propext," -- so a forbidden
 # axiom on a continuation line is invisible. Measured on this tree: 33 of the
-# 367 certified names wrap. `scripts/audit-entry-iii.sh` found and repaired this
+# 370 certified names wrap. `scripts/audit-entry-iii.sh` found and repaired this
 # for its own gate; the repair was never carried here until round ten said so.
 #
 # Emit the whole stanza for $1, joined onto one line.
 axiom_stanza () {
   # The name must be followed by a SPACE: `denote_rho` is a prefix of
   # `denote_rho'`, and a prefix test swallowed the following stanza --
-  # caught by running this against the real 367-name output, not a sample.
+  # caught by running this against the real 370-name output, not a sample.
   # The quote character is passed in as a variable so the awk program itself
   # contains none, which is what the shell quoting requires.
   awk -v want="'$1'" -v q="'" '

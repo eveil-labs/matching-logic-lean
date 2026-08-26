@@ -1,8 +1,18 @@
 # Notes for the authors
 
+Dear Professor Chen, Professor Roșu,
+
 Everything here came out of mechanizing the paper in Lean 4. Each item says what
 we checked and how, so nothing has to be taken on trust. Where a claim is about
 our development rather than the paper, it says so.
+
+One thing about provenance, so that it is not a surprise later. The Lean and
+this note were written by language models — Claude Opus 5 and Sonnet 5, and
+OpenAI `gpt-5.6-sol` — working under a method and a review process designed and
+run by Aurelien Bocquet, who is accountable for everything here. The
+`Attribution` section of `README.md` describes the division of work and what
+each side proved unreliable at. Every claim below is machine-checked, or is
+marked as a claim about how the work was done.
 
 We are not proposing any of this as a correction to the mathematics. The one
 item that is an actual erratum is a citation, item 1. Item 7 is the one we would
@@ -130,8 +140,10 @@ you say matters.
 **The last is one the paper argues but does not prove.** Section 4 explains that
 the generated submodel C alone will not serve once element variables and ∃ are
 present — that this is *why* Definition 10 doubles it — without giving a
-counterexample. Here are two, proved independently in different model families.
-`variants/V5SingleSheet.lean` takes the empty signature, carrier Bool,
+counterexample. Here are two, found independently by two provers working from the same pinned
+statement with no sight of each other's work. Both live over the empty signature
+with a two-element carrier and differ in the data.
+`variants/V5SingleSheet.lean` takes carrier Bool,
 C = {false}, star = true, and ψ = ∀x. x;
 `alternates/V5SingleSheet.inhouse.lean` takes C = {true}, star = false, and
 ψ = ∀x∀y.(x → y). In both, ψ is total exactly on a one-element carrier: the
@@ -175,9 +187,10 @@ implicitly.
 **And you already say why the extension is needed.** The paragraph above Lemma
 3.22 gives the counterexample: `Γ = {¬x | x ∈ V}` is consistent and cannot be
 extended to a witnessed MCS without new variables. Nothing below is news to you
-on that point. What is different here is the target — not *witnessed* but a
-strictly stronger condition — and the fact that the obstruction survives in a
-form your extension does not reach.
+on that point. What is different here is the target, not *witnessed* but a strictly stronger
+condition, and the fact that once the variable set is fixed, so that your
+extension step is not available, the obstruction has to be carried as a
+hypothesis instead.
 
 Our formalization does not quotient: `Pattern` is raw named syntax. So we had to
 carry a stronger invariant, `FreshWitnessed`, in which the witness avoids **all**
@@ -207,7 +220,11 @@ for the stronger invariant.
 because the body has only finitely many variables. The proof is three lines. Its
 value is that it identifies the mechanism: not α-equivalence, but the supply.
 
-**4. And that is exactly what V → V⁺ provides.** We mechanized Lemma 3.22 at
+**4. And a supply of that kind is what V → V⁺ makes available.** The two
+conditions are not the same one: (3) asks for infinitely many names whose Henkin
+implications are already present, while your extension supplies infinitely many
+names free in no member of Γ, and the construction converts the second into the
+first as it goes. We mechanized Lemma 3.22 at
 your level of generality — arbitrary locally consistent sets, not just finite
 lists — as `locConsistent_extend_freshWitnessed_isMCS`. Because our variables
 are already all of `ℕ` and cannot be extended, the hypothesis appears explicitly
@@ -218,10 +235,12 @@ That is the raw-syntax translation of your extension step.
 (`locConsistent_extend_freshWitnessed_isMCS_unrestricted_refuted`). Drop it and
 the statement is false. Feed the extension the witnessed-but-not-fresh MCS from
 (1): it is already maximal, so any locally consistent extension equals it, so it
-would have to be fresh-witnessed itself, which (1) refutes. Note the difference
-from your `{¬x | x ∈ V}`: that set is consistent but not maximal, and the repair
-is to add variables. Ours is *already an MCS*, so there is nothing left to add —
-which is why the supply has to be a hypothesis on the starting theory rather
+would have to be fresh-witnessed itself, which (1) refutes. The difference from your `{¬x | x ∈ V}` is instructive. That set is consistent
+but not maximal, and the repair is to add variables. Ours is already maximal
+over the variable set it is stated at, and that set is all of `ℕ`; in your
+setting the same set would stop being maximal as soon as `V` grew to `V⁺`, and
+your repair would go through. It is precisely when the language cannot be
+widened that the supply has to be a hypothesis on the starting theory rather
 than a step in the construction.
 
 **The concrete suggestion.** Lemma 3.22's side condition can be strengthened
@@ -325,7 +344,7 @@ we have misread.
 
 | | |
 |---|---|
-| commit | see `git log` |
+| commit | `https://github.com/eveil-labs/matching-logic-lean`, tag `separation-results` |
 | toolchain | Lean 4.33.0 |
 | Mathlib | pinned to the public tag `v4.33.0` |
 | build | `lake exe cache get && lake build MatchingLogic` — about 90 s from a clean clone |
@@ -371,17 +390,19 @@ not get to it.
 
 **(L) is no longer among these.** It is discharged — see
 `MatchingLogic/EntryIII/` and `ENTRY-III-COMPLETION.md` — at the source's
-variable scope, a countably infinite element-variable type. We had estimated
-three to four thousand lines from reading Theorem 3.7 of [4]; the construction
-came to 6,616 lines in 30 modules, dominated as expected by the n-ary Existence
-Lemma. (`MatchingLogic/EntryIII/` also holds a further 941 lines in three
+variable scope, a countably infinite element-variable type. We had estimated three to four thousand lines from reading Theorem 3.7 of [4];
+the construction came to 6,616 lines in 30 modules, and the surprise was where
+they went. The n-ary Existence Lemma is 281 of them. About 2,700 are
+α-equivalence, capture-avoidance and witness plumbing, which your convention
+supplies for free. (`MatchingLogic/EntryIII/` also holds a further 944 lines in three
 modules that are *not* part of the construction: they are the separation results
-described below.) Nothing existing
-transferred: the closest mechanized completeness proof for a neighbouring logic
-uses nominals as its Henkin witnesses, and this fragment has none.
+described in item 7 above.) We did not find existing work we could transfer. The nearest thing is the
+approach you point at yourselves in Section 4, each existential witnessed by a
+nominal as in [11], and this fragment has no nominals. If there is a
+mechanization we missed, we would like to know.
 
-Two things in that construction are worth your attention, because they are
-places where the raw formalization had to say more than the paper does.
+One thing in that construction is worth your attention, because it is a place
+where the raw formalization had to say more than the paper does.
 
 *Fresh witnesses on raw names.* The Lean syntax does not quotient patterns by
 α-equivalence, and a witness name merely absent from the free variables of an
@@ -392,10 +413,20 @@ demanding a witness avoiding *all* variables of the body rather than only its
 free ones. This is not an extra assumption: the finite Henkin extension proves
 every locally consistent finite list extends to an MCS satisfying it.
 
-*Arbitrary symbol sets without countability.* The canonical construction wants a
-countable pattern type, and the paper permits an arbitrary finitary symbol set.
-Rather than assume countability, each finite countertheory is moved to the
+We also mechanized the reduction you give in Section 2 for exactly this purpose.
+The canonical construction wants a countable pattern type and you permit an
+arbitrary finitary symbol set, so each finite countertheory is moved to the
 finite sub-signature its premises generate, the model is built there, and it is
-extended back to the ambient signature by interpreting the absent symbols as
-empty. So no finiteness or countability hypothesis is imposed on `S.Sym`.
+extended back to the ambient signature. Ours interprets the absent symbols as
+empty rather than arbitrarily; the denotation of every `Σ₀`-pattern is unchanged
+either way. So no finiteness or countability hypothesis is imposed on `S.Sym`,
+for the reason you give.
 
+---
+
+With thanks for the paper, and for stating the challenge in Section 10 precisely
+enough to be answered.
+
+Aurelien Bocquet
+`aurelien@eveil-labs.ai`
+`https://github.com/eveil-labs/matching-logic-lean`
