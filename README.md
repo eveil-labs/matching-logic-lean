@@ -19,7 +19,7 @@ The paper adds that, to its authors' knowledge, the definedness-free system it
 studies has not been mechanized.
 
 Three tags mark the states worth comparing, and they are genuinely different
-theorems rather than different codebases:
+theorems rather than just different codebases:
 
 | tag | what holds there |
 |---|---|
@@ -38,7 +38,7 @@ five variant refutations in `variants/` are claimed too, and enforced separately
 by `scripts/audit-variants.sh`. **Nothing outside those two is claimed.** CI
 runs every gate on every push.
 
-Two of the checks are **not ours**, which matters more than the ones that are:
+Two of the checks are **not ours**:
 
     lake exe axiom-audit     leanprover-community/axiom-audit: asks the kernel
                              which axioms each of the 2,095 declarations depends
