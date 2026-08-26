@@ -18,6 +18,15 @@ challenge, in three entry points of increasing ambition:
 The paper adds that, to its authors' knowledge, the definedness-free system it
 studies has not been mechanized.
 
+Three tags mark the states worth comparing, and they are genuinely different
+theorems rather than different codebases:
+
+| tag | what holds there |
+|---|---|
+| `entry-i-and-ii` | (i) and (ii), (S) discharged, (L) still a hypothesis — at **arbitrary** `Var`, so the most general statements in the repository |
+| `entry-iii` | (L) discharged, at the paper's scope `[Denumerable Var]` |
+| `separation-results` | why the construction needs an invariant the source does not state |
+
 ## Status
 
 **All three entry points of the challenge are discharged.** Everything below is
@@ -250,7 +259,10 @@ lake build MatchingLogic
     gate/                            the enforced lists the gates read
     scripts/                         the gates
     FINDINGS.md                      what the mechanization surfaced, for the authors
+    NARRATIVE.md                     why the development is shaped this way, what it
+                                     cost, and the one thing it found
     CORRESPONDENCE.md                generated: paper result -> Lean name -> axioms
+    ENTRY-III-COMPLETION.md          the map of the (L) construction
 
 ## Representation choices
 
