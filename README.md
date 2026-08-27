@@ -487,24 +487,21 @@ with the same axiom verdict.
 
 ## Attribution
 
-This was built by a person and a set of models doing different jobs, and the
-division was not incidental to the result.
+This was built by a person and a set of models doing different jobs:
 
-**Aurelien Bocquet designed the system that produced it** — not the Lean, and
-not merely the task list. The method is the contribution: statements pinned
-before any proof is attempted, so independent provers cannot drift toward a
-statement each finds convenient; definitions audited before proofs are
-commissioned on them; every target proved twice where it mattered, by different
-model families in separate workspaces with no sight of each other; neighbouring
-readings of each definition stated as prove-or-refute pairs rather than argued
-about; every instrument fire-tested against a deliberately broken tree before
-being trusted; claims judged from files and receipts rather than from an agent's
-report; adversarial review in rounds, against a stopping rule agreed in advance
-(publish on zero CRITICAL, not zero findings); and defects recorded as they
-happened rather than tidied away afterwards.
+**The author designed the harness that produced the result**, not the Lean, and
+not merely the task list. The method is the contribution: 
+- statements pinned before any proof is attempted, so independent provers cannot drift toward a statement each finds convenient
+- definitions audited before proofs are commissioned on them
+- every target proved twice where it mattered, by different model families in separate workspaces with no sight of each other
+- neighbouring readings of each definition stated as prove-or-refute pairs rather than argued about
+- every instrument fire-tested against a deliberately broken tree before being trusted
+- claims judged from files and receipts rather than from an agent's report
+- adversarial review in rounds, against a stopping rule agreed in advance (publish on zero CRITICAL, not zero findings)
+- and defects recorded as they happened rather than tidied away afterwards
 
 **The models wrote the Lean, ran the instruments, and wrote the prose.** Four
-were used, and not interchangeably:
+were used:
 
 - **Claude Opus 5** ran the coordinating session: writing the definitions and
   pinned statements before any proof was commissioned, building and
@@ -519,12 +516,6 @@ were used, and not interchangeably:
   independent proof of Lemma 9.
 - **Claude Fable 5** was brought in on some of the harder proof obligations.
 
-`alternates/README.md` records which family proved which target, for the two
-results that were deliberately proved twice; it is the only per-result model
-attribution in this repository that can be checked against an artifact. Where a result was proved twice,
-the two proofs came from different families in separate workspaces with no
-sight of each other, and audits were run in a different family from the code
-under audit wherever possible.
 
 Entry point (iii), 6,616 lines, took a single session of a few hours.
 
